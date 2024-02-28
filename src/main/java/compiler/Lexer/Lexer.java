@@ -34,13 +34,13 @@ public class Lexer {
         }
     };
     //'+', '-', '*', '/', '%', '<', '>', '=', '!', '&', '|', '(', ')', '{', '}', ';', ',', '[', ']', '.'
-    LinkedList<Symbol> symbolList;
+    public LinkedList<Symbol> symbolList;
 
     public Lexer(Reader input) throws IOException {
         symbolList = new LinkedList<Symbol>();
         int c = input.read();
         if (c == -1) {
-            throw new EndOfFileException();
+            return;
         }
         this.lastChar = (char) c;
         while (true) {
@@ -69,8 +69,8 @@ public class Lexer {
                         case "char":
                             symbolList.add(new VarType("char"));
                             break;
-                        case "string":
-                            symbolList.add(new VarType("string"));
+                        case "String":
+                            symbolList.add(new VarType("String"));
                             break;
                         case "bool":
                             symbolList.add(new VarType("bool"));
@@ -211,13 +211,13 @@ public class Lexer {
     }
     private String readString(Reader input) throws IOException {
         StringBuilder sb = new StringBuilder();
-        sb.append(this.lastChar);
         this.lastChar = (char) input.read();
 
         while (this.lastChar != '"') {
             sb.append(this.lastChar);
             this.lastChar = (char) input.read();
         }
+        this.lastChar = (char) input.read();
         return sb.toString();
     }
     private String readSpecialCharactere(Reader input) throws IOException {

@@ -1,10 +1,10 @@
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringReader;
 import compiler.Lexer.Lexer;
+
+import static org.junit.Assert.*;
 
 public class TestLexer {
     
@@ -91,7 +91,11 @@ public class TestLexer {
     }
     @Test
     public void test6() throws IOException {
-        String input = "for (int i = 0; i < 10; i = i + 1) { print(i); }";
+        String input = """
+                for (int i = 0; i 
+                < 10; i = i + 1)
+                 { print(i); 
+                 }""";
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
         assertEquals(lexer.getNextSymbol().toString(), "Keyword(for)");
@@ -129,6 +133,24 @@ public class TestLexer {
         assertEquals(lexer.getNextSymbol().toString(), "VarType(int)");
         assertEquals(lexer.getNextSymbol().toString(), "Special(=)");
         assertEquals(lexer.getNextSymbol().toString(), "MyInteger(2)");
+        assertEquals(lexer.getNextSymbol().toString(), "Special(;)");
+    }
+    @Test
+    public void test8() throws IOException {
+        String input = "// This is a comment";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        assertNull(lexer.getNextSymbol());
+    }
+    @Test
+    public void test9() throws IOException {
+        String input = "String s = \"Hello, World!\";";
+        StringReader reader = new StringReader(input);
+        Lexer lexer = new Lexer(reader);
+        assertEquals(lexer.getNextSymbol().toString(), "VarType(String)");
+        assertEquals(lexer.getNextSymbol().toString(), "Identifier(s)");
+        assertEquals(lexer.getNextSymbol().toString(), "Special(=)");
+        assertEquals(lexer.getNextSymbol().toString(), "MyString(Hello, World!)");
         assertEquals(lexer.getNextSymbol().toString(), "Special(;)");
     }
 }
