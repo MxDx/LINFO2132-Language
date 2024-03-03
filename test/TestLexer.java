@@ -144,10 +144,10 @@ public class TestLexer {
     }
     @Test
     public void TestString() throws Exception {
-        String input = "String s = \"Hello, World!\";";
+        String input = "string s = \"Hello, World!\";";
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
-        assertEquals(lexer.getNextSymbol().toString(), "<VarType,String>");
+        assertEquals(lexer.getNextSymbol().toString(), "<VarType,string>");
         assertEquals(lexer.getNextSymbol().toString(), "<Identifier,s>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,=>");
         assertEquals(lexer.getNextSymbol().toString(), "<MyString,Hello, World!>");
@@ -156,11 +156,11 @@ public class TestLexer {
 
     @Test
     public void TestNoEndString() throws Exception {
-        String input = "String s = \"Hello, World!";
+        String input = "string s = \"Hello, World!";
         StringReader reader = new StringReader(input);
         try {
             Lexer lexer = new Lexer(reader);
-            assertEquals(lexer.getNextSymbol().toString(), "<VarType,String>");
+            assertEquals(lexer.getNextSymbol().toString(), "<VarType,string>");
             assertEquals(lexer.getNextSymbol().toString(), "<Identifier,s>");
             assertEquals(lexer.getNextSymbol().toString(), "<Special,=>");
             lexer.getNextSymbol();
@@ -169,11 +169,11 @@ public class TestLexer {
             assertEquals(e.getMessage(), "No end of string");
         }
 
-        String input2 = "String s = \"";
+        String input2 = "string s = \"";
         StringReader reader2 = new StringReader(input2);
         try {
             Lexer lexer = new Lexer(reader2);
-            assertEquals(lexer.getNextSymbol().toString(), "<VarType,String>");
+            assertEquals(lexer.getNextSymbol().toString(), "<VarType,string>");
             assertEquals(lexer.getNextSymbol().toString(), "<Identifier,s>");
             assertEquals(lexer.getNextSymbol().toString(), "<Special,=>");
             lexer.getNextSymbol();

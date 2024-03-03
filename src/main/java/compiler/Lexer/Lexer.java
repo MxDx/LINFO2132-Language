@@ -63,7 +63,7 @@ public class Lexer {
                     case "int" -> new VarType("int");
                     case "float" -> new VarType("float");
                     case "char" -> new VarType("char");
-                    case "String" -> new VarType("String");
+                    case "string" -> new VarType("string");
                     case "bool" -> new VarType("bool");
                     // Keyword
                     case "final" -> new Keyword("final");
