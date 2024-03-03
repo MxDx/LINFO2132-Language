@@ -41,7 +41,7 @@ public class Compiler {
         } catch (FileNotFoundException e) {
             System.out.println("An error occurred. File not found.");
             e.printStackTrace();
-        } catch (IOException e) {
+        }  catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
