@@ -183,22 +183,22 @@ public class TestLexer {
         String input = "var x int = 2..3; \n var y int = 3.14.15;";
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
-        assertEquals(lexer.getNextSymbol().toString(), "Identifier(var)");
-        assertEquals(lexer.getNextSymbol().toString(), "Identifier(x)");
-        assertEquals(lexer.getNextSymbol().toString(), "VarType(int)");
-        assertEquals(lexer.getNextSymbol().toString(), "Special(=)");
-        assertEquals(lexer.getNextSymbol().toString(), "MyFloat(2.)");
-        assertEquals(lexer.getNextSymbol().toString(), "Special(.)");
-        assertEquals(lexer.getNextSymbol().toString(), "MyInteger(3)");
-        assertEquals(lexer.getNextSymbol().toString(), "Special(;)");
-        assertEquals(lexer.getNextSymbol().toString(), "Identifier(var)");
-        assertEquals(lexer.getNextSymbol().toString(), "Identifier(y)");
-        assertEquals(lexer.getNextSymbol().toString(), "VarType(int)");
-        assertEquals(lexer.getNextSymbol().toString(), "Special(=)");
-        assertEquals(lexer.getNextSymbol().toString(), "MyFloat(3.14)");
-        assertEquals(lexer.getNextSymbol().toString(), "Special(.)");
-        assertEquals(lexer.getNextSymbol().toString(), "MyInteger(15)");
-        assertEquals(lexer.getNextSymbol().toString(), "Special(;)");
+        assertEquals(lexer.getNextSymbol().toString(), "<Identifier,var>");
+        assertEquals(lexer.getNextSymbol().toString(), "<Identifier,x>");
+        assertEquals(lexer.getNextSymbol().toString(), "<VarType,int>");
+        assertEquals(lexer.getNextSymbol().toString(), "<Special,=>");
+        assertEquals(lexer.getNextSymbol().toString(), "<MyFloat,2.>");
+        assertEquals(lexer.getNextSymbol().toString(), "<Special,.>");
+        assertEquals(lexer.getNextSymbol().toString(), "<MyInteger,3>");
+        assertEquals(lexer.getNextSymbol().toString(), "<Special,;>");
+        assertEquals(lexer.getNextSymbol().toString(), "<Identifier,var>");
+        assertEquals(lexer.getNextSymbol().toString(), "<Identifier,y>");
+        assertEquals(lexer.getNextSymbol().toString(), "<VarType,int>");
+        assertEquals(lexer.getNextSymbol().toString(), "<Special,=>");
+        assertEquals(lexer.getNextSymbol().toString(), "<MyFloat,3.14>");
+        assertEquals(lexer.getNextSymbol().toString(), "<Special,.>");
+        assertEquals(lexer.getNextSymbol().toString(), "<MyInteger,15>");
+        assertEquals(lexer.getNextSymbol().toString(), "<Special,;>");
     }
 
     @Test
