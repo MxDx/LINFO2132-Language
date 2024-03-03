@@ -72,7 +72,7 @@ public class TestLexer {
         assertEquals(lexer.getNextSymbol().toString(), "Special(})");
     }
     @Test
-    public void test5() throws IOException {
+    public void TestSimple() throws IOException {
         String input = "var x int = 2; var y int = 3;";
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
@@ -90,7 +90,7 @@ public class TestLexer {
         assertEquals(lexer.getNextSymbol().toString(), "Special(;)");
     }
     @Test
-    public void test6() throws IOException {
+    public void TestForLoop() throws IOException {
         String input = """
                 for (int i = 0; i 
                 < 10; i = i + 1)
@@ -124,7 +124,7 @@ public class TestLexer {
         assertEquals(lexer.getNextSymbol().toString(), "Special(})");
     }
     @Test
-    public void test7() throws IOException {
+    public void TestComment1() throws IOException {
         String input = "// This is a comment\n  \rvar x                                        int     =2         ;";
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
@@ -136,14 +136,14 @@ public class TestLexer {
         assertEquals(lexer.getNextSymbol().toString(), "Special(;)");
     }
     @Test
-    public void test8() throws IOException {
+    public void TestComment2() throws IOException {
         String input = "// This is a comment";
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
         assertNull(lexer.getNextSymbol());
     }
     @Test
-    public void test9() throws IOException {
+    public void TestString() throws IOException {
         String input = "String s = \"Hello, World!\";";
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
@@ -152,6 +152,29 @@ public class TestLexer {
         assertEquals(lexer.getNextSymbol().toString(), "Special(=)");
         assertEquals(lexer.getNextSymbol().toString(), "MyString(Hello, World!)");
         assertEquals(lexer.getNextSymbol().toString(), "Special(;)");
+    }
+
+    @Test
+    public void TestNoEndString() throws IOException {
+        String input = "String s = \"Hello, World!";
+        StringReader reader = new StringReader(input);
+        try {
+            Lexer lexer = new Lexer(reader);
+            lexer.getNextSymbol();
+            fail();
+        } catch (IOException e) {
+            assertEquals(e.getMessage(), "No end of string");
+        }
+
+        String input2 = "String s = \"";
+        StringReader reader2 = new StringReader(input2);
+        try {
+            Lexer lexer = new Lexer(reader2);
+            lexer.getNextSymbol();
+            fail();
+        } catch (IOException e) {
+            assertEquals(e.getMessage(), "No end of string");
+        }
     }
 }
 
