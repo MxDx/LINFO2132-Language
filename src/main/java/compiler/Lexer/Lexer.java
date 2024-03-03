@@ -211,11 +211,19 @@ public class Lexer {
     }
     private String readString(Reader input) throws IOException {
         StringBuilder sb = new StringBuilder();
-        this.lastChar = (char) input.read();
+        int c = input.read();
+        if (c == -1) {
+            throw new IOException("No end of string");
+        }
+        this.lastChar = (char) c;
 
         while (this.lastChar != '"') {
             sb.append(this.lastChar);
-            this.lastChar = (char) input.read();
+            c = input.read();
+            if (c == -1) {
+                throw new IOException("No end of string");
+            }
+            this.lastChar = (char) c;
         }
         this.lastChar = (char) input.read();
         return sb.toString();
