@@ -160,6 +160,9 @@ public class TestLexer {
         StringReader reader = new StringReader(input);
         try {
             Lexer lexer = new Lexer(reader);
+            assertEquals(lexer.getNextSymbol().toString(), "<VarType,String>");
+            assertEquals(lexer.getNextSymbol().toString(), "<Identifier,s>");
+            assertEquals(lexer.getNextSymbol().toString(), "<Special,=>");
             lexer.getNextSymbol();
             fail("Supposed to raise an exception");
         } catch (Exception e) {
@@ -170,6 +173,9 @@ public class TestLexer {
         StringReader reader2 = new StringReader(input2);
         try {
             Lexer lexer = new Lexer(reader2);
+            assertEquals(lexer.getNextSymbol().toString(), "<VarType,String>");
+            assertEquals(lexer.getNextSymbol().toString(), "<Identifier,s>");
+            assertEquals(lexer.getNextSymbol().toString(), "<Special,=>");
             lexer.getNextSymbol();
             fail("Supposed to raise an exception");
         } catch (Exception e) {
@@ -217,11 +223,16 @@ public class TestLexer {
 
     @Test
     public void TestSpecialCharacters() throws Exception {
-        // This is supposed to raise an error
+        // This is supposed to raise an error when it reaches the special character
         String input = "var x int = 2@3;";
         StringReader reader = new StringReader(input);
         try {
             Lexer lexer = new Lexer(reader);
+            assertEquals(lexer.getNextSymbol().toString(), "<Identifier,var>");
+            assertEquals(lexer.getNextSymbol().toString(), "<Identifier,x>");
+            assertEquals(lexer.getNextSymbol().toString(), "<VarType,int>");
+            assertEquals(lexer.getNextSymbol().toString(), "<Special,=>");
+            assertEquals(lexer.getNextSymbol().toString(), "<MyInteger,2>");
             lexer.getNextSymbol();
             fail("Supposed to raise an exception");
         } catch (Exception e) {
@@ -232,6 +243,11 @@ public class TestLexer {
         StringReader reader2 = new StringReader(input2);
         try {
             Lexer lexer = new Lexer(reader2);
+            assertEquals(lexer.getNextSymbol().toString(), "<Identifier,var>");
+            assertEquals(lexer.getNextSymbol().toString(), "<Identifier,x>");
+            assertEquals(lexer.getNextSymbol().toString(), "<VarType,int>");
+            assertEquals(lexer.getNextSymbol().toString(), "<Special,=>");
+            assertEquals(lexer.getNextSymbol().toString(), "<MyInteger,2>");
             lexer.getNextSymbol();
             fail("Supposed to raise an exception");
         } catch (Exception e) {

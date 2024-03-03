@@ -35,119 +35,80 @@ public class Lexer {
     };
     //'+', '-', '*', '/', '%', '<', '>', '=', '!', '&', '|', '(', ')', '{', '}', ';', ',', '[', ']', '.'
     public LinkedList<Symbol> symbolList;
+    private Reader input;
 
     public Lexer(Reader input) throws Exception {
         symbolList = new LinkedList<Symbol>();
+        this.input = input;
         int c = input.read();
         if (c == -1) {
-            return;
+            throw new IOException("Empty file");
         }
         this.lastChar = (char) c;
-        while (true) {
-            try {
-                this.lastChar = nextUsefulChar(input);
-                if (this.lastChar == '\uFFFF') {
-                    throw new EndOfFileException();
-                }
-                if (Character.isLetter(this.lastChar)) {
-                    String s = readToken(input);
-                    switch (s) {
-                        // Boolean
-                        case "true":
-                            symbolList.add(new MyBoolean("true"));
-                            break;
-                        case "false":
-                            symbolList.add(new MyBoolean("false"));
-                            break;
-                        // VarType
-                        case "int":
-                            symbolList.add(new VarType("int"));
-                            break;
-                        case "float":
-                            symbolList.add(new VarType("float"));
-                            break;
-                        case "char":
-                            symbolList.add(new VarType("char"));
-                            break;
-                        case "String":
-                            symbolList.add(new VarType("String"));
-                            break;
-                        case "bool":
-                            symbolList.add(new VarType("bool"));
-                            break;
-                        // Keyword
-                        case "final":
-                            symbolList.add(new Keyword("final"));
-                            break;
-                        case "if":
-                            symbolList.add(new Keyword("if"));
-                            break;
-                        case "else":
-                            symbolList.add(new Keyword("else"));
-                            break;
-                        case "while":
-                            symbolList.add(new Keyword("while"));
-                            break;
-                        case "for":
-                            symbolList.add(new Keyword("for"));
-                            break;
-                        case "free":
-                            symbolList.add(new Keyword("free"));
-                            break;
-                        case "return":
-                            symbolList.add(new Keyword("return"));
-                            break;
-                        case "struct":
-                            symbolList.add(new Keyword("struct"));
-                            break;
-                        case "def":
-                            symbolList.add(new Keyword("def"));
-                            break;
-                        // Identifier
-                        default:
-                            symbolList.add(new Identifier(s));
-                            break;
-                    }
-                } else if (Character.isDigit(this.lastChar)) {
-                    String s = readNumber(input);
-                    if (s.contains(".")) {
-                        symbolList.add(new MyFloat(s));
-                    } else {
-                        symbolList.add(new MyInteger(s));
-                    }
-                    if (this.lastChar != ' ' && this.lastChar != '\t' && this.lastChar != '\n' && !specialCharacteres.contains(this.lastChar)){
-                        throw new IOException("Invalid character: " + this.lastChar);
-                    }
-                } else if (this.lastChar == '"') {
-                    String s = readString(input);
-                    symbolList.add(new MyString(s));
-                } else if (this.lastChar == '.') {
-                    this.lastChar = (char) input.read();
-                    if (Character.isDigit(this.lastChar)) {
-                        String s = readNumber(input);
-                        symbolList.add(new MyFloat("0." + s));
-                    } else {
-                        symbolList.add(new Special("."));
-                    }
-                } else {
-                    String s = readSpecialCharactere(input);
-                    symbolList.add(new Special(s));
-                }
-            } catch (EndOfFileException e) {
-                System.out.println("End of file");
-                break;
-            } catch (Exception e) {
-                throw e;
-            }
-        }
-
     }
     
-    public Symbol getNextSymbol() {
-        if (symbolList.isEmpty()) {
-            return null;
+    public Symbol getNextSymbol() throws Exception {
+        try {
+            this.lastChar = nextUsefulChar(input);
+            if (this.lastChar == '\uFFFF') {
+                throw new EndOfFileException();
+            }
+            if (Character.isLetter(this.lastChar)) {
+                String s = readToken(input);
+                return switch (s) {
+                    // Boolean
+                    case "true" -> new MyBoolean("true");
+                    case "false" -> new MyBoolean("false");
+                    // VarType
+                    case "int" -> new VarType("int");
+                    case "float" -> new VarType("float");
+                    case "char" -> new VarType("char");
+                    case "String" -> new VarType("String");
+                    case "bool" -> new VarType("bool");
+                    // Keyword
+                    case "final" -> new Keyword("final");
+                    case "if" -> new Keyword("if");
+                    case "else" -> new Keyword("else");
+                    case "while" -> new Keyword("while");
+                    case "for" -> new Keyword("for");
+                    case "free" -> new Keyword("free");
+                    case "return" -> new Keyword("return");
+                    case "struct" -> new Keyword("struct");
+                    case "def" -> new Keyword("def");
+                    // Identifier
+                    default -> new Identifier(s);
+                };
+            } else if (Character.isDigit(this.lastChar)) {
+                String s = readNumber(input);
+                if (this.lastChar != ' ' && this.lastChar != '\t' && this.lastChar != '\n' && !specialCharacteres.contains(this.lastChar)){
+                    throw new IOException("Invalid character: " + this.lastChar);
+                }
+                if (s.contains(".")) {
+                    return new MyFloat(s);
+                } else {
+                    return new MyInteger(s);
+                }
+            } else if (this.lastChar == '"') {
+                String s = readString(input);
+                return new MyString(s);
+            } else if (this.lastChar == '.') {
+                this.lastChar = (char) input.read();
+                if (Character.isDigit(this.lastChar)) {
+                    String s = readNumber(input);
+                    return new MyFloat("0." + s);
+                } else {
+                    return new Special(".");
+                }
+            } else {
+                String s = readSpecialCharactere(input);
+                return new Special(s);
+            }
+        } catch (EndOfFileException e) {
+            System.out.println("End of file");
+        } catch (Exception e) {
+            throw e;
         }
-        return this.symbolList.removeFirst();
+        return null;
     }
 
     private char nextUsefulChar(Reader input) throws IOException {
