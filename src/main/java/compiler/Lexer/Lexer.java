@@ -121,6 +121,14 @@ public class Lexer {
                 } else if (this.lastChar == '"') {
                     String s = readString(input);
                     symbolList.add(new MyString(s));
+                } else if (this.lastChar == '.') {
+                    this.lastChar = (char) input.read();
+                    if (Character.isDigit(this.lastChar)) {
+                        String s = readNumber(input);
+                        symbolList.add(new MyFloat("0." + s));
+                    } else {
+                        symbolList.add(new Special("."));
+                    }
                 } else {
                     String s = readSpecialCharactere(input);
                     symbolList.add(new Special(s));
@@ -192,6 +200,16 @@ public class Lexer {
             super("End of file");
         }
     }
+
+    private String readInteger(Reader input) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        while (Character.isDigit(this.lastChar)) {
+            sb.append(this.lastChar);
+            this.lastChar = (char) input.read();
+        }
+        return sb.toString();
+    }
+
     private String readNumber(Reader input) throws IOException {
         StringBuilder sb = new StringBuilder();
         while (Character.isDigit(this.lastChar)) {
