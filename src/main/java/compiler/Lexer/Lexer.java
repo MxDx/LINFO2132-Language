@@ -8,8 +8,7 @@ import java.util.LinkedList;
 public class Lexer {
 
     private char lastChar;
-    private String currentToken;
-    private final HashSet<Character> specialCharacteres = new HashSet<Character>() {
+    private final HashSet<Character> specialCharacters = new HashSet<>() {
         {
             add('+');
             add('-');
@@ -35,10 +34,10 @@ public class Lexer {
     };
     //'+', '-', '*', '/', '%', '<', '>', '=', '!', '&', '|', '(', ')', '{', '}', ';', ',', '[', ']', '.'
     public LinkedList<Symbol> symbolList;
-    private Reader input;
+    private final Reader input;
 
     public Lexer(Reader input) throws Exception {
-        symbolList = new LinkedList<Symbol>();
+        symbolList = new LinkedList<>();
         this.input = input;
         int c = input.read();
         if (c == -1) {
@@ -80,7 +79,7 @@ public class Lexer {
                 };
             } else if (Character.isDigit(this.lastChar)) {
                 String s = readNumber(input);
-                if (this.lastChar != ' ' && this.lastChar != '\t' && this.lastChar != '\n' && !specialCharacteres.contains(this.lastChar)){
+                if (this.lastChar != ' ' && this.lastChar != '\t' && this.lastChar != '\n' && !specialCharacters.contains(this.lastChar)){
                     throw new IOException("Invalid character: " + this.lastChar);
                 }
                 if (s.contains(".")) {
@@ -100,48 +99,39 @@ public class Lexer {
                     return new Special(".");
                 }
             } else {
-                String s = readSpecialCharactere(input);
+                String s = readSpecialCharacters(input);
                 return new Special(s);
             }
         } catch (EndOfFileException e) {
             System.out.println("End of file");
-        } catch (Exception e) {
-            throw e;
         }
         return null;
     }
 
     private char nextUsefulChar(Reader input) throws IOException {
         int c;
-        while (this.lastChar != -1) {
+        while (true) {
             if (this.lastChar == ' ' || this.lastChar == '\t' || this.lastChar == '\n' || this.lastChar == '\r') {
                 this.lastChar = (char) input.read();
                 continue;
             }
             if (this.lastChar == '/') {
-                c = input.read();
-                if (this.lastChar == -1) {
-                    throw new EndOfFileException();
-                }
-                if (this.lastChar == '/') {
-                    while (this.lastChar != '\n') {
-                        c = input.read();
-                        if (c == -1) {
-                            throw new EndOfFileException();
-                        }
-                        this.lastChar = (char) c;
-                    }
+                while (this.lastChar != '\n') {
                     c = input.read();
                     if (c == -1) {
                         throw new EndOfFileException();
                     }
                     this.lastChar = (char) c;
-                    this.nextUsefulChar(input);
                 }
+                c = input.read();
+                if (c == -1) {
+                    throw new EndOfFileException();
+                }
+                this.lastChar = (char) c;
+                this.nextUsefulChar(input);
             }
             return this.lastChar;
         }
-        throw new EndOfFileException();
     }
 
     private String readToken(Reader input) throws IOException {
@@ -160,15 +150,6 @@ public class Lexer {
         public EndOfFileException() {
             super("End of file");
         }
-    }
-
-    private String readInteger(Reader input) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        while (Character.isDigit(this.lastChar)) {
-            sb.append(this.lastChar);
-            this.lastChar = (char) input.read();
-        }
-        return sb.toString();
     }
 
     private String readNumber(Reader input) throws IOException {
@@ -207,10 +188,10 @@ public class Lexer {
         this.lastChar = (char) input.read();
         return sb.toString();
     }
-    private String readSpecialCharactere(Reader input) throws Exception {
+    private String readSpecialCharacters(Reader input) throws Exception {
         StringBuilder sb = new StringBuilder();
         sb.append(this.lastChar);
-        if (this.specialCharacteres.contains(this.lastChar)) {
+        if (this.specialCharacters.contains(this.lastChar)) {
             if (this.lastChar == '<' || this.lastChar == '>' || this.lastChar == '=' || this.lastChar == '!') {
                 this.lastChar = (char) input.read();
                 if (this.lastChar == '=') {
