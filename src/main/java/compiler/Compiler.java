@@ -7,7 +7,6 @@ import compiler.Lexer.Symbol;
 
 import java.io.*;
 import java.util.LinkedList;
-import java.util.Scanner;
 
 public class Compiler {
     public static void main(String[] args) {
@@ -46,9 +45,9 @@ public class Compiler {
             } catch (FileNotFoundException e) {
                 System.out.println("An error occurred. File not found.");
                 e.printStackTrace();
-            } catch (IOException e) {
+            }  catch (Exception e) {
                 throw new RuntimeException(e);
             }
-        return null;
+            return null;
     }
-    }
+}

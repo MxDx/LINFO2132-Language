@@ -36,7 +36,7 @@ public class Lexer {
     //'+', '-', '*', '/', '%', '<', '>', '=', '!', '&', '|', '(', ')', '{', '}', ';', ',', '[', ']', '.'
     public LinkedList<Symbol> symbolList;
 
-    public Lexer(Reader input) throws IOException {
+    public Lexer(Reader input) throws Exception {
         symbolList = new LinkedList<Symbol>();
         int c = input.read();
         if (c == -1) {
@@ -118,18 +118,18 @@ public class Lexer {
                     if (this.lastChar != ' ' && this.lastChar != '\t' && this.lastChar != '\n' && !specialCharacteres.contains(this.lastChar)){
                         throw new IOException("Invalid character: " + this.lastChar);
                     }
-                }
-                else if (this.lastChar == '"')
-                {
+                } else if (this.lastChar == '"') {
                     String s = readString(input);
                     symbolList.add(new MyString(s));
-                }
-                else {
+                } else {
                     String s = readSpecialCharactere(input);
                     symbolList.add(new Special(s));
                 }
             } catch (EndOfFileException e) {
+                System.out.println("End of file");
                 break;
+            } catch (Exception e) {
+                throw e;
             }
         }
 
@@ -209,11 +209,11 @@ public class Lexer {
         }
         return sb.toString();
     }
-    private String readString(Reader input) throws IOException {
+    private String readString(Reader input) throws Exception {
         StringBuilder sb = new StringBuilder();
         int c = input.read();
         if (c == -1) {
-            throw new IOException("No end of string");
+            throw new Exception("No end of string");
         }
         this.lastChar = (char) c;
 
@@ -221,14 +221,14 @@ public class Lexer {
             sb.append(this.lastChar);
             c = input.read();
             if (c == -1) {
-                throw new IOException("No end of string");
+                throw new Exception("No end of string");
             }
             this.lastChar = (char) c;
         }
         this.lastChar = (char) input.read();
         return sb.toString();
     }
-    private String readSpecialCharactere(Reader input) throws IOException {
+    private String readSpecialCharactere(Reader input) throws Exception {
         StringBuilder sb = new StringBuilder();
         sb.append(this.lastChar);
         if (this.specialCharacteres.contains(this.lastChar)) {
@@ -252,12 +252,12 @@ public class Lexer {
             }
         }
         else {
-            throw new IOException("Invalid character: " + this.lastChar);
+            throw new Exception("Invalid character: " + this.lastChar);
         }
         return sb.toString();
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         String input = "var x int=2 ahfdjhfjdhf;";
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader);
