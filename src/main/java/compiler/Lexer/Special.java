@@ -1,6 +1,6 @@
 package compiler.Lexer;
 
-public class Special implements Symbol{
+public class Special extends Symbol{
     public  String Type = "Special";
     public  String Value = "default";
     public Special(String value) {
@@ -8,5 +8,15 @@ public class Special implements Symbol{
     }
     public String toString() {
         return "<" + this.Type + ","+ this.Value + ">";
+    }
+
+    @Override
+    public String getType() {
+        return Type;
+    }
+
+    @Override
+    public String getValue() {
+        return Value;
     }
 }

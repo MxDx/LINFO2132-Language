@@ -4,23 +4,28 @@
 package compiler;
 import compiler.Lexer.Lexer;
 import compiler.Lexer.Symbol;
+import compiler.Parser.Parser;
 
 import java.io.*;
 import java.util.LinkedList;
 
 public class Compiler {
     public static void main(String[] args) {
-        if (args.length < 1) {
+        /*if (args.length < 1) {
             System.out.println("No input file");
             return;
         }
+
         boolean showLexer = args[0].equals("-lexer");
         if (showLexer && args.length < 2) {
             System.out.println("No input file");
             return;
         }
-        String inputPath = args[(showLexer ? 1 : 0)];
+        String inputPath = args[(showLexer ? 1 : 0)];*/
+        String inputPath = "src/main/java/compiler/test.txt";
+        boolean showLexer = false;
         Lexer lex = lexerGetter(inputPath, showLexer);
+        parserGetter(lex);
     }
 
     public static Lexer lexerGetter(String inputPath,boolean showLexer) {
@@ -47,5 +52,13 @@ public class Compiler {
                 throw new RuntimeException(e);
             }
             return null;
+    }
+
+    public static void parserGetter(Lexer lex) {
+        try {
+            Parser parser = new Parser(lex);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

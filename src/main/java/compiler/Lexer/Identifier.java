@@ -1,6 +1,6 @@
 package compiler.Lexer;
 
-public class Identifier implements Symbol {
+public class Identifier extends Symbol {
     public  String Type = "Identifier";
     public  String Value = "default";
     public Identifier(String value) {
@@ -9,5 +9,13 @@ public class Identifier implements Symbol {
     public String toString() {
         return "<" + this.Type + ","+ this.Value + ">";
     }
+    @Override
+    public String getType() {
+        return Type;
+    }
 
+    @Override
+    public String getValue() {
+        return Value;
+    }
 }

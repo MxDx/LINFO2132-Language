@@ -1,10 +1,18 @@
 package compiler.Lexer;
 
-public interface Symbol {
-    public String Type = "default";
-    public String Value = "default";
+public abstract class Symbol {
+    public String Type;
+    public String Value;
 
-    public default Boolean equals(Symbol s) {
-        return this.Type.equals(s.Type) && this.Value.equals(s.Value);
+    public String toString() {
+        return super.toString();
+    }
+
+    public String getType() {
+        return Type;
+    }
+
+    public String getValue() {
+        return Value;
     }
 }

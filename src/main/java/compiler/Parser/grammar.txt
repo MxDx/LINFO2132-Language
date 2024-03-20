@@ -1,3 +1,4 @@
+Starting => Statements | ε
 Method => def Type identifier (Params) Block
 
 Type => TypeValue | TypeValue[]
@@ -16,18 +17,19 @@ Param => Type identifier
 Block => { Statements }
 
 Statements => Statement Statements | ε
-Statement => Block | Assignment | If | While | Return | FunctionCall | Declaration | For
+Statement => If | While | Return | For | FunctionCall | Declaration | Method | SingleAssignment
 
-Declaration => Type identifier ;
-Assignment => Type identifier = Expression ; | final Type identifier = Expression ;
-SingleAssignment => IdentifierAccess = Expression
+Declaration => Type identifier Assignment ; | final Type identifier Assignment ;
+Assignment => = Expression | ε
+SingleAssignment => IdentifierAccess = Expression ;
+ForAssignment => IdentifierAccess = Expression
 
 If => if ( Expression ) Block Else
 Else => else Block | ε
 
 While => while ( Expression ) Block
 
-For => for ( SingleAssignment, Expression, SingleAssignment ) Block
+For => for ( ForAssignment, Expression, ForAssignment ) Block
 
 Return => return Expression ;
 

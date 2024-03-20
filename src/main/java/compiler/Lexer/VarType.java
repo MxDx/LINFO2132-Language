@@ -1,6 +1,6 @@
 package compiler.Lexer;
 
-public class VarType implements Symbol{
+public class VarType extends Symbol{
     public  String Type = "VarType";
     public  String Value = "default";
     public VarType(String value) {
@@ -8,5 +8,15 @@ public class VarType implements Symbol{
     }
     public String toString() {
         return "<" + this.Type + ","+ this.Value + ">";
+    }
+
+    @Override
+    public String getType() {
+        return Type;
+    }
+
+    @Override
+    public String getValue() {
+        return Value;
     }
 }
