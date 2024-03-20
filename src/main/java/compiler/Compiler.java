@@ -24,8 +24,6 @@ public class Compiler {
     }
 
     public static Lexer lexerGetter(String inputPath,boolean showLexer) {
-            System.out.printf("Input file: %s\n", inputPath);
-            System.out.printf("Lexer: %s\n", showLexer ? "true" : "false");
             LinkedList<Symbol> symbolList = new LinkedList<Symbol>();
             try {
                 File myObj = new File(inputPath);

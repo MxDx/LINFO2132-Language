@@ -1,0 +1,43 @@
+Method => def Type identifier (Params) Block
+
+Type => TypeValue | TypeValue[]
+TypeValue => int | float | bool | string | void | identifier
+
+IdentifierVector => identifier IdentifierVectorTail
+IdentifierVectorTail => [ Expression ] IdentifierVectorTail | ε
+
+IdentifierAccess => IdentifierVector IdentifierAccessTail
+IdentifierAccessTail => . IdentifierAccess IdentifierAccessTail | ε
+
+Params => Param ParamsTail | ε
+ParamsTail => , Param ParamsTail | ε
+Param => Type identifier
+
+Block => { Statements }
+
+Statements => Statement Statements | ε
+Statement => Block | Assignment | If | While | Return | FunctionCall | Declaration | For
+
+Declaration => Type identifier ;
+Assignment => Type identifier = Expression ; | final Type identifier = Expression ;
+SingleAssignment => IdentifierAccess = Expression
+
+If => if ( Expression ) Block Else
+Else => else Block | ε
+
+While => while ( Expression ) Block
+
+For => for ( SingleAssignment, Expression, SingleAssignment ) Block
+
+Return => return Expression ;
+
+FunctionCall => IdentifierAccess ( Args ) ;
+Args => Expression ArgsTail | ε
+ArgsTail => , Expression ArgsTail | ε
+
+
+Expression => Corps ExpressionTail
+ExpressionTail => Op Expression | ε
+Op => + | - | * | / | % | < | > | <= | >= | == | != | && | ||
+Corps => ( Expression ) | IdentifierAccess | Value | FunctionCall | ! Expression
+Value => int | float | bool | string
