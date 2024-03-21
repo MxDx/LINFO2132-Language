@@ -55,6 +55,7 @@ public class Statements extends Node {
                         case "return" -> content = new Return(this.parser).parse();
                         case "for" -> content = new For(this.parser).parse();
                         case "def" -> content = new Method(this.parser).parse();
+                        case "struct" -> content = new Struct(this.parser).parse();
                         default -> parser.ParserException("Invalid Statement Keyword");
                     }
                     return this;
@@ -73,10 +74,12 @@ public class Statements extends Node {
                         }
                         default -> parser.ParserException("Invalid Statement Identifier");
                     }
+                    parser.match(Parser.SEMICOLON);
                     return this;
 
                 case "VarType":
                     content = new Declaration(this.parser).parse();
+                    parser.match(Parser.SEMICOLON);
                     return this;
                 default:
                     parser.ParserException("Invalid Statement");

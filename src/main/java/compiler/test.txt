@@ -1,5 +1,10 @@
+struct Person {
+    int age;
+    string name;
+}
+
 int x = 69;
-int y = 69;
+Person y = 69;
 
 if (14) {
     int z = 69;
@@ -10,6 +15,7 @@ if (14) {
 
 if (14) {
     int z = 69;
+    z[0] = 69;
     return "Hello";
 }
 
