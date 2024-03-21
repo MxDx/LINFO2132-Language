@@ -15,4 +15,8 @@ public abstract class Symbol {
     public String getValue() {
         return Value;
     }
+
+    public boolean isValue() {
+        return false;
+    }
 }

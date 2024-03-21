@@ -24,7 +24,7 @@ public class Parser {
             throw new Exception("Syntax Error");
         }
         if (currentToken == token) {
-            currentToken = lexer.getNextSymbol();
+            this.getNext();
             return token;
         } else {
             throw new Exception("Syntax Error");

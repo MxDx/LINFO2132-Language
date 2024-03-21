@@ -1,5 +1,6 @@
 package compiler.Parser;
 
+import compiler.Lexer.Identifier;
 import org.junit.experimental.theories.internal.Assignments;
 
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ public class Statements extends Node {
             if (Objects.equals(parser.currentToken.getValue(), EOF)) break;
             Statement statement = new Statement(parser);
             statements.add(statement.parse());
-            parser.getNext();
+            //parser.getNext();
         }
         return this;
     }
@@ -48,8 +49,10 @@ public class Statements extends Node {
                         case "Identifier" -> content = new Declaration(this.parser).parse();
                         case "Special" -> {
                             switch (parser.lookahead.getValue()) {
-                                case "(" -> content = new FunctionCall(this.parser).parse();
-                                case "=" -> content = new Assignment(this.parser).parse();
+                                case "(" -> content = new IdentifierAccess(this.parser).parse();
+                                case "=" -> content = new IdentifierAccess(this.parser).parse();
+                                case "[" -> content = new IdentifierAccess(this.parser).parse();
+                                case "." -> content = new IdentifierAccess(this.parser).parse();
                                 default -> throw new Exception("Invalid Statement Identifier");
                             }
                         }

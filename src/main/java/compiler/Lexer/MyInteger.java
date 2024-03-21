@@ -18,4 +18,9 @@ public class MyInteger extends Symbol{
     public String getValue() {
         return Value;
     }
+
+    @Override
+    public boolean isValue() {
+        return true;
+    }
 }
