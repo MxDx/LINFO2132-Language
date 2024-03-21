@@ -2,10 +2,17 @@ package compiler.Parser;
 
 import compiler.Lexer.*;
 
-
 public class Parser {
+    public final static Symbol CLOSE_PARENTHESES = new Special(")");
+    public final static Symbol OPEN_PARENTHESES = new Special("(");
+    public final static Symbol OPEN_BRACES = new Special("{");
+    public final static Symbol CLOSE_BRACES = new Special("}");
+    public static final Symbol SEMICOLON = new Special(";");
+
+    public final static Symbol COMMA = new Special(",");
+    public static final Symbol EQUALS = new Special("=");
     Symbol currentToken;
-    Node root;
+    Statements root;
     Lexer lexer;
     Symbol lookahead;
 
@@ -19,16 +26,23 @@ public class Parser {
         currentToken = lookahead;
         lookahead = lexer.getNextSymbol();
     }
-    public Symbol match(Symbol token) throws Exception{
+    public void match(Symbol token) throws Exception {
         if (token == null) {
-            throw new Exception("Syntax Error");
+            ParserException("Syntax Error");
         }
-        if (currentToken == token) {
-            this.getNext();
-            return token;
-        } else {
-            throw new Exception("Syntax Error");
+        if (!currentToken.equals(token)) {
+            ParserException("Syntax Error");
         }
+        getNext();
+    }
+
+    @Override
+    public String toString() {
+        return root.toString();
+    }
+
+    public void ParserException(String message) throws Exception {
+        throw new Exception(message + " With token: " + currentToken.getValue());
     }
 
 }

@@ -11,7 +11,7 @@ public class IdentifierAccess extends Node {
 
     public Node parse() throws Exception {
         return switch (parser.currentToken.getValue()) {
-            case "=" -> new Assignment(parser).setIdentifier(this).parse();
+            case "=" -> new Assignment(parser).setIdentifier(this.identifier).parse();
             case "[" -> new ArrayAccess(parser).parse();
             case "." -> new StructAccess(parser).parse();
             default -> this;

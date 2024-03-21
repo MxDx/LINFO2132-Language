@@ -1,10 +1,21 @@
 package compiler.Parser;
 
 public class Return extends Node{
-    public Return(Parser parser) {
+    Expression expression;
+    public Return(Parser parser) throws Exception {
         super(parser);
+        parser.getNext();
     }
     public Node parse() throws Exception {
-        return null;
+        expression = new Expression(parser).parse();
+        parser.match(Parser.SEMICOLON);
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return "\"RETURN_Statement\": {\n"
+                + "\"expression\": \""+ expression.toString() + "\"\n"
+                + '}';
     }
 }

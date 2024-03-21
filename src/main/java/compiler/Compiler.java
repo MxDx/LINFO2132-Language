@@ -29,7 +29,7 @@ public class Compiler {
     }
 
     public static Lexer lexerGetter(String inputPath,boolean showLexer) {
-            LinkedList<Symbol> symbolList = new LinkedList<Symbol>();
+            LinkedList<Symbol> symbolList = new LinkedList<>();
             try {
                 File myObj = new File(inputPath);
                 Reader reader = new FileReader(myObj);
@@ -57,6 +57,13 @@ public class Compiler {
     public static void parserGetter(Lexer lex) {
         try {
             Parser parser = new Parser(lex);
+
+            // TO DO: REMOVE THIS LINES
+            System.out.println(parser);
+            // Write to file
+            BufferedWriter writer = new BufferedWriter(new FileWriter("src/main/java/compiler/output.txt"));
+            writer.write(parser.toString());
+            writer.close();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

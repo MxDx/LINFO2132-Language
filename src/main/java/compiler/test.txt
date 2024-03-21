@@ -1,2 +1,15 @@
 int x = 69;
 int y = 69;
+
+if (14) {
+    int z = 69;
+    return "Hello";
+}
+
+while (true) {
+    int z = 69;
+    int i;
+    for (i = 0, 10, i = 2) {
+        int z = 69;
+    }
+}

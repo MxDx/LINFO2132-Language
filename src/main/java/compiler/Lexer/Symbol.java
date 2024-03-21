@@ -1,5 +1,7 @@
 package compiler.Lexer;
 
+import java.util.Objects;
+
 public abstract class Symbol {
     public String Type;
     public String Value;
@@ -17,6 +19,17 @@ public abstract class Symbol {
     }
 
     public boolean isValue() {
+        return false;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Symbol) {
+            Symbol s = (Symbol) obj;
+            boolean type = Objects.equals(this.getType(), s.getType());
+            boolean value = Objects.equals(this.getValue(), s.getValue());
+            return type && value;
+        }
         return false;
     }
 }

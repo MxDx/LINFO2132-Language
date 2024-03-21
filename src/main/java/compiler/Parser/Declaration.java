@@ -12,7 +12,7 @@ public class Declaration extends Node{
         type = parser.currentToken.getValue();
         parser.getNext();
         if (!Objects.equals(parser.currentToken.getType(), "Identifier")){
-            throw new Exception("Invalid Identifier");
+            parser.ParserException("Invalid Identifier");
         }
         identifier = parser.currentToken.getValue();
         parser.getNext();
@@ -23,9 +23,21 @@ public class Declaration extends Node{
             assignment = new Expression(parser).parse();
         }
         if(!parser.currentToken.getValue().equals(";")){
-            throw new Exception("Invalid Declaration");
+            parser.ParserException("Invalid Declaration");
         }
         parser.getNext();
         return this;
+    }
+
+    @Override
+    public String toString() {
+        String str =  "\"Declaration_Statement\": { \n" +
+                "\"type\": \"" + type + '\"' + ",\n" +
+                "\"identifier\": \"" + identifier + '\"';
+        if (assignment != null) {
+            str += ",\n\"assignment\": " + assignment;
+        }
+        str += "\n}";
+        return str;
     }
 }

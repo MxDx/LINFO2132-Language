@@ -1,27 +1,42 @@
 package compiler.Parser;
 
-import compiler.Lexer.Identifier;
-import org.junit.experimental.theories.internal.Assignments;
-
+import compiler.Lexer.Symbol;
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class Statements extends Node {
     ArrayList<Node> statements;
-    String EOF;
+    Symbol EOF;
     public Statements(Parser parser) {
         super(parser);
     }
 
-    public Node parse() throws Exception {
+    public Statements parse() throws Exception {
         statements = new ArrayList<>();
         while (parser.currentToken != null) {
-            if (Objects.equals(parser.currentToken.getValue(), EOF)) break;
+            if (parser.currentToken.equals(EOF)) break;
             Statement statement = new Statement(parser);
             statements.add(statement.parse());
             //parser.getNext();
         }
         return this;
+    }
+
+    public Statements setEOF(Symbol EOF) {
+        this.EOF = EOF;
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        str.append("{\n\"Statements\": [\n");
+        for (int i = 0; i < statements.size()-1; i++) {
+            str.append(statements.get(i).toString());
+            str.append(",\n");
+        }
+        str.append(statements.get(statements.size()-1).toString());
+        str.append("\n]\n}");
+        return str.toString();
     }
 
     public static class Statement extends Node {
@@ -40,8 +55,8 @@ public class Statements extends Node {
                         case "return" -> content = new Return(this.parser).parse();
                         case "for" -> content = new For(this.parser).parse();
                         case "def" -> content = new Method(this.parser).parse();
-                        default -> throw new Exception("Invalid Statement Keyword");
-                    };
+                        default -> parser.ParserException("Invalid Statement Keyword");
+                    }
                     return this;
 
                 case "Identifier":
@@ -53,19 +68,27 @@ public class Statements extends Node {
                                 case "=" -> content = new IdentifierAccess(this.parser).parse();
                                 case "[" -> content = new IdentifierAccess(this.parser).parse();
                                 case "." -> content = new IdentifierAccess(this.parser).parse();
-                                default -> throw new Exception("Invalid Statement Identifier");
+                                default -> parser.ParserException("Invalid Statement Identifier");
                             }
                         }
-                        default -> throw new Exception("Invalid Statement Identifier");
-                    };
+                        default -> parser.ParserException("Invalid Statement Identifier");
+                    }
                     return this;
 
                 case "VarType":
                     content = new Declaration(this.parser).parse();
                     return this;
                 default:
-                    throw new Exception("Invalid Statement");
+                    parser.ParserException("Invalid Statement");
             }
+            return this;
+        }
+        @Override
+        public String toString() {
+            return "{\n" +
+                    "\"content\": {\n" + content +
+                    "\n}" +
+                    "\n}";
         }
     }
 }
