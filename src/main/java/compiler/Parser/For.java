@@ -30,9 +30,7 @@ public class For extends Node{
         secondAssignment = new Assignment(parser).setIdentifier(identifier).parse();
         parser.match(Parser.CLOSE_PARENTHESES);
 
-        parser.match(Parser.OPEN_BRACES);
         block = new Block(parser).parse();
-        parser.match(Parser.CLOSE_BRACES);
         return this;
     }
 

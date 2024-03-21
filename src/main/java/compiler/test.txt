@@ -1,6 +1,11 @@
 int x = 69;
 int y = 69;
 
+def String foo(float x, float y) {
+    int x = 69;
+    int y = 69;
+    return "Hello";
+}
 if (14) {
     int z = 69;
     return "Hello";

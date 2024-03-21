@@ -1,15 +1,17 @@
 package compiler.Parser;
 
+import compiler.Lexer.VarType;
+
 import java.util.Objects;
 
 public class Declaration extends Node{
-    String type;
+    VarType type;
     String identifier;
     Node assignment;
 
     public Declaration(Parser parser) throws Exception {
         super(parser);
-        type = parser.currentToken.getValue();
+        type = new VarType(parser.currentToken.getValue());
         parser.getNext();
         if (!Objects.equals(parser.currentToken.getType(), "Identifier")){
             parser.ParserException("Invalid Identifier");
