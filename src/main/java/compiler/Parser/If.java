@@ -1,8 +1,13 @@
 package compiler.Parser;
 
+import compiler.Lexer.Keyword;
+import compiler.Lexer.Symbol;
+
 public class If extends Node{
+    final static Symbol ELSE = new Keyword("else");
     Expression expression;
     Block block;
+    Node elseStatement;
     public If(Parser parser) throws Exception {
         super(parser);
         parser.getNext();
@@ -11,17 +16,42 @@ public class If extends Node{
         parser.match(Parser.OPEN_PARENTHESES);
         expression = new Expression(parser).parse();
         parser.match(Parser.CLOSE_PARENTHESES);
-        parser.match(Parser.OPEN_BRACES);
         block = new Block(parser).parse();
-        parser.match(Parser.CLOSE_BRACES);
+        if (parser.currentToken.equals(ELSE)){
+            elseStatement = new Else(parser).parse();
+        }
         return this;
     }
 
     @Override
     public String toString() {
-        return "\"IF_Statement\": {\n"
+        String str =  "\"IF_Statement\": {\n"
                 + "\"expression\": \""+ expression.toString() + "\",\n"
-                + "\"block\": " + block.toString() + "\n"
-                + '}';
+                + "\"block\": " + block.toString() + "\n";
+        if (elseStatement != null){
+            str += ",\n" + elseStatement.toString();
+        }
+        str += '}';
+        return str;
+    }
+
+    private static class Else extends Node {
+        Block block;
+
+        public Else(Parser parser) throws Exception {
+            super(parser);
+            parser.getNext();
+        }
+        public Node parse() throws Exception {
+            block = new Block(parser).parse();
+            return this;
+        }
+
+        @Override
+        public String toString() {
+            return "\"ELSE_Statement\": {\n"
+                    + "\"block\": " + block.toString() + "\n"
+                    + '}';
+        }
     }
 }
