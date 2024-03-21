@@ -29,12 +29,12 @@ public class Expression extends Node {
         super(parser);
     }
 
-    public Expression parse() throws Exception {
+    public Node parse() throws Exception {
         if (parser.currentToken.isValue()) {
             corps = new Value(parser).parse();
         } else {
             switch (parser.currentToken.getType()) {
-                case "identifier":
+                case "Identifier":
                     corps = new IdentifierAccess(parser).parse();
                     break;
                 case "(":
@@ -44,12 +44,13 @@ public class Expression extends Node {
                     break;
             }
         }
-        if (parser.currentToken.equals(EOF)) {
+        if (parser.lookahead.equals(EOF)) {
+            parser.getNext();
             return this;
         }
-        if (arithmeticOperations.contains(parser.currentToken.getValue())) {
+        if (arithmeticOperations.contains(parser.lookahead.getValue())) {
             return new ArithmeticOperation(parser, corps).parse();
-        } else if (comparisonOperations.contains(parser.currentToken.getValue())) {
+        } else if (comparisonOperations.contains(parser.lookahead.getValue())) {
             return new ComparisonOperation(parser, corps).parse();
         } else {
             parser.ParserException("Invalid expression");
@@ -75,7 +76,6 @@ public class Expression extends Node {
                 parser.ParserException("Invalid value");
             }
             value = parser.currentToken;
-            parser.getNext();
         }
 
         public Expression parse() throws Exception {
@@ -84,7 +84,7 @@ public class Expression extends Node {
 
         @Override
         public String toString() {
-            return value.getValue();
+            return  value.getValue();
         }
     }
 
@@ -95,38 +95,88 @@ public class Expression extends Node {
 
         public Operation(Parser parser, Node before) throws Exception {
             super(parser);
-            operation = parser.currentToken.getValue();
+            operation = parser.lookahead.getValue();
             left = before;
 
         }
 
-        public Expression parse() throws Exception {
+        public Node parse() throws Exception {
             return this;
         }
 
         @Override
         public String toString() {
-            return "{\nleft: " + left.toString() + ",\n"
-                    + "operation: " + operation + ",\n"
-                    + "right: " + right.toString() + "\n}";
+            return "{\n\"left\": " + left.toString() + ",\n"
+                    + "\"operation\": " + "\"" + operation + "\"" + ",\n"
+                    + "\"right\": " + right.toString() + "\n}";
         }
     }
 
     public static class ArithmeticOperation extends Operation {
+        final static ArrayList<String> weak = new ArrayList<>() {{
+            add("+");
+            add("-");
+        }};
+
+        final static ArrayList<String> strong = new ArrayList<>() {{
+            add("*");
+            add("/");
+        }};
         public ArithmeticOperation(Parser parser, Node before) throws Exception {
             super(parser, before);
-            parser.getNext();
         }
 
-        public Expression parse() throws Exception {
-            right = new Expression(parser).parse();
-            return this;
+        public ArithmeticOperation(Parser parser, Node before, Node next, String operation) throws Exception {
+            super(parser, before);
+            this.operation = operation;
+            right = next;
+        }
+
+        public Node parse() throws Exception {
+            left = parseTerm();
+            while (weak.contains(parser.lookahead.getValue())) {
+                String operation = parser.lookahead.getValue();
+                parser.getNext();
+                parser.getNext();
+                Node newRight = parseTerm();
+                left = new ArithmeticOperation(parser, left, newRight, operation);
+            }
+            parser.getNext();
+            return left;
+        }
+
+        private Node parseTerm() throws Exception {
+            Node result = null;
+
+            if (parser.currentToken.isValue()) {
+                result =  new Value(parser).parse();
+            } else {
+                switch (parser.currentToken.getType()) {
+                    case "Identifier":
+                        result = new IdentifierAccess(parser).parse();
+                        break;
+                    case "(":
+                        parser.match(Parser.OPEN_PARENTHESES);
+                        result = new Expression(parser).parse();
+                        parser.match(Parser.CLOSE_PARENTHESES);
+                    default:
+                        parser.ParserException("Invalid term");
+                }
+            }
+
+            while (strong.contains(parser.lookahead.getValue())) {
+                String operation = parser.lookahead.getValue();
+                parser.getNext();
+                parser.getNext();
+                result = new ArithmeticOperation(parser, result, parseTerm(), operation);
+            }
+            return result;
         }
 
         @Override
         public String toString() {
             String str = super.toString();
-            return "ArithmeticOperation{\n" + str + "\n}";
+            return "{\n\"ArithmeticOperation\": \n" + str + "\n \n}";
         }
     }
 
@@ -136,7 +186,7 @@ public class Expression extends Node {
             parser.getNext();
         }
 
-        public Expression parse() throws Exception {
+        public Node parse() throws Exception {
             right = new Expression(parser).parse();
             return this;
         }
@@ -144,7 +194,7 @@ public class Expression extends Node {
         @Override
         public String toString() {
             String str = super.toString();
-            return "ComparisonOperation{\n" + str + "\n}";
+            return "{\n\"ComparisonOperation\": \n" + str + "\n \n}";
         }
     }
 }

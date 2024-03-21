@@ -2,7 +2,7 @@ package compiler.Parser;
 
 public class For extends Node{
     Assignment firstAssignment;
-    Expression expression;
+    Node expression;
     Assignment secondAssignment;
     Block block;
     public For(Parser parser) throws Exception {
@@ -16,7 +16,7 @@ public class For extends Node{
         }
         String identifier = parser.currentToken.getValue();
         parser.getNext();
-        firstAssignment = new Assignment(parser).setIdentifier(identifier).parse();
+        firstAssignment = new Assignment(parser).setIdentifier(identifier).setEOF(Parser.COMMA).parse();
         parser.match(Parser.COMMA);
 
         expression = new Expression(parser).setEOF(Parser.COMMA).parse();
@@ -27,7 +27,7 @@ public class For extends Node{
         }
         identifier = parser.currentToken.getValue();
         parser.getNext();
-        secondAssignment = new Assignment(parser).setIdentifier(identifier).parse();
+        secondAssignment = new Assignment(parser).setIdentifier(identifier).setEOF(Parser.CLOSE_PARENTHESES).parse();
         parser.match(Parser.CLOSE_PARENTHESES);
 
         block = new Block(parser).parse();

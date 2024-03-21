@@ -1,7 +1,7 @@
 package compiler.Parser;
 
 public class Return extends Node{
-    Expression expression;
+    Node expression;
     public Return(Parser parser) throws Exception {
         super(parser);
         parser.getNext();

@@ -1,7 +1,7 @@
 package compiler.Parser;
 
 public class While extends Node{
-    Expression expression;
+    Node expression;
     Block block;
     public While(Parser parser) throws Exception {
         super(parser);
@@ -9,7 +9,7 @@ public class While extends Node{
     }
     public Node parse() throws Exception {
         parser.match(Parser.OPEN_PARENTHESES);
-        expression = new Expression(parser).parse();
+        expression = new Expression(parser).setEOF(Parser.CLOSE_PARENTHESES).parse();
         parser.match(Parser.CLOSE_PARENTHESES);
         block = new Block(parser).parse();
         return this;
