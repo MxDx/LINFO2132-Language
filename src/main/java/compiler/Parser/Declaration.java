@@ -19,15 +19,12 @@ public class Declaration extends Node{
         identifier = parser.currentToken.getValue();
         parser.getNext();
     }
-    public Node parse() throws Exception {
+    public Declaration parse() throws Exception {
         if (parser.currentToken.getValue().equals("=")){
             parser.getNext();
             assignment = new Expression(parser).parse();
         }
-        if(!parser.currentToken.getValue().equals(";")){
-            parser.ParserException("Invalid Declaration");
-        }
-        parser.getNext();
+
         return this;
     }
 

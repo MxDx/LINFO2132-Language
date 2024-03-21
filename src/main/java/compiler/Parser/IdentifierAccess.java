@@ -23,7 +23,6 @@ public class IdentifierAccess extends Node {
 
         public ArrayAccess(Parser parser) throws Exception {
             super(parser);
-            parser.getNext();
             if (parser.currentToken.getType().equals("MyInteger")) {
                 index = Integer.parseInt(parser.currentToken.getValue());
                 parser.getNext();

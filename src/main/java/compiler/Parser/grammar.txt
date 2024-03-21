@@ -4,6 +4,8 @@ Method => def Type identifier (Params) Block
 Type => TypeValue | TypeValue[]
 TypeValue => int | float | bool | string | void | identifier
 
+struct => struct identifier { StructBody }
+
 IdentifierVector => identifier IdentifierVectorTail
 IdentifierVectorTail => [ Expression ] IdentifierVectorTail | ε
 
