@@ -4,14 +4,10 @@ import compiler.Lexer.Keyword;
 import compiler.Lexer.Symbol;
 
 public class If extends Node{
-
     final static Symbol ELSE = new Keyword("else");
     Expression expression;
     Block block;
-
     Node elseStatement;
-
-
     public If(Parser parser) throws Exception {
         super(parser);
         parser.getNext();
@@ -20,14 +16,10 @@ public class If extends Node{
         parser.match(Parser.OPEN_PARENTHESES);
         expression = new Expression(parser).parse();
         parser.match(Parser.CLOSE_PARENTHESES);
-        parser.match(Parser.OPEN_BRACES);
         block = new Block(parser).parse();
-        parser.match(Parser.CLOSE_BRACES);
-
         if (parser.currentToken.equals(ELSE)){
-            elseStatement = new ELse(parser).parse();
+            elseStatement = new Else(parser).parse();
         }
-
         return this;
     }
 
@@ -43,17 +35,15 @@ public class If extends Node{
         return str;
     }
 
-    private static class ELse extends Node {
+    private static class Else extends Node {
         Block block;
 
-        public ELse(Parser parser) throws Exception {
+        public Else(Parser parser) throws Exception {
             super(parser);
             parser.getNext();
         }
         public Node parse() throws Exception {
-            parser.match(Parser.OPEN_BRACES);
             block = new Block(parser).parse();
-            parser.match(Parser.CLOSE_BRACES);
             return this;
         }
 
