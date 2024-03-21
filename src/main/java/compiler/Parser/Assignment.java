@@ -1,7 +1,7 @@
 package compiler.Parser;
 
 public class Assignment extends Node {
-    String identifier;
+    IdentifierAccess identifier;
     Node expression;
 
     public Assignment(Parser parser) throws Exception {
@@ -9,7 +9,7 @@ public class Assignment extends Node {
         parser.getNext();
     }
 
-    public Assignment setIdentifier(String identifier) {
+    public Assignment setIdentifier(IdentifierAccess identifier) {
         this.identifier = identifier;
         return this;
     }
@@ -22,7 +22,7 @@ public class Assignment extends Node {
     @Override
     public String toString() {
         return "\"Assignment\": {\n"
-                + "\"identifier\": \""+ identifier + "\",\n"
+                + "\"identifier\": \""+ identifier.toString() + "\",\n"
                 + "\"expression\": " + expression.toString() + "\n"
                 + '}';
     }

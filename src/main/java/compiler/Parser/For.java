@@ -1,9 +1,9 @@
 package compiler.Parser;
 
 public class For extends Node{
-    Assignment firstAssignment;
+    Node firstAssignment;
     Expression expression;
-    Assignment secondAssignment;
+    Node secondAssignment;
     Block block;
     public For(Parser parser) throws Exception {
         super(parser);
@@ -14,9 +14,7 @@ public class For extends Node{
         if (!parser.currentToken.getType().equals("Identifier")){
             parser.ParserException("Invalid Identifier");
         }
-        String identifier = parser.currentToken.getValue();
-        parser.getNext();
-        firstAssignment = new Assignment(parser).setIdentifier(identifier).parse();
+        firstAssignment = new IdentifierAccess(parser);
         parser.match(Parser.COMMA);
 
         expression = new Expression(parser).parse();
@@ -25,9 +23,7 @@ public class For extends Node{
         if (!parser.currentToken.getType().equals("Identifier")){
             parser.ParserException("Invalid Identifier");
         }
-        identifier = parser.currentToken.getValue();
-        parser.getNext();
-        secondAssignment = new Assignment(parser).setIdentifier(identifier).parse();
+        secondAssignment = new IdentifierAccess(parser);
         parser.match(Parser.CLOSE_PARENTHESES);
 
         block = new Block(parser).parse();
