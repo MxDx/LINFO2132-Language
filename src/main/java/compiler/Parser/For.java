@@ -14,7 +14,7 @@ public class For extends Node{
         if (!parser.currentToken.getType().equals("Identifier")){
             parser.ParserException("Invalid Identifier");
         }
-        firstAssignment = new IdentifierAccess(parser);
+        firstAssignment = new IdentifierAccess(parser).setEOF(Parser.COMMA).parse();
         parser.match(Parser.COMMA);
 
         expression = new Expression(parser).setEOF(Parser.COMMA).parse();
@@ -23,7 +23,7 @@ public class For extends Node{
         if (!parser.currentToken.getType().equals("Identifier")){
             parser.ParserException("Invalid Identifier");
         }
-        secondAssignment = new IdentifierAccess(parser);
+        secondAssignment = new IdentifierAccess(parser).setEOF(Parser.CLOSE_PARENTHESES).parse();
         parser.match(Parser.CLOSE_PARENTHESES);
 
         block = new Block(parser).parse();
@@ -33,9 +33,9 @@ public class For extends Node{
     @Override
     public String toString() {
         return "\"FOR_Statement\": {\n"
-                + "\"firstAssignment\": {" + firstAssignment.toString() + "},\n"
+                + "\"firstAssignment\": {\n" + firstAssignment.toString() + "},\n"
                 + "\"expression\": \""+ expression.toString() + "\",\n"
-                + "\"secondAssignment\": {" + secondAssignment.toString() + "},\n"
+                + "\"secondAssignment\": {\n" + secondAssignment.toString() + "},\n"
                 + "\"block\": " + block.toString() + "\n"
                 + '}';
     }

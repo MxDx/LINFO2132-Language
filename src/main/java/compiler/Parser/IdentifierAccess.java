@@ -1,10 +1,15 @@
 package compiler.Parser;
 
+import compiler.Lexer.Special;
+import compiler.Lexer.Symbol;
+
 import java.util.ArrayList;
 
 public class IdentifierAccess extends Node {
     String identifier;
     IdentifierAccess next;
+    Assignment assignment;
+    Symbol EOF = new Special(";");
 
     public IdentifierAccess(Parser parser) throws Exception {
         super(parser);
@@ -18,28 +23,36 @@ public class IdentifierAccess extends Node {
         this.identifier = identifier;
     }
 
+    public IdentifierAccess setEOF(Symbol EOF) {
+        this.EOF = EOF;
+        return this;
+    }
+
     public IdentifierAccess parse() throws Exception {
         switch (parser.lookahead.getValue()) {
-            case "=" -> new Assignment(parser).setIdentifier(this).parse();
-            case "[" -> next = new ArrayAccess(parser,this).parse();
-            case "." -> next = new StructAccess(parser,this).parse();
-            case "(" -> next = new FunctionCall(parser,this).parse();
+            case "=" -> assignment =  new Assignment(parser).setEOF(EOF).parse();
+            case "[" -> next = new ArrayAccess(parser,this).setEOF(EOF).parse();
+            case "." -> next = new StructAccess(parser,this).setEOF(EOF).parse();
+            case "(" -> next = new FunctionCall(parser,this).setEOF(EOF).parse();
         };
         return this;
     }
     @Override
     public String toString() {
-        return "IdentifierAccess: {\n"
-                + "identifier: " + identifier + ", \n"
-                + "next: {\n"
-                + next.toString()
-                + "\n}"
-                + "\n}";
+        String str = "\"IdentifierAccess\": {\n"
+                + "\"identifier\": " + "\"" + identifier + "\"";
+        if (next != null) {
+            str += ", \n\"next\": {\n" + next.toString() + "\n}";
+        }
+        if (assignment != null) {
+            str += ", \n\"assignment\": {\n" + assignment.toString() + "\n}";
+        }
+        str += "\n}";
+        return str;
     }
 
     public static class ArrayAccess extends IdentifierAccess {
         Integer index;
-        IdentifierAccess heritage;
 
         public ArrayAccess(Parser parser,IdentifierAccess BaseIdentifier) throws Exception {
             super(parser, BaseIdentifier.identifier);
@@ -53,7 +66,6 @@ public class IdentifierAccess extends Node {
             if (!parser.lookahead.getValue().equals("]")) {
                 throw new Exception("Invalid Array Access");
             }
-            this.heritage = BaseIdentifier;
             parser.getNext();
         }
 
@@ -63,18 +75,21 @@ public class IdentifierAccess extends Node {
 
         @Override
         public String toString() {
-            return "ArrayAccess: {\n"
-                    + "index: " + index + ", \n"
-                    + "heritage: {\n"
-                    + heritage.toString()
-                    + "\n}"
-                    + "\n}";
+            String str = "\"ArrayAccess\": {\n"
+                    + "\"index\": " + index;
+            if (next != null) {
+                str += "\n, \"next\": {\n" + next.toString() + "\n}";
+            }
+            if (assignment != null) {
+                str += "\n, \"assignment\": {\n" + assignment.toString() + "\n}";
+            }
+            str += "\n}";
+            return str;
         }
     }
 
     public static class StructAccess extends IdentifierAccess {
         String field;
-        IdentifierAccess heritage;
 
         public StructAccess(Parser parser,IdentifierAccess BaseIdentifier) throws Exception {
             super(parser, BaseIdentifier.identifier);
@@ -83,7 +98,6 @@ public class IdentifierAccess extends Node {
                 throw new Exception("Invalid Struct Field");
             }
             field = parser.lookahead.getValue();
-            this.heritage = BaseIdentifier;
             parser.getNext();
         }
 
@@ -93,12 +107,16 @@ public class IdentifierAccess extends Node {
 
         @Override
         public String toString() {
-            return "StructAccess: {\n"
-                    + "field: " + field + ", \n"
-                    + "heritage: {\n"
-                    + heritage.toString()
-                    + "\n}"
-                    + "\n}";
+            String str = "\"StructAccess\": {\n"
+                    + "\"field\": " + "\"" + field + "\"";
+            if (next != null) {
+                str += "\n, \"next\": {\n" + next.toString() + "\n}";
+            }
+            if (assignment != null) {
+                str += "\n, \"assignment\": {\n" + assignment.toString() + "\n}";
+            }
+            str += "\n}";
+            return str;
         }
     }
 

@@ -3,6 +3,8 @@ package compiler.Parser;
 import compiler.Lexer.Keyword;
 import compiler.Lexer.Symbol;
 
+import java.util.Objects;
+
 public class If extends Node{
     final static Symbol ELSE = new Keyword("else");
     Node expression;
@@ -17,7 +19,7 @@ public class If extends Node{
         expression = new Expression(parser).setEOF(Parser.CLOSE_PARENTHESES).parse();
         parser.match(Parser.CLOSE_PARENTHESES);
         block = new Block(parser).parse();
-        if (parser.currentToken.equals(ELSE)){
+        if (Objects.equals(parser.currentToken, ELSE)){
             elseStatement = new Else(parser).parse();
         }
         return this;

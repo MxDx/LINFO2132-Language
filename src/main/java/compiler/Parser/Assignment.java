@@ -4,7 +4,6 @@ import compiler.Lexer.Special;
 import compiler.Lexer.Symbol;
 
 public class Assignment extends Node {
-    IdentifierAccess identifier;
     Node expression;
     Symbol EOF = new Special(";");
 
@@ -12,11 +11,6 @@ public class Assignment extends Node {
         super(parser);
         parser.getNext();
         parser.match(Parser.EQUALS);
-    }
-
-    public Assignment setIdentifier(IdentifierAccess identifier) {
-        this.identifier = identifier;
-        return this;
     }
 
     public Assignment parse() throws Exception {
@@ -32,7 +26,6 @@ public class Assignment extends Node {
     @Override
     public String toString() {
         return "\"Assignment\": {\n"
-                + "\"identifier\": \""+ identifier.toString() + "\",\n"
                 + "\"expression\": " + expression.toString() + "\n"
                 + '}';
     }

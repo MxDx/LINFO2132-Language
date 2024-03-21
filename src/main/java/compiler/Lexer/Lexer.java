@@ -7,6 +7,7 @@ import java.util.LinkedList;
 
 public class Lexer {
 
+    private boolean tooMuch = false;
     private char lastChar;
     private final HashSet<Character> specialCharacters = new HashSet<>() {
         {
@@ -48,7 +49,11 @@ public class Lexer {
     
     public Symbol getNextSymbol() throws Exception {
         try {
-            this.lastChar = nextUsefulChar(input);
+            char tmp = nextUsefulChar(input);
+            if (tooMuch) {
+                tooMuch = false;
+                return new Special(Character.toString(tmp));
+            }
             if (this.lastChar == '\uFFFF') {
                 throw new EndOfFileException();
             }
@@ -122,6 +127,7 @@ public class Lexer {
                 }
                 this.lastChar = (char) c;
                 if (this.lastChar != '/') {
+                    tooMuch = true;
                     return '/';
                 }
                 while (this.lastChar != '\n') {
