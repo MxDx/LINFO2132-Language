@@ -116,6 +116,14 @@ public class Lexer {
                 continue;
             }
             if (this.lastChar == '/') {
+                c = input.read();
+                if (c == -1) {
+                    throw new EndOfFileException();
+                }
+                this.lastChar = (char) c;
+                if (this.lastChar != '/') {
+                    return '/';
+                }
                 while (this.lastChar != '\n') {
                     c = input.read();
                     if (c == -1) {

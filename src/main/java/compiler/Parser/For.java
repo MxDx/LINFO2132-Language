@@ -2,7 +2,7 @@ package compiler.Parser;
 
 public class For extends Node{
     Node firstAssignment;
-    Expression expression;
+    Node expression;
     Node secondAssignment;
     Block block;
     public For(Parser parser) throws Exception {
@@ -17,7 +17,7 @@ public class For extends Node{
         firstAssignment = new IdentifierAccess(parser);
         parser.match(Parser.COMMA);
 
-        expression = new Expression(parser).parse();
+        expression = new Expression(parser).setEOF(Parser.COMMA).parse();
         parser.match(Parser.COMMA);
 
         if (!parser.currentToken.getType().equals("Identifier")){

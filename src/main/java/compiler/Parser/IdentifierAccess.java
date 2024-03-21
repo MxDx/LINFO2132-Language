@@ -12,7 +12,6 @@ public class IdentifierAccess extends Node {
             throw new Exception("Invalid Identifier");
         }
         identifier = parser.currentToken.getValue();
-        parser.getNext();
     }
     public IdentifierAccess(Parser parser, String identifier) {
         super(parser);
@@ -20,7 +19,7 @@ public class IdentifierAccess extends Node {
     }
 
     public IdentifierAccess parse() throws Exception {
-        switch (parser.currentToken.getValue()) {
+        switch (parser.lookahead.getValue()) {
             case "=" -> new Assignment(parser).setIdentifier(this).parse();
             case "[" -> next = new ArrayAccess(parser,this).parse();
             case "." -> next = new StructAccess(parser,this).parse();
@@ -44,13 +43,14 @@ public class IdentifierAccess extends Node {
 
         public ArrayAccess(Parser parser,IdentifierAccess BaseIdentifier) throws Exception {
             super(parser, BaseIdentifier.identifier);
-            if (parser.currentToken.getType().equals("MyInteger")) {
-                index = Integer.parseInt(parser.currentToken.getValue());
+            parser.getNext();
+            if (parser.lookahead.getType().equals("MyInteger")) {
+                index = Integer.parseInt(parser.lookahead.getValue());
                 parser.getNext();
             } else {
                 throw new Exception("Invalid Array Index");
             }
-            if (!parser.currentToken.getValue().equals("]")) {
+            if (!parser.lookahead.getValue().equals("]")) {
                 throw new Exception("Invalid Array Access");
             }
             this.heritage = BaseIdentifier;
@@ -78,10 +78,11 @@ public class IdentifierAccess extends Node {
 
         public StructAccess(Parser parser,IdentifierAccess BaseIdentifier) throws Exception {
             super(parser, BaseIdentifier.identifier);
-            if (!parser.currentToken.getType().equals("Identifier")) {
+            parser.getNext();
+            if (!parser.lookahead.getType().equals("Identifier")) {
                 throw new Exception("Invalid Struct Field");
             }
-            field = parser.currentToken.getValue();
+            field = parser.lookahead.getValue();
             this.heritage = BaseIdentifier;
             parser.getNext();
         }

@@ -5,7 +5,7 @@ import compiler.Lexer.Symbol;
 
 public class If extends Node{
     final static Symbol ELSE = new Keyword("else");
-    Expression expression;
+    Node expression;
     Block block;
     Node elseStatement;
     public If(Parser parser) throws Exception {
@@ -14,7 +14,7 @@ public class If extends Node{
     }
     public Node parse() throws Exception {
         parser.match(Parser.OPEN_PARENTHESES);
-        expression = new Expression(parser).parse();
+        expression = new Expression(parser).setEOF(Parser.CLOSE_PARENTHESES).parse();
         parser.match(Parser.CLOSE_PARENTHESES);
         block = new Block(parser).parse();
         if (parser.currentToken.equals(ELSE)){

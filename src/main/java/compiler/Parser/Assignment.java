@@ -1,12 +1,17 @@
 package compiler.Parser;
 
+import compiler.Lexer.Special;
+import compiler.Lexer.Symbol;
+
 public class Assignment extends Node {
     IdentifierAccess identifier;
     Node expression;
+    Symbol EOF = new Special(";");
 
     public Assignment(Parser parser) throws Exception {
         super(parser);
         parser.getNext();
+        parser.match(Parser.EQUALS);
     }
 
     public Assignment setIdentifier(IdentifierAccess identifier) {
@@ -15,7 +20,12 @@ public class Assignment extends Node {
     }
 
     public Assignment parse() throws Exception {
-        expression = new Expression(parser).parse();
+        expression = new Expression(parser).setEOF(EOF).parse();
+        return this;
+    }
+
+    public Assignment setEOF(Symbol EOF) {
+        this.EOF = EOF;
         return this;
     }
 
