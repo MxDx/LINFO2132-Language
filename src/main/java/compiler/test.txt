@@ -4,6 +4,13 @@ int y = 69;
 if (14) {
     int z = 69;
     return "Hello";
+} else {
+    return "World";
+}
+
+if (14) {
+    int z = 69;
+    return "Hello";
 }
 
 while (true) {
