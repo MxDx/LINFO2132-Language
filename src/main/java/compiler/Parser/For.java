@@ -19,7 +19,7 @@ public class For extends Node{
         firstAssignment = new Assignment(parser).setIdentifier(identifier).parse();
         parser.match(Parser.COMMA);
 
-        expression = new Expression(parser).parse();
+        expression = new Expression(parser).setEOF(Parser.COMMA).parse();
         parser.match(Parser.COMMA);
 
         if (!parser.currentToken.getType().equals("Identifier")){
