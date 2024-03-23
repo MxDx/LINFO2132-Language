@@ -2,9 +2,10 @@ package compiler.Parser;
 
 import compiler.Lexer.Symbol;
 import java.util.ArrayList;
+import java.util.Objects;
 
-public class Statements extends Node {
-    ArrayList<Node> statements;
+public class Statements extends Starting {
+    public ArrayList<Node> statements;
     Symbol EOF;
     public Statements(Parser parser) {
         super(parser);
@@ -16,6 +17,9 @@ public class Statements extends Node {
             if (parser.currentToken.equals(EOF)) break;
             Statement statement = new Statement(parser);
             statements.add(statement.parse());
+            while (Objects.equals(parser.currentToken, Parser.SEMICOLON)) {
+                parser.getNext();
+            }
             //parser.getNext();
         }
         return this;
@@ -40,7 +44,7 @@ public class Statements extends Node {
     }
 
     public static class Statement extends Node {
-        Node content;
+        public Node content;
 
         public Statement(Parser parser) {
             super(parser);
@@ -56,6 +60,7 @@ public class Statements extends Node {
                         case "for" -> content = new For(this.parser).parse();
                         case "def" -> content = new Method(this.parser).parse();
                         case "struct" -> content = new Struct(this.parser).parse();
+                        case "final" -> content = new Declaration(this.parser).parse();
                         default -> parser.ParserException("Invalid Statement Keyword");
                     }
                     return this;
@@ -88,9 +93,7 @@ public class Statements extends Node {
         }
         @Override
         public String toString() {
-            return "{\n" +
-                    "\"content\": {\n" + content +
-                    "\n}" +
+            return "{\n"+ content +
                     "\n}";
         }
     }

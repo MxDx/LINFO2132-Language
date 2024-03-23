@@ -1,18 +1,32 @@
 package compiler.Parser;
 
+import compiler.Lexer.Keyword;
+import compiler.Lexer.Symbol;
 import compiler.Lexer.VarType;
 
 import java.util.Objects;
 
-public class Declaration extends Node{
-    VarType type;
-    String identifier;
-    Node assignment;
+public class Declaration extends Node {
+    public static final Symbol FINAL = new Keyword("final");
+    public VarType type;
+    public String identifier;
+    public Node assignment;
 
     public Declaration(Parser parser) throws Exception {
         super(parser);
+        boolean isFinal = false;
+        if (parser.currentToken.equals(FINAL)){
+            isFinal = true;
+            parser.getNext();
+        }
         type = new VarType(parser.currentToken.getValue());
+        type.setFinal(isFinal);
         parser.getNext();
+        if (Objects.equals(parser.currentToken.getValue(), "[")){
+            type.setVector();
+            parser.getNext();
+            parser.match(Parser.CLOSE_BRACKETS);
+        }
         if (!Objects.equals(parser.currentToken.getType(), "Identifier")){
             parser.ParserException("Invalid Identifier");
         }

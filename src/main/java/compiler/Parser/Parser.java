@@ -7,12 +7,14 @@ public class Parser {
     public final static Symbol OPEN_PARENTHESES = new Special("(");
     public final static Symbol OPEN_BRACES = new Special("{");
     public final static Symbol CLOSE_BRACES = new Special("}");
+    public final static Symbol OPEN_BRACKETS = new Special("[");
+    public final static Symbol CLOSE_BRACKETS = new Special("]");
     public static final Symbol SEMICOLON = new Special(";");
 
     public final static Symbol COMMA = new Special(",");
     public static final Symbol EQUALS = new Special("=");
     Symbol currentToken;
-    Statements root;
+    Starting root;
     Lexer lexer;
     Symbol lookahead;
 
@@ -21,6 +23,9 @@ public class Parser {
         currentToken = lexer.getNextSymbol();
         lookahead = lexer.getNextSymbol();
         root = new Starting(this).parse();
+    }
+    public Starting getAST() {
+        return root;
     }
     public void getNext() throws Exception {
         currentToken = lookahead;

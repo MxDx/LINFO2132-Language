@@ -39,7 +39,7 @@ public class IdentifierAccess extends Node {
     }
     @Override
     public String toString() {
-        String str = "\"IdentifierAccess\": {\n"
+        String str = "{\n\"IdentifierAccess\": {\n"
                 + "\"identifier\": " + "\"" + identifier + "\"";
         if (next != null) {
             str += ", \n\"next\": {\n" + next.toString() + "\n}";
@@ -47,7 +47,7 @@ public class IdentifierAccess extends Node {
         if (assignment != null) {
             str += ", \n\"assignment\": {\n" + assignment.toString() + "\n}";
         }
-        str += "\n}";
+        str += "\n}\n}";
         return str;
     }
 

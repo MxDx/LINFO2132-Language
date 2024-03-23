@@ -18,22 +18,9 @@ public class Method extends Node{
     }
 
     public Node parse() throws Exception {
-        if(parser.currentToken.getType().equals("Identifier")) {
-            returnType = new VarType(parser.currentToken.getValue());
-        }
-        else {
-            if (parser.currentToken.getType().equals("VarType")) {
-                returnType = new VarType(parser.currentToken.getValue());
-            } else {
-                throw new Exception("Invalid Return Type");
-            }
-        }
-        parser.getNext();
-        if (!parser.currentToken.getType().equals("Identifier")) {
-            throw new Exception("Invalid Method Name");
-        }
-        name = new Identifier(parser.currentToken.getValue());
-        parser.getNext();
+        Declaration declaration = new Declaration(parser).parse();
+        returnType = declaration.type;
+        name = new Identifier(declaration.identifier);
         if (!parser.currentToken.getValue().equals("(")) {
             throw new Exception("Invalid Method Declaration");
         }

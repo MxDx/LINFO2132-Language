@@ -22,7 +22,7 @@ public class Expression extends Node {
         add("==");
         add("!=");
     }};
-    Node corps;
+    public Node corps;
     Symbol EOF = new Special(";");
 
     public Expression(Parser parser) {
@@ -69,7 +69,7 @@ public class Expression extends Node {
         return corps.toString();
     }
     public static class Value extends Expression {
-        Symbol value;
+        public Symbol value;
         public Value(Parser parser) throws Exception {
             super(parser);
             if (!parser.currentToken.isValue()) {
@@ -84,14 +84,14 @@ public class Expression extends Node {
 
         @Override
         public String toString() {
-            return  value.getValue();
+            return "\"" + value.getValue() + "\"";
         }
     }
 
     public static class Operation extends Expression {
-        String operation;
-        Node left;
-        Node right;
+        public String operation;
+        public Node left;
+        public Node right;
 
         public Operation(Parser parser, Node before) throws Exception {
             super(parser);
@@ -133,19 +133,35 @@ public class Expression extends Node {
         }
 
         public Node parse() throws Exception {
-            left = parseTerm();
+            left = parseTerm(left);
             while (weak.contains(parser.lookahead.getValue())) {
                 String operation = parser.lookahead.getValue();
                 parser.getNext();
                 parser.getNext();
-                Node newRight = parseTerm();
+                Node newRight = parseTerm(null);
                 left = new ArithmeticOperation(parser, left, newRight, operation);
             }
             parser.getNext();
             return left;
         }
 
-        private Node parseTerm() throws Exception {
+        private Node parseTerm(Node start) throws Exception {
+            Node result = start;
+
+            if (start == null) {
+                result = parseIdentifier();
+            }
+
+            while (strong.contains(parser.lookahead.getValue())) {
+                String operation = parser.lookahead.getValue();
+                parser.getNext();
+                parser.getNext();
+                result = new ArithmeticOperation(parser, result, parseTerm(null), operation);
+            }
+            return result;
+        }
+
+        private Node parseIdentifier() throws Exception {
             Node result = null;
 
             if (parser.currentToken.isValue()) {
@@ -162,13 +178,6 @@ public class Expression extends Node {
                     default:
                         parser.ParserException("Invalid term");
                 }
-            }
-
-            while (strong.contains(parser.lookahead.getValue())) {
-                String operation = parser.lookahead.getValue();
-                parser.getNext();
-                parser.getNext();
-                result = new ArithmeticOperation(parser, result, parseTerm(), operation);
             }
             return result;
         }

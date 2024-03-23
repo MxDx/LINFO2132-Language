@@ -15,7 +15,7 @@ public class Return extends Node{
     @Override
     public String toString() {
         return "\"RETURN_Statement\": {\n"
-                + "\"expression\": \""+ expression.toString() + "\"\n"
+                + "\"expression\": "+ expression.toString() + "\n"
                 + '}';
     }
 }

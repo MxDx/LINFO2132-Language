@@ -1,13 +1,38 @@
 package compiler.Lexer;
 
 public class VarType extends Symbol{
-    public  String Type = "VarType";
-    public  String Value = "default";
+    private String Type = "VarType";
+    private String Value = "default";
+    private Boolean Vector = false;
+    private Boolean Final = false;
+
     public VarType(String value) {
         Value = value;
     }
+
+    public void setVector() {
+        Vector = true;
+    }
+    public Boolean isVector() {
+        return Vector;
+    }
+    public void setFinal(Boolean finalValue) {
+        Final = finalValue;
+    }
+    public Boolean isFinal() {
+        return Final;
+    }
+
     public String toString() {
-        return "<" + this.Type + ","+ this.Value + ">";
+        String str = "<" + this.Type + ","+ this.Value;
+        if (Vector) {
+            str += ",Vector";
+        }
+        if (Final) {
+            str += ",Final";
+        }
+        str += ">";
+        return str;
     }
 
     @Override
