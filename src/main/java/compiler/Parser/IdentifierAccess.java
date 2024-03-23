@@ -4,6 +4,7 @@ import compiler.Lexer.Special;
 import compiler.Lexer.Symbol;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class IdentifierAccess extends Node {
     String identifier;
@@ -126,6 +127,8 @@ public class IdentifierAccess extends Node {
         public FunctionCall(Parser parser,IdentifierAccess BaseIdentifier) throws Exception {
             super(parser, BaseIdentifier.identifier);
             this.heritage = BaseIdentifier;
+            parser.getNext();
+            parser.match(Parser.OPEN_PARENTHESES);
         }
         public IdentifierAccess parse() throws Exception {
 
@@ -135,8 +138,31 @@ public class IdentifierAccess extends Node {
                     parser.getNext();
                 }
             }
-            parser.match(Parser.CLOSE_PARENTHESES);
+            if (Objects.equals(parser.lookahead, Parser.CLOSE_PARENTHESES)) {
+                next = new StructAccess(parser,this).setEOF(EOF).parse();
+            }
             return this;
+        }
+
+        @Override
+        public String toString() {
+            String str = "\"FunctionCall\": {\n"
+                    + "\"arguments\": [\n";
+            for (int i = 0; i < arguments.size(); i++) {
+                str += arguments.get(i).toString();
+                if (i != arguments.size() - 1) {
+                    str += ",\n";
+                }
+            }
+            str += "\n]";
+            if (next != null) {
+                str += ", \n\"next\": {\n" + next.toString() + "\n}";
+            }
+            if (assignment != null) {
+                str += ", \n\"assignment\": {\n" + assignment.toString() + "\n}";
+            }
+            str += "\n}";
+            return str;
         }
     }
 }

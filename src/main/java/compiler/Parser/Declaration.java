@@ -19,7 +19,7 @@ public class Declaration extends Node {
             isFinal = true;
             parser.getNext();
         }
-        type = new VarType(parser.currentToken.getValue());
+        type = new VarType(parser.currentToken.getValue(), parser.currentToken.getLine());
         type.setFinal(isFinal);
         parser.getNext();
         if (Objects.equals(parser.currentToken.getValue(), "[")){

@@ -3,8 +3,9 @@ package compiler.Lexer;
 public class MyBoolean extends Symbol{
     public  String Type = "MyBoolean";
     public  String Value = "default";
-    public MyBoolean(String value) {
+    public MyBoolean(String value, int line) {
         Value = value;
+        this.line = line;
     }
     public String toString() {
         return "<" + this.Type + ","+ this.Value + ">";

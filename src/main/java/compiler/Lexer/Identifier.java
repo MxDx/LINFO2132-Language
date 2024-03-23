@@ -3,8 +3,9 @@ package compiler.Lexer;
 public class Identifier extends Symbol {
     public  String Type = "Identifier";
     public  String Value = "default";
-    public Identifier(String value) {
+    public Identifier(String value, int line) {
         Value = value;
+        this.line = line;
     }
     public String toString() {
         return "<" + this.Type + ","+ this.Value + ">";

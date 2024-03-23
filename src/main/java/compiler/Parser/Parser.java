@@ -47,7 +47,7 @@ public class Parser {
     }
 
     public void ParserException(String message) throws Exception {
-        throw new Exception(message + " With token: " + currentToken.getValue());
+        throw new Exception(message + " With token: " + currentToken.getValue() + " at line: " + currentToken.getLine());
     }
 
 }

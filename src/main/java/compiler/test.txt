@@ -1,3 +1,48 @@
-for (i.y = 0, 10, i.y[123] = 2) {
-    int z = 69;
+//for (i.y = 0, 10, i.y[123] = 2) {
+//    int z = 69;
+//}
+//
+//int i = 0;
+//
+//struct Point {
+//    int x;
+//    int y;
+//}
+
+//struct Person {
+//    string name;
+//    Point location;
+//    int[] history;
+//}
+
+final int i = 3;
+final float j = 3.2*5.0;
+//final k int = i*3;
+final string[] message = "Hello";
+final bool isEmpty = true;
+
+
+def int[] square(int[] v, int x) {
+    return v[1]*v +2*x.w;
+}
+
+def Point copyPoints(Point[] p) {
+    return Point(p[0].x+p[1].x, p[0].y+p[1].y);
+}
+
+def void main() {
+    int value = readInt();
+    writeln(square(value));
+    int i;
+    for (i=1, i<100, i = i+1) {
+        while (value!=3) {
+            if (i > 10){
+                // ....
+            } else {
+                // ....
+            }
+        }
+    }
+
+    i = (i+2)*2;
 }

@@ -6,6 +6,10 @@ public class VarType extends Symbol{
     private Boolean Vector = false;
     private Boolean Final = false;
 
+    public VarType(String value, int line) {
+        Value = value;
+        this.line = line;
+    }
     public VarType(String value) {
         Value = value;
     }

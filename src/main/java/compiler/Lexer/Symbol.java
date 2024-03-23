@@ -5,6 +5,7 @@ import java.util.Objects;
 public abstract class Symbol {
     public String Type;
     public String Value;
+    public int line;
 
     public String toString() {
         return super.toString();
@@ -20,6 +21,10 @@ public abstract class Symbol {
 
     public boolean isValue() {
         return false;
+    }
+
+    public int getLine() {
+        return line;
     }
 
     @Override

@@ -36,6 +36,7 @@ public class Lexer {
     //'+', '-', '*', '/', '%', '<', '>', '=', '!', '&', '|', '(', ')', '{', '}', ';', ',', '[', ']', '.'
     public LinkedList<Symbol> symbolList;
     private final Reader input;
+    private int line = 1;
 
     public Lexer(Reader input) throws Exception {
         symbolList = new LinkedList<>();
@@ -52,7 +53,7 @@ public class Lexer {
             char tmp = nextUsefulChar(input);
             if (tooMuch) {
                 tooMuch = false;
-                return new Special(Character.toString(tmp));
+                return new Special(Character.toString(tmp), line);
             }
             if (this.lastChar == '\uFFFF') {
                 throw new EndOfFileException();
@@ -61,26 +62,26 @@ public class Lexer {
                 String s = readToken(input);
                 return switch (s) {
                     // Boolean
-                    case "true" -> new MyBoolean("true");
-                    case "false" -> new MyBoolean("false");
+                    case "true" -> new MyBoolean("true", line);
+                    case "false" -> new MyBoolean("false", line);
                     // VarType
-                    case "int" -> new VarType("int");
-                    case "float" -> new VarType("float");
-                    case "char" -> new VarType("char");
-                    case "string" -> new VarType("string");
-                    case "bool" -> new VarType("bool");
+                    case "int" -> new VarType("int", line);
+                    case "float" -> new VarType("float", line);
+                    case "char" -> new VarType("char", line);
+                    case "string" -> new VarType("string", line);
+                    case "bool" -> new VarType("bool", line);
                     // Keyword
-                    case "final" -> new Keyword("final");
-                    case "if" -> new Keyword("if");
-                    case "else" -> new Keyword("else");
-                    case "while" -> new Keyword("while");
-                    case "for" -> new Keyword("for");
-                    case "free" -> new Keyword("free");
-                    case "return" -> new Keyword("return");
-                    case "struct" -> new Keyword("struct");
-                    case "def" -> new Keyword("def");
+                    case "final" -> new Keyword("final", line);
+                    case "if" -> new Keyword("if", line);
+                    case "else" -> new Keyword("else", line);
+                    case "while" -> new Keyword("while", line);
+                    case "for" -> new Keyword("for", line);
+                    case "free" -> new Keyword("free", line);
+                    case "return" -> new Keyword("return", line);
+                    case "struct" -> new Keyword("struct", line);
+                    case "def" -> new Keyword("def", line);
                     // Identifier
-                    default -> new Identifier(s);
+                    default -> new Identifier(s, line);
                 };
             } else if (Character.isDigit(this.lastChar)) {
                 String s = readNumber(input);
@@ -88,24 +89,24 @@ public class Lexer {
                     throw new IOException("Invalid character: " + this.lastChar);
                 }
                 if (s.contains(".")) {
-                    return new MyFloat(s);
+                    return new MyFloat(s, line);
                 } else {
-                    return new MyInteger(s);
+                    return new MyInteger(s, line);
                 }
             } else if (this.lastChar == '"') {
                 String s = readString(input);
-                return new MyString(s);
+                return new MyString(s, line);
             } else if (this.lastChar == '.') {
                 this.lastChar = (char) input.read();
                 if (Character.isDigit(this.lastChar)) {
                     String s = readNumber(input);
-                    return new MyFloat("0." + s);
+                    return new MyFloat("0." + s, line);
                 } else {
-                    return new Special(".");
+                    return new Special(".", line);
                 }
             } else {
                 String s = readSpecialCharacters(input);
-                return new Special(s);
+                return new Special(s, line);
             }
         } catch (EndOfFileException e) {
             System.out.println("End of file");
@@ -117,6 +118,9 @@ public class Lexer {
         int c;
         while (true) {
             if (this.lastChar == ' ' || this.lastChar == '\t' || this.lastChar == '\n' || this.lastChar == '\r') {
+                if (this.lastChar == '\n') {
+                    this.line++;
+                }
                 this.lastChar = (char) input.read();
                 continue;
             }
@@ -137,6 +141,7 @@ public class Lexer {
                     }
                     this.lastChar = (char) c;
                 }
+                line++;
                 c = input.read();
                 if (c == -1) {
                     throw new EndOfFileException();

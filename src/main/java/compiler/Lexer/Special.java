@@ -3,6 +3,11 @@ package compiler.Lexer;
 public class Special extends Symbol{
     public  String Type = "Special";
     public  String Value = "default";
+    public Special(String value, int line) {
+        Value = value;
+        this.line = line;
+    }
+
     public Special(String value) {
         Value = value;
     }

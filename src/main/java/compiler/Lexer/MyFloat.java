@@ -3,8 +3,9 @@ package compiler.Lexer;
 public class MyFloat extends Symbol{
     public  String Type = "MyFloat";
     public  String Value = "default";
-    public MyFloat(String value) {
+    public MyFloat(String value, int line) {
         Value = value;
+        this.line = line;
     }
     public String toString() {
         return "<" + this.Type + ","+ this.Value + ">";
