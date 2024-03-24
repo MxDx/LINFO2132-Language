@@ -1,27 +1,8 @@
 package compiler.Lexer;
 
 public class MyBoolean extends Symbol{
-    public  String Type = "MyBoolean";
-    public  String Value = "default";
     public MyBoolean(String value, int line) {
-        Value = value;
-        this.line = line;
-    }
-    public String toString() {
-        return "<" + this.Type + ","+ this.Value + ">";
-    }
-    @Override
-    public String getType() {
-        return Type;
-    }
-
-    @Override
-    public String getValue() {
-        return Value;
-    }
-
-    @Override
-    public boolean isValue() {
-        return true;
+        super("MyBoolean", value, line);
+        this.setValue(true);
     }
 }

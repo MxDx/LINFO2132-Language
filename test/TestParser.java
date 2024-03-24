@@ -80,4 +80,34 @@ public class TestParser {
         assertEquals("10", value.value.getValue());
     }
 
+    @Test
+    public void testWhile() throws Exception {
+        String input = "while (a < 10) { int a = 10; }";
+        Starting root = parse(input);
+
+        Statements statement = (Statements) root;
+        Statements.Statement stmt = (Statements.Statement) statement.statements.get(0);
+        While wh = (While) stmt.content;
+
+        Expression expression = (Expression) wh.expression;
+        Expression.Operation operation = (Expression.Operation) expression;
+        Expression.Value value = (Expression.Value) operation.left;
+        assertEquals("a", value.value.getValue());
+        value = (Expression.Value) operation.right;
+        assertEquals("10", value.value.getValue());
+        assertEquals("<", operation.operation);
+
+        Block block = (Block) wh.block;
+        assertEquals(1, block.statements.size());
+        Statements.Statement innerStmt = (Statements.Statement) block.statements.get(0);
+        Declaration decl = (Declaration) innerStmt.content;
+        assertEquals(new VarType("int"), decl.type);
+        assertEquals("a", decl.identifier);
+        assertNotNull(decl.assignment);
+
+        Expression innerExpression = (Expression) decl.assignment;
+        Expression.Value innerValue = (Expression.Value) innerExpression.corps;
+        assertEquals("10", innerValue.value.getValue());
+    }
+
 }

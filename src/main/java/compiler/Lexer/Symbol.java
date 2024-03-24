@@ -5,10 +5,13 @@ import java.util.Objects;
 public abstract class Symbol {
     public String Type;
     public String Value;
-    public int line;
+    public int Line;
+    private boolean isValue = false;
 
-    public String toString() {
-        return super.toString();
+    public Symbol(String type, String value, int line) {
+        Type = type;
+        Value = value;
+        this.Line = line;
     }
 
     public String getType() {
@@ -20,11 +23,20 @@ public abstract class Symbol {
     }
 
     public boolean isValue() {
-        return false;
+        return isValue;
+    }
+
+    public void setValue(boolean value) {
+        isValue = value;
     }
 
     public int getLine() {
-        return line;
+        return Line;
+    }
+
+    @Override
+    public String toString() {
+        return "<" + this.Type + ","+ this.Value + ">";
     }
 
     @Override

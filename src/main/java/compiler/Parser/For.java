@@ -1,9 +1,5 @@
 package compiler.Parser;
 
-import compiler.Lexer.Symbol;
-
-import java.util.HashSet;
-
 public class For extends Node{
     Node firstAssignment;
     Node expression;

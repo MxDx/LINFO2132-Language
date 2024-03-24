@@ -1,6 +1,5 @@
 package compiler.Parser;
 
-import com.google.common.hash.Hasher;
 import compiler.Lexer.Special;
 import compiler.Lexer.Symbol;
 
@@ -26,7 +25,7 @@ public class Expression extends Node {
         add("!=");
     }};
     public Node corps;
-    HashSet<Symbol> EOF = new HashSet<Symbol>() {{
+    HashSet<Symbol> EOF = new HashSet<>() {{
         add(new Special(";"));
     }};
 
@@ -113,7 +112,7 @@ public class Expression extends Node {
         public Node left;
         public Node right;
 
-        public Operation(Parser parser, Node before) throws Exception {
+        public Operation(Parser parser, Node before) {
             super(parser);
             operation = parser.lookahead.getValue();
             left = before;

@@ -1,6 +1,5 @@
 package compiler.Parser;
 
-import compiler.Lexer.Identifier;
 import compiler.Lexer.VarType;
 
 public class Parameter extends Node{
