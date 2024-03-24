@@ -4,12 +4,11 @@ import compiler.Lexer.Special;
 import compiler.Lexer.Symbol;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 public class IdentifierAccess extends Node {
     public String identifier;
     public IdentifierAccess next;
-    Assignment assignment;
+    public Assignment assignment;
     ArrayList<Symbol> EOF = new ArrayList<>() {{
         add(new Special(";"));
     }};
@@ -36,7 +35,7 @@ public class IdentifierAccess extends Node {
             case "=" -> assignment =  new Assignment(parser).setEOF(EOF).parse();
             case "[" -> next = new ArrayAccess(parser,this).setEOF(EOF).parse();
             case "." -> next = new StructAccess(parser,this).setEOF(EOF).parse();
-            case "(" -> next = new FunctionCall(parser, this).setEOF(Parser.EOF_CLOSE_PARENTHESES).parse();
+            case "(" -> next = new FunctionCall(parser, this).setEOF(Parser.EOF_CLOSE_PARENTHESES()).parse();
         }
         return this;
     }
@@ -162,10 +161,10 @@ public class IdentifierAccess extends Node {
             }
             str.append("\n]");
             if (next != null) {
-                str.append(", \n\"next\": {\n").append(next.toString()).append("\n}");
+                str.append(", \n\"next\": {\n").append(next).append("\n}");
             }
             if (assignment != null) {
-                str.append(", \n\"assignment\": {\n").append(assignment.toString()).append("\n}");
+                str.append(", \n\"assignment\": {\n").append(assignment).append("\n}");
             }
             str.append("\n}");
             return str.toString();

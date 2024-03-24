@@ -1,10 +1,10 @@
 package compiler.Parser;
 
 public class For extends Node{
-    Node firstAssignment;
-    Node expression;
-    Node secondAssignment;
-    Block block;
+    public Node firstAssignment;
+    public Node expression;
+    public Node secondAssignment;
+    public Block block;
     public For(Parser parser) throws Exception {
         super(parser);
         parser.getNext();
@@ -14,16 +14,16 @@ public class For extends Node{
         if (!parser.currentToken.getType().equals("Identifier")){
             parser.ParserException("Invalid Identifier");
         }
-        firstAssignment = new IdentifierAccess(parser).setEOF(Parser.EOF_COMMA).parse();
+        firstAssignment = new IdentifierAccess(parser).setEOF(Parser.EOF_COMMA()).parse();
         parser.match(Parser.COMMA);
 
-        expression = new Expression(parser).setEOF(Parser.EOF_COMMA).parse();
+        expression = new Expression(parser).setEOF(Parser.EOF_COMMA()).parse();
         parser.match(Parser.COMMA);
 
         if (!parser.currentToken.getType().equals("Identifier")){
             parser.ParserException("Invalid Identifier");
         }
-        secondAssignment = new IdentifierAccess(parser).setEOF(Parser.EOF_CLOSE_PARENTHESES).parse();
+        secondAssignment = new IdentifierAccess(parser).setEOF(Parser.EOF_CLOSE_PARENTHESES()).parse();
         parser.match(Parser.CLOSE_PARENTHESES);
 
         block = new Block(parser).parse();

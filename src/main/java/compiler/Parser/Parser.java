@@ -16,10 +16,10 @@ public class Parser {
     public final static Symbol COMMA = new Special(",");
     public static final Symbol EQUALS = new Special("=");
 
-    static ArrayList<Symbol> EOF_COMMA = new ArrayList<>(){{
+    private static ArrayList<Symbol> EOF_COMMA = new ArrayList<>(){{
         add(Parser.COMMA);
     }};
-    static ArrayList<Symbol> EOF_CLOSE_PARENTHESES = new ArrayList<Symbol>(){{
+    private static ArrayList<Symbol> EOF_CLOSE_PARENTHESES = new ArrayList<>(){{
         add(Parser.CLOSE_PARENTHESES);
     }};
 
@@ -63,6 +63,14 @@ public class Parser {
         error += "\tat line: " + currentToken.getLine() + "\n";
         error += "\tat token number: " + currentToken.getTokenNumber() + "\n";
         throw new Exception(error);
+    }
+
+    public static ArrayList<Symbol> EOF_COMMA() {
+        return new ArrayList<>(EOF_COMMA);
+    }
+
+    public static ArrayList<Symbol> EOF_CLOSE_PARENTHESES() {
+        return new ArrayList<>(EOF_CLOSE_PARENTHESES);
     }
 
 }

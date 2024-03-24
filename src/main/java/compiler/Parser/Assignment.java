@@ -6,7 +6,7 @@ import compiler.Lexer.Symbol;
 import java.util.ArrayList;
 
 public class Assignment extends Node {
-    Node expression;
+    public Node expression;
     ArrayList<Symbol> EOF = new ArrayList<>() {{
         add(new Special(";"));
     }};

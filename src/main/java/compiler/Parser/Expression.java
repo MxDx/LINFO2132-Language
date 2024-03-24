@@ -41,8 +41,11 @@ public class Expression extends Node {
                 return new IdentifierAccess(parser).setEOF(EOF).parse();
             } else if (parser.currentToken.equals(Parser.OPEN_PARENTHESES)) {
                 parser.match(Parser.OPEN_PARENTHESES);
-                EOF.add(Parser.CLOSE_PARENTHESES);
-                Node result = new Expression(parser).setEOF(Parser.EOF_CLOSE_PARENTHESES).parse();
+                if (EOF.contains(Parser.CLOSE_PARENTHESES)) {
+                    // Only useful to prevent the expression to stop early
+                    EOF.add(Parser.CLOSE_PARENTHESES);
+                }
+                Node result = new Expression(parser).setEOF(Parser.EOF_CLOSE_PARENTHESES()).parse();
                 if (!parser.currentToken.equals(Parser.CLOSE_PARENTHESES)) {
                     parser.ParserException("Invalid expression");
                 }
@@ -150,11 +153,11 @@ public class Expression extends Node {
             add("*");
             add("/");
         }};
-        public ArithmeticOperation(Parser parser, Node before) throws Exception {
+        public ArithmeticOperation(Parser parser, Node before) {
             super(parser, before);
         }
 
-        public ArithmeticOperation(Parser parser, Node before, Node next, String operation) throws Exception {
+        public ArithmeticOperation(Parser parser, Node before, Node next, String operation) {
             super(parser, before);
             this.operation = operation;
             right = next;
