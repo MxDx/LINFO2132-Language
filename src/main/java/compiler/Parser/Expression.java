@@ -59,19 +59,6 @@ public class Expression extends Node {
 
     public Node parse() throws Exception {
         corps = getCorps();
-        if (EOF.contains(parser.lookahead)) {
-            parser.getNext();
-        }
-        if (EOF.contains(parser.currentToken)) {
-            EOF.remove(parser.currentToken);
-            if (!EOF.contains(parser.currentToken)) {
-                if (corps instanceof Value) {
-                    return corps;
-                }
-                return this;
-            }
-        }
-
         if (arithmeticOperations.contains(parser.lookahead.getValue())) {
             Node result =  new ArithmeticOperation(parser, corps).setEOF(EOF).parse();
             if (EOF.contains(parser.currentToken)) {
@@ -83,6 +70,27 @@ public class Expression extends Node {
             return new ComparisonOperation(parser, result).setEOF(EOF).parse();
         } else if (comparisonOperations.contains(parser.lookahead.getValue())) {
             return new ComparisonOperation(parser, corps).setEOF(EOF).parse();
+        }
+
+        if (EOF.contains(parser.currentToken)) {
+            EOF.remove(parser.currentToken);
+            if (!EOF.contains(parser.currentToken)) {
+                if (corps instanceof Value) {
+                    return corps;
+                }
+                return this;
+            }
+        }
+
+        if (EOF.contains(parser.lookahead)) {
+            parser.getNext();
+            EOF.remove(parser.currentToken);
+            if (!EOF.contains(parser.currentToken)) {
+                if (corps instanceof Value) {
+                    return corps;
+                }
+                return this;
+            }
         } else {
             parser.ParserException("Invalid expression");
         }

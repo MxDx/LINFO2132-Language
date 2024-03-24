@@ -300,8 +300,7 @@ public class TestParser {
         IdentifierAccess firstAssign = (IdentifierAccess) forTested.firstAssignment;
         assertEquals("The identifier is not correct", "i", firstAssign.identifier);
         assertNotNull("The first assignement has an assignment", firstAssign.assignment);
-        assertTrue("The assignment is not an instance of Assignment", firstAssign.assignment instanceof Assignment);
-        Assignment assign = (Assignment) firstAssign.assignment;
+        Assignment assign = firstAssign.assignment;
         assertTrue("The assignment is not an instance of Expression.Value", assign.expression instanceof Expression.Value);
         Expression.Value value = (Expression.Value) assign.expression;
         assertEquals("The value is not correct", "0", value.value.getValue());
@@ -346,5 +345,122 @@ public class TestParser {
         Expression.Value innerValue = (Expression.Value) decl.assignment;
         assertEquals("The value is not correct", "10", innerValue.value.getValue());
 
+    }
+
+    @Test
+    // for (i=1*readInt(square(2/a)), i*2 <100+4*readInt(), i = i+1*4+readInt())
+    public void testComplexeFor() throws Exception {
+        String input = "for (i=1*readInt(square(2/a)), i*2 <100+4*readInt(), i = i+1*4+readInt()) {}";
+        Starting root = parse(input);
+
+        Statements statement = (Statements) root;
+        Statements.Statement stmt = (Statements.Statement) statement.statements.get(0);
+        assertTrue("The statement is not an instance of For", stmt.content instanceof For);
+        For forTested = (For) stmt.content;
+
+        assertTrue("The first assignement is not an instance of IdentifierAccess", forTested.firstAssignment instanceof IdentifierAccess);
+        IdentifierAccess firstAssign = (IdentifierAccess) forTested.firstAssignment;
+        assertEquals("The identifier is not correct", "i", firstAssign.identifier);
+        assertNotNull("The first assignement has an assignment", firstAssign.assignment);
+        Assignment assign = firstAssign.assignment;
+        assertTrue("The assignment is not an instance of Expression.Operation", assign.expression instanceof Expression.Operation);
+        Expression.Operation operation = (Expression.Operation) assign.expression;
+        assertEquals("The operation is not correct", "*", operation.operation);
+
+        assertTrue("The left side of the operation is not an instance of Value", operation.left instanceof Expression.Value);
+        Expression.Value value = (Expression.Value) operation.left;
+        assertEquals("The value is not correct", "1", value.value.getValue());
+        assertTrue("The right side of the operation is not an instance of IdentifierAccess", operation.right instanceof IdentifierAccess);
+        IdentifierAccess identifier = (IdentifierAccess) operation.right;
+        assertEquals("The identifier is not correct", "readInt", identifier.identifier);
+
+        assertTrue("The next element of the right side of the operation is not an instance of IdentifierAccess.FunctionCall", identifier.next instanceof IdentifierAccess.FunctionCall);
+        IdentifierAccess.FunctionCall functionCall = (IdentifierAccess.FunctionCall) identifier.next;
+        ArrayList<Node> arguments = functionCall.arguments;
+        assertEquals("The number of arguments is not correct", 1, arguments.size());
+        assertTrue("The argument is not an instance of Expression", arguments.get(0) instanceof Expression);
+        Expression expression = (Expression) arguments.get(0);
+
+        assertTrue("The argument is not an instance of IdentifierAccess", expression.corps instanceof IdentifierAccess);
+        IdentifierAccess corps = (IdentifierAccess) expression.corps;
+        assertTrue("The next element of the argument is not an instance of IdentifierAccess.FunctionCall", corps.next instanceof IdentifierAccess.FunctionCall);
+        IdentifierAccess.FunctionCall argument = (IdentifierAccess.FunctionCall) corps.next;
+        assertEquals("The identifier is not correct", "square", argument.identifier);
+        arguments = argument.arguments;
+        assertEquals("The number of arguments is not correct", 1, arguments.size());
+        assertTrue("The argument is not an instance of Expression.Operation", arguments.get(0) instanceof Expression.Operation);
+        operation = (Expression.Operation) arguments.get(0);
+        assertTrue("The left side of the argument is not an instance of Value", operation.left instanceof Expression.Value);
+        value = (Expression.Value) operation.left;
+        assertEquals("The value is not correct", "2", value.value.getValue());
+        assertTrue("The right side of the argument is not an instance of IdentifierAccess", operation.right instanceof IdentifierAccess);
+        identifier = (IdentifierAccess) operation.right;
+        assertEquals("The identifier is not correct", "a", identifier.identifier);
+        assertEquals("The operation is not correct", "/", operation.operation);
+
+
+        assertTrue("The expression is not an instance of Expression", forTested.expression instanceof Expression);
+        expression = (Expression) forTested.expression;
+        assertTrue("The expression is not an instance of Operation", expression instanceof Expression.Operation);
+        operation = (Expression.Operation) expression;
+        assertEquals("The operation is not correct", "<", operation.operation);
+
+        assertTrue("The left side of the operation is not an instance of Operation", operation.left instanceof Expression.Operation);
+        Expression.Operation operationLeft = (Expression.Operation) operation.left;
+        assertTrue("The left side of the left operation is not an instance of IdentifierAccess", operationLeft.left instanceof IdentifierAccess);
+        identifier = (IdentifierAccess) operationLeft.left;
+        assertEquals("The identifier is not correct", "i", identifier.identifier);
+        assertTrue("The right side of the left operation is not an instance of Value", operationLeft.right instanceof Expression.Value);
+        value = (Expression.Value) operationLeft.right;
+        assertEquals("The value is not correct", "2", value.value.getValue());
+        assertEquals("The operation is not correct", "*", operationLeft.operation);
+
+        assertTrue("The right side of the operation is not an instance of Operation", operation.right instanceof Expression.Operation);
+        Expression.Operation operationRight = (Expression.Operation) operation.right;
+        assertTrue("The left side of the right operation is not an instance of Value", operationRight.left instanceof Expression.Value);
+        value = (Expression.Value) operationRight.left;
+        assertEquals("The value is not correct", "100", value.value.getValue());
+        assertTrue("The right side of the right operation is not an instance of Operation", operationRight.right instanceof Expression.Operation);
+        Expression.Operation operationRightMul = (Expression.Operation) operationRight.right;
+        assertTrue("The left side of the right operation is not an instance of Value", operationRightMul.left instanceof Expression.Value);
+        value = (Expression.Value) operationRightMul.left;
+        assertEquals("The value is not correct", "4", value.value.getValue());
+        assertTrue("The right side of the right operation is not an instance of IdentifierAccess", operationRightMul.right instanceof IdentifierAccess);
+        identifier = (IdentifierAccess) operationRightMul.right;
+        assertEquals("The identifier is not correct", "readInt", identifier.identifier);
+        assertTrue("The next element of the right side of the right operation is not an instance of IdentifierAccess.FunctionCall", identifier.next instanceof IdentifierAccess.FunctionCall);
+        functionCall = (IdentifierAccess.FunctionCall) identifier.next;
+        assertEquals("The number of arguments is not correct", 0, functionCall.arguments.size());
+
+        assertTrue("The second assignement is not an instance of IdentifierAccess", forTested.secondAssignment instanceof IdentifierAccess);
+        IdentifierAccess secondAssign = (IdentifierAccess) forTested.secondAssignment;
+        assertEquals("The identifier is not correct", "i", secondAssign.identifier);
+        assertNotNull("The second assignement has an assignment", secondAssign.assignment);
+        assign = (Assignment) secondAssign.assignment;
+        assertTrue("The assignment is not an instance of Expression.Operation", assign.expression instanceof Expression.Operation);
+        operation = (Expression.Operation) assign.expression;
+        assertEquals("The operation is not correct", "+", operation.operation);
+        assertTrue("The left side of the operation is not an instance of Expression.Operation", operation.left instanceof Expression.Operation);
+        operationLeft = (Expression.Operation) operation.left;
+        assertEquals("The operation is not correct", "+", operationLeft.operation);
+        assertTrue("The left side of the left operation is not an instance of IdentifierAccess", operationLeft.left instanceof IdentifierAccess);
+        identifier = (IdentifierAccess) operationLeft.left;
+        assertEquals("The identifier is not correct", "i", identifier.identifier);
+        assertTrue("The right side of the left operation is not an instance of Expression.Operation", operationLeft.right instanceof Expression.Operation);
+        Expression.Operation operationLeftRight = (Expression.Operation) operationLeft.right;
+        assertEquals("The operation is not correct", "*", operationLeftRight.operation);
+        assertTrue("The left side of the right operation is not an instance of Value", operationLeftRight.left instanceof Expression.Value);
+        value = (Expression.Value) operationLeftRight.left;
+        assertEquals("The value is not correct", "1", value.value.getValue());
+        assertTrue("The right side of the right operation is not an instance of Expression.Value", operationLeftRight.right instanceof Expression.Value);
+        value = (Expression.Value) operationLeftRight.right;
+        assertEquals("The value is not correct", "4", value.value.getValue());
+
+        assertTrue("The right side of the operation is not an instance of IdentifierAccess", operation.right instanceof IdentifierAccess);
+        identifier = (IdentifierAccess) operation.right;
+        assertEquals("The identifier is not correct", "readInt", identifier.identifier);
+        assertTrue("The next element of the right side of the operation is not an instance of IdentifierAccess.FunctionCall", identifier.next instanceof IdentifierAccess.FunctionCall);
+        functionCall = (IdentifierAccess.FunctionCall) identifier.next;
+        assertEquals("The number of arguments is not correct", 0, functionCall.arguments.size());
     }
 }
