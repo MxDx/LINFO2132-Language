@@ -25,7 +25,7 @@ public class Expression extends Node {
         add("!=");
     }};
     public Node corps;
-    HashSet<Symbol> EOF = new HashSet<>() {{
+    ArrayList<Symbol> EOF = new ArrayList<>() {{
         add(new Special(";"));
     }};
 
@@ -39,25 +39,34 @@ public class Expression extends Node {
         } else {
             if (Objects.equals(parser.currentToken.getType(), "Identifier")) {
                 return new IdentifierAccess(parser).setEOF(EOF).parse();
-            } else {
+            } else if (parser.currentToken.equals(Parser.OPEN_PARENTHESES)) {
                 parser.match(Parser.OPEN_PARENTHESES);
+                EOF.add(Parser.CLOSE_PARENTHESES);
                 Node result = new Expression(parser).setEOF(Parser.EOF_CLOSE_PARENTHESES).parse();
                 if (!parser.currentToken.equals(Parser.CLOSE_PARENTHESES)) {
                     parser.ParserException("Invalid expression");
                 }
                 return result;
+            } else {
+                parser.ParserException("Invalid expression");
             }
         }
+        return null;
     }
 
     public Node parse() throws Exception {
         corps = getCorps();
         if (EOF.contains(parser.lookahead)) {
             parser.getNext();
-            return this;
         }
         if (EOF.contains(parser.currentToken)) {
-            return this;
+            EOF.remove(parser.currentToken);
+            if (!EOF.contains(parser.currentToken)) {
+                if (corps instanceof Value) {
+                    return corps;
+                }
+                return this;
+            }
         }
 
         if (arithmeticOperations.contains(parser.lookahead.getValue())) {
@@ -75,10 +84,10 @@ public class Expression extends Node {
             parser.ParserException("Invalid expression");
         }
 
-        return this;
+        return null;
     }
 
-    public Expression setEOF(HashSet<Symbol> EOF) {
+    public Expression setEOF(ArrayList<Symbol> EOF) {
         this.EOF = EOF;
         return this;
     }
@@ -116,7 +125,6 @@ public class Expression extends Node {
             super(parser);
             operation = parser.lookahead.getValue();
             left = before;
-
         }
 
         public Node parse() throws Exception {

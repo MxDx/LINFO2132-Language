@@ -4,11 +4,11 @@ public class VarType extends Symbol{
     private Boolean Vector = false;
     private Boolean Final = false;
 
-    public VarType(String value, int line) {
-        super("VarType", value, line);
+    public VarType(String value, int line, int i) {
+        super("VarType", value, line, i);
     }
     public VarType(String value) {
-        super("VarType", value, 0);
+        super("VarType", value, 0, 0);
         Value = value;
     }
 

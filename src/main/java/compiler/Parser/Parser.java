@@ -2,7 +2,7 @@ package compiler.Parser;
 
 import compiler.Lexer.*;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 
 public class Parser {
     public final static Symbol CLOSE_PARENTHESES = new Special(")");
@@ -16,12 +16,14 @@ public class Parser {
     public final static Symbol COMMA = new Special(",");
     public static final Symbol EQUALS = new Special("=");
 
-    static final HashSet<Symbol> EOF_COMMA = new HashSet<Symbol>(){{
+    static ArrayList<Symbol> EOF_COMMA = new ArrayList<>(){{
         add(Parser.COMMA);
     }};
-    static final HashSet<Symbol> EOF_CLOSE_PARENTHESES = new HashSet<Symbol>(){{
+    static ArrayList<Symbol> EOF_CLOSE_PARENTHESES = new ArrayList<Symbol>(){{
         add(Parser.CLOSE_PARENTHESES);
     }};
+
+
     Symbol currentToken;
     Starting root;
     Lexer lexer;
@@ -56,7 +58,11 @@ public class Parser {
     }
 
     public void ParserException(String message) throws Exception {
-        throw new Exception(message + " With token: " + currentToken.getValue() + " at line: " + currentToken.getLine());
+        String error = message + "\n";
+        error += "\twith token: " + currentToken.getValue() + "\n";
+        error += "\tat line: " + currentToken.getLine() + "\n";
+        error += "\tat token number: " + currentToken.getTokenNumber() + "\n";
+        throw new Exception(error);
     }
 
 }

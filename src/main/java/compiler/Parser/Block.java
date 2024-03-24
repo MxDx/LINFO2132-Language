@@ -1,7 +1,7 @@
 package compiler.Parser;
 
 public class Block extends Node{
-    Statements statements;
+    public Statements statements;
     public Block(Parser parser) {
         super(parser);
     }

@@ -20,7 +20,7 @@ public class Method extends Node{
     public Node parse() throws Exception {
         Declaration declaration = new Declaration(parser).parse();
         returnType = declaration.type;
-        name = new Identifier(declaration.identifier, parser.currentToken.getLine());
+        name = new Identifier(declaration.identifier, parser.currentToken.getLine(), parser.currentToken.TokenNumber);
         if (!parser.currentToken.getValue().equals("(")) {
             throw new Exception("Invalid Method Declaration");
         }

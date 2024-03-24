@@ -3,11 +3,11 @@ package compiler.Parser;
 import compiler.Lexer.Special;
 import compiler.Lexer.Symbol;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 
 public class Assignment extends Node {
     Node expression;
-    HashSet<Symbol> EOF = new HashSet<Symbol>() {{
+    ArrayList<Symbol> EOF = new ArrayList<>() {{
         add(new Special(";"));
     }};
 
@@ -22,7 +22,7 @@ public class Assignment extends Node {
         return this;
     }
 
-    public Assignment setEOF(HashSet<Symbol> EOF) {
+    public Assignment setEOF(ArrayList<Symbol> EOF) {
         this.EOF = EOF;
         return this;
     }

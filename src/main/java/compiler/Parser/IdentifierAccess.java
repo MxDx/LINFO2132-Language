@@ -5,13 +5,12 @@ import compiler.Lexer.Symbol;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Objects;
 
 public class IdentifierAccess extends Node {
-    String identifier;
+    public String identifier;
     IdentifierAccess next;
     Assignment assignment;
-    HashSet<Symbol> EOF = new HashSet<Symbol>() {{
+    ArrayList<Symbol> EOF = new ArrayList<>() {{
         add(new Special(";"));
     }};
 
@@ -27,7 +26,7 @@ public class IdentifierAccess extends Node {
         this.identifier = identifier;
     }
 
-    public IdentifierAccess setEOF(HashSet<Symbol> EOF) {
+    public IdentifierAccess setEOF(ArrayList<Symbol> EOF) {
         this.EOF = EOF;
         return this;
     }
@@ -37,8 +36,8 @@ public class IdentifierAccess extends Node {
             case "=" -> assignment =  new Assignment(parser).setEOF(EOF).parse();
             case "[" -> next = new ArrayAccess(parser,this).setEOF(EOF).parse();
             case "." -> next = new StructAccess(parser,this).setEOF(EOF).parse();
-            case "(" -> next = new FunctionCall(parser,this).setEOF(Parser.EOF_CLOSE_PARENTHESES).parse();
-        };
+            case "(" -> next = new FunctionCall(parser, this).setEOF(Parser.EOF_CLOSE_PARENTHESES).parse();
+        }
         return this;
     }
     @Override
@@ -46,10 +45,10 @@ public class IdentifierAccess extends Node {
         String str = "\"IdentifierAccess\": {\n"
                 + "\"identifier\": " + "\"" + identifier + "\"";
         if (next != null) {
-            str += ", \n\"next\": {\n" + next.toString() + "\n}";
+            str += ", \n\"next\": {\n" + next + "\n}";
         }
         if (assignment != null) {
-            str += ", \n\"assignment\": {\n" + assignment.toString() + "\n}";
+            str += ", \n\"assignment\": {\n" + assignment + "\n}";
         }
         str += "\n}";
         return str;
@@ -82,10 +81,10 @@ public class IdentifierAccess extends Node {
             String str = "\"ArrayAccess\": {\n"
                     + "\"index\": " + index;
             if (next != null) {
-                str += "\n, \"next\": {\n" + next.toString() + "\n}";
+                str += "\n, \"next\": {\n" + next + "\n}";
             }
             if (assignment != null) {
-                str += "\n, \"assignment\": {\n" + assignment.toString() + "\n}";
+                str += "\n, \"assignment\": {\n" + assignment + "\n}";
             }
             str += "\n}";
             return str;
@@ -114,19 +113,19 @@ public class IdentifierAccess extends Node {
             String str = "\"StructAccess\": {\n"
                     + "\"field\": " + "\"" + field + "\"";
             if (next != null) {
-                str += "\n, \"next\": {\n" + next.toString() + "\n}";
+                str += "\n, \"next\": {\n" + next + "\n}";
             }
             if (assignment != null) {
-                str += "\n, \"assignment\": {\n" + assignment.toString() + "\n}";
+                str += "\n, \"assignment\": {\n" + assignment + "\n}";
             }
             str += "\n}";
             return str;
         }
     }
 
-    public class FunctionCall extends IdentifierAccess {
-        ArrayList<Node> arguments = new ArrayList<>();
-        final HashSet<Symbol> EOF = new HashSet<Symbol>(){{
+    public static class FunctionCall extends IdentifierAccess {
+        public ArrayList<Node> arguments = new ArrayList<>();
+        ArrayList<Symbol> EOF = new ArrayList<>(){{
             add(Parser.CLOSE_PARENTHESES);
             add(Parser.COMMA);
         }};
@@ -151,23 +150,25 @@ public class IdentifierAccess extends Node {
 
         @Override
         public String toString() {
-            String str = "\"FunctionCall\": {\n"
-                    + "\"arguments\": [\n";
+            StringBuilder str = new StringBuilder("""
+                    "FunctionCall": {
+                    "arguments": [
+                    """);
             for (int i = 0; i < arguments.size(); i++) {
-                str += "{\n" + arguments.get(i).toString() + "\n}";
+                str.append("{\n").append(arguments.get(i).toString()).append("\n}");
                 if (i != arguments.size() - 1) {
-                    str += ",\n";
+                    str.append(",\n");
                 }
             }
-            str += "\n]";
+            str.append("\n]");
             if (next != null) {
-                str += ", \n\"next\": {\n" + next.toString() + "\n}";
+                str.append(", \n\"next\": {\n").append(next.toString()).append("\n}");
             }
             if (assignment != null) {
-                str += ", \n\"assignment\": {\n" + assignment.toString() + "\n}";
+                str.append(", \n\"assignment\": {\n").append(assignment.toString()).append("\n}");
             }
-            str += "\n}";
-            return str;
+            str.append("\n}");
+            return str.toString();
         }
     }
 }

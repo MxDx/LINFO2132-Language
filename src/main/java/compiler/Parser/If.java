@@ -3,16 +3,16 @@ package compiler.Parser;
 import compiler.Lexer.Keyword;
 import compiler.Lexer.Symbol;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class If extends Node{
     final static Symbol ELSE = new Keyword("else");
-    final HashSet<Symbol> EOF = new HashSet<Symbol>(){{
+    ArrayList<Symbol> EOF = new ArrayList<>(){{
         add(Parser.CLOSE_PARENTHESES);
     }};
-    Node expression;
-    Block block;
+    public Node expression;
+    public Block block;
     Node elseStatement;
     public If(Parser parser) throws Exception {
         super(parser);
@@ -35,7 +35,7 @@ public class If extends Node{
                 + "\"expression\": {\n"+ expression.toString() + "\n},\n"
                 + "\"block\": " + block.toString() + "\n";
         if (elseStatement != null){
-            str += ",\n" + elseStatement.toString();
+            str += ",\n" + elseStatement;
         }
         str += '}';
         return str;

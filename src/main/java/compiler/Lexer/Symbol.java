@@ -6,12 +6,14 @@ public abstract class Symbol {
     public String Type;
     public String Value;
     public int Line;
+    public int TokenNumber;
     private boolean isValue = false;
 
-    public Symbol(String type, String value, int line) {
+    public Symbol(String type, String value, int line, int tokenNumber) {
         Type = type;
         Value = value;
-        this.Line = line;
+        Line = line;
+        TokenNumber = tokenNumber;
     }
 
     public String getType() {
@@ -33,6 +35,9 @@ public abstract class Symbol {
     public int getLine() {
         return Line;
     }
+    public int getTokenNumber() {
+        return TokenNumber;
+    }
 
     @Override
     public String toString() {
@@ -41,8 +46,7 @@ public abstract class Symbol {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Symbol) {
-            Symbol s = (Symbol) obj;
+        if (obj instanceof Symbol s) {
             boolean type = Objects.equals(this.getType(), s.getType());
             boolean value = Objects.equals(this.getValue(), s.getValue());
             return type && value;

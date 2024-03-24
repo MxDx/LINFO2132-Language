@@ -2,14 +2,14 @@ package compiler.Parser;
 
 import compiler.Lexer.Symbol;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 
 public class While extends Node{
-    final HashSet<Symbol> EOF = new HashSet<Symbol>(){{
+    ArrayList<Symbol> EOF = new ArrayList<>(){{
         add(Parser.CLOSE_PARENTHESES);
     }};
-    Node expression;
-    Block block;
+    public Node expression;
+    public Block block;
     public While(Parser parser) throws Exception {
         super(parser);
         parser.getNext();
