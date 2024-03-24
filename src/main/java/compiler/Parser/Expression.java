@@ -183,9 +183,11 @@ public class Expression extends Node {
                 result = parseIdentifier();
             }
 
-            while (strong.contains(parser.lookahead.getValue())) {
-                String operation = parser.lookahead.getValue();
-                parser.getNext();
+            while (strong.contains(parser.lookahead.getValue()) || strong.contains(parser.currentToken.getValue())) {
+                if (strong.contains(parser.lookahead.getValue())) {
+                    parser.getNext();
+                }
+                String operation = parser.currentToken.getValue();
                 parser.getNext();
                 result = new ArithmeticOperation(parser, result, parseTerm(null), operation);
             }

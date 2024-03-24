@@ -8,7 +8,7 @@ import java.util.HashSet;
 
 public class IdentifierAccess extends Node {
     public String identifier;
-    IdentifierAccess next;
+    public IdentifierAccess next;
     Assignment assignment;
     ArrayList<Symbol> EOF = new ArrayList<>() {{
         add(new Special(";"));
@@ -55,7 +55,7 @@ public class IdentifierAccess extends Node {
     }
 
     public static class ArrayAccess extends IdentifierAccess {
-        Integer index;
+        public Integer index;
 
         public ArrayAccess(Parser parser,IdentifierAccess BaseIdentifier) throws Exception {
             super(parser, BaseIdentifier.identifier);
@@ -92,7 +92,7 @@ public class IdentifierAccess extends Node {
     }
 
     public static class StructAccess extends IdentifierAccess {
-        String field;
+        public String field;
 
         public StructAccess(Parser parser,IdentifierAccess BaseIdentifier) throws Exception {
             super(parser, BaseIdentifier.identifier);
