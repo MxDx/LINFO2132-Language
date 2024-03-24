@@ -48,7 +48,7 @@ public class Declaration extends Node {
                 "\"type\": \"" + type + '\"' + ",\n" +
                 "\"identifier\": \"" + identifier + '\"';
         if (assignment != null) {
-            str += ",\n\"assignment\": " + assignment;
+            str += ",\n\"assignment\": {\n" + assignment + "\n}";
         }
         str += "\n}";
         return str;

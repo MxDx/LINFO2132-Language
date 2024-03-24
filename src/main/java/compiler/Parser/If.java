@@ -3,10 +3,14 @@ package compiler.Parser;
 import compiler.Lexer.Keyword;
 import compiler.Lexer.Symbol;
 
+import java.util.HashSet;
 import java.util.Objects;
 
 public class If extends Node{
     final static Symbol ELSE = new Keyword("else");
+    final HashSet<Symbol> EOF = new HashSet<Symbol>(){{
+        add(Parser.CLOSE_PARENTHESES);
+    }};
     Node expression;
     Block block;
     Node elseStatement;
@@ -16,7 +20,7 @@ public class If extends Node{
     }
     public Node parse() throws Exception {
         parser.match(Parser.OPEN_PARENTHESES);
-        expression = new Expression(parser).setEOF(Parser.CLOSE_PARENTHESES).parse();
+        expression = new Expression(parser).setEOF(EOF).parse();
         parser.match(Parser.CLOSE_PARENTHESES);
         block = new Block(parser).parse();
         if (Objects.equals(parser.currentToken, ELSE)){
@@ -28,7 +32,7 @@ public class If extends Node{
     @Override
     public String toString() {
         String str =  "\"IF_Statement\": {\n"
-                + "\"expression\": \""+ expression.toString() + "\",\n"
+                + "\"expression\": {\n"+ expression.toString() + "\n},\n"
                 + "\"block\": " + block.toString() + "\n";
         if (elseStatement != null){
             str += ",\n" + elseStatement.toString();

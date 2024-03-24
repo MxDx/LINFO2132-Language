@@ -4,13 +4,16 @@ import compiler.Lexer.Special;
 import compiler.Lexer.Symbol;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Objects;
 
 public class IdentifierAccess extends Node {
     String identifier;
     IdentifierAccess next;
     Assignment assignment;
-    Symbol EOF = new Special(";");
+    HashSet<Symbol> EOF = new HashSet<Symbol>() {{
+        add(new Special(";"));
+    }};
 
     public IdentifierAccess(Parser parser) throws Exception {
         super(parser);
@@ -24,7 +27,7 @@ public class IdentifierAccess extends Node {
         this.identifier = identifier;
     }
 
-    public IdentifierAccess setEOF(Symbol EOF) {
+    public IdentifierAccess setEOF(HashSet<Symbol> EOF) {
         this.EOF = EOF;
         return this;
     }
@@ -34,13 +37,13 @@ public class IdentifierAccess extends Node {
             case "=" -> assignment =  new Assignment(parser).setEOF(EOF).parse();
             case "[" -> next = new ArrayAccess(parser,this).setEOF(EOF).parse();
             case "." -> next = new StructAccess(parser,this).setEOF(EOF).parse();
-            case "(" -> next = new FunctionCall(parser,this).setEOF(EOF).parse();
+            case "(" -> next = new FunctionCall(parser,this).setEOF(Parser.EOF_CLOSE_PARENTHESES).parse();
         };
         return this;
     }
     @Override
     public String toString() {
-        String str = "{\n\"IdentifierAccess\": {\n"
+        String str = "\"IdentifierAccess\": {\n"
                 + "\"identifier\": " + "\"" + identifier + "\"";
         if (next != null) {
             str += ", \n\"next\": {\n" + next.toString() + "\n}";
@@ -48,7 +51,7 @@ public class IdentifierAccess extends Node {
         if (assignment != null) {
             str += ", \n\"assignment\": {\n" + assignment.toString() + "\n}";
         }
-        str += "\n}\n}";
+        str += "\n}";
         return str;
     }
 
@@ -123,6 +126,10 @@ public class IdentifierAccess extends Node {
 
     public class FunctionCall extends IdentifierAccess {
         ArrayList<Node> arguments = new ArrayList<>();
+        final HashSet<Symbol> EOF = new HashSet<Symbol>(){{
+            add(Parser.CLOSE_PARENTHESES);
+            add(Parser.COMMA);
+        }};
         IdentifierAccess heritage;
         public FunctionCall(Parser parser,IdentifierAccess BaseIdentifier) throws Exception {
             super(parser, BaseIdentifier.identifier);
@@ -133,14 +140,12 @@ public class IdentifierAccess extends Node {
         public IdentifierAccess parse() throws Exception {
 
             while (!parser.currentToken.getValue().equals(")")) {
-                arguments.add(new Expression(parser).parse());
+                arguments.add(new Expression(parser).setEOF(EOF).parse());
                 if (parser.currentToken.getValue().equals(",")) {
                     parser.getNext();
                 }
             }
-            if (Objects.equals(parser.lookahead, Parser.CLOSE_PARENTHESES)) {
-                next = new StructAccess(parser,this).setEOF(EOF).parse();
-            }
+            parser.match(Parser.CLOSE_PARENTHESES);
             return this;
         }
 
@@ -149,7 +154,7 @@ public class IdentifierAccess extends Node {
             String str = "\"FunctionCall\": {\n"
                     + "\"arguments\": [\n";
             for (int i = 0; i < arguments.size(); i++) {
-                str += arguments.get(i).toString();
+                str += "{\n" + arguments.get(i).toString() + "\n}";
                 if (i != arguments.size() - 1) {
                     str += ",\n";
                 }

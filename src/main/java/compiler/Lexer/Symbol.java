@@ -37,4 +37,9 @@ public abstract class Symbol {
         }
         return false;
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(Type, Value);
+    }
 }

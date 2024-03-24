@@ -1,19 +1,19 @@
-//for (i.y = 0, 10, i.y[123] = 2) {
-//    int z = 69;
-//}
-//
-//int i = 0;
-//
-//struct Point {
-//    int x;
-//    int y;
-//}
+for (i.y = 0, 10 > i *2 +1 , i.y[123] = 2) {
+    int z = 69;
+}
 
-//struct Person {
-//    string name;
-//    Point location;
-//    int[] history;
-//}
+int i = 0;
+
+struct Point {
+    int x;
+    int y;
+}
+
+struct Person {
+    string name;
+    Point location;
+    int[] history;
+}
 
 final int i = 3;
 final float j = 3.2*5.0;
@@ -34,9 +34,9 @@ def void main() {
     int value = readInt();
     writeln(square(value));
     int i;
-    for (i=1, i<100, i = i+1) {
-        while (value!=3) {
-            if (i > 10){
+    for (i=1, i*2 <100+4*readInt(), i = i+1*4+readInt()) {
+        while (value!=3*2+1) {
+            if (i*4+2 > 10){
                 // ....
             } else {
                 // ....
@@ -44,5 +44,5 @@ def void main() {
         }
     }
 
-    i = (i+2)*2;
+    i = (i+2)*2 + 1+2*2;
 }

@@ -1,5 +1,9 @@
 package compiler.Parser;
 
+import compiler.Lexer.Symbol;
+
+import java.util.HashSet;
+
 public class For extends Node{
     Node firstAssignment;
     Node expression;
@@ -14,16 +18,16 @@ public class For extends Node{
         if (!parser.currentToken.getType().equals("Identifier")){
             parser.ParserException("Invalid Identifier");
         }
-        firstAssignment = new IdentifierAccess(parser).setEOF(Parser.COMMA).parse();
+        firstAssignment = new IdentifierAccess(parser).setEOF(Parser.EOF_COMMA).parse();
         parser.match(Parser.COMMA);
 
-        expression = new Expression(parser).setEOF(Parser.COMMA).parse();
+        expression = new Expression(parser).setEOF(Parser.EOF_COMMA).parse();
         parser.match(Parser.COMMA);
 
         if (!parser.currentToken.getType().equals("Identifier")){
             parser.ParserException("Invalid Identifier");
         }
-        secondAssignment = new IdentifierAccess(parser).setEOF(Parser.CLOSE_PARENTHESES).parse();
+        secondAssignment = new IdentifierAccess(parser).setEOF(Parser.EOF_CLOSE_PARENTHESES).parse();
         parser.match(Parser.CLOSE_PARENTHESES);
 
         block = new Block(parser).parse();
@@ -34,7 +38,7 @@ public class For extends Node{
     public String toString() {
         return "\"FOR_Statement\": {\n"
                 + "\"firstAssignment\": {\n" + firstAssignment.toString() + "},\n"
-                + "\"expression\": \""+ expression.toString() + "\",\n"
+                + "\"expression\": {\n"+ expression.toString() + "\n},\n"
                 + "\"secondAssignment\": {\n" + secondAssignment.toString() + "},\n"
                 + "\"block\": " + block.toString() + "\n"
                 + '}';

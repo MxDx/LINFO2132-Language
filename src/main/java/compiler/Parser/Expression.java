@@ -1,20 +1,23 @@
 package compiler.Parser;
 
+import com.google.common.hash.Hasher;
 import compiler.Lexer.Special;
 import compiler.Lexer.Symbol;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Objects;
 
 public class Expression extends Node {
 
-    final static ArrayList<String> arithmeticOperations = new ArrayList<>() {{
+    final static HashSet<String> arithmeticOperations = new HashSet<>() {{
         add("+");
         add("-");
         add("*");
         add("/");
     }};
 
-    final static ArrayList<String> comparisonOperations = new ArrayList<>() {{
+    final static HashSet<String> comparisonOperations = new HashSet<>() {{
         add(">");
         add("<");
         add(">=");
@@ -23,35 +26,52 @@ public class Expression extends Node {
         add("!=");
     }};
     public Node corps;
-    Symbol EOF = new Special(";");
+    HashSet<Symbol> EOF = new HashSet<Symbol>() {{
+        add(new Special(";"));
+    }};
 
     public Expression(Parser parser) {
         super(parser);
     }
 
-    public Node parse() throws Exception {
+    public Node getCorps() throws Exception {
         if (parser.currentToken.isValue()) {
-            corps = new Value(parser).parse();
+            return new Value(parser).parse();
         } else {
-            switch (parser.currentToken.getType()) {
-                case "Identifier":
-                    corps = new IdentifierAccess(parser).parse();
-                    break;
-                case "(":
-                    parser.getNext();
-                    corps = new Expression(parser).parse();
-                    parser.match(Parser.CLOSE_PARENTHESES);
-                    break;
+            if (Objects.equals(parser.currentToken.getType(), "Identifier")) {
+                return new IdentifierAccess(parser).setEOF(EOF).parse();
+            } else {
+                parser.match(Parser.OPEN_PARENTHESES);
+                Node result = new Expression(parser).setEOF(Parser.EOF_CLOSE_PARENTHESES).parse();
+                if (!parser.currentToken.equals(Parser.CLOSE_PARENTHESES)) {
+                    parser.ParserException("Invalid expression");
+                }
+                return result;
             }
         }
-        if (parser.lookahead.equals(EOF)) {
+    }
+
+    public Node parse() throws Exception {
+        corps = getCorps();
+        if (EOF.contains(parser.lookahead)) {
             parser.getNext();
             return this;
         }
+        if (EOF.contains(parser.currentToken)) {
+            return this;
+        }
+
         if (arithmeticOperations.contains(parser.lookahead.getValue())) {
-            return new ArithmeticOperation(parser, corps).parse();
+            Node result =  new ArithmeticOperation(parser, corps).setEOF(EOF).parse();
+            if (EOF.contains(parser.currentToken)) {
+                return result;
+            }
+            if (!comparisonOperations.contains(parser.lookahead.getValue())) {
+                parser.ParserException("Invalid expression");
+            }
+            return new ComparisonOperation(parser, result).setEOF(EOF).parse();
         } else if (comparisonOperations.contains(parser.lookahead.getValue())) {
-            return new ComparisonOperation(parser, corps).parse();
+            return new ComparisonOperation(parser, corps).setEOF(EOF).parse();
         } else {
             parser.ParserException("Invalid expression");
         }
@@ -59,7 +79,7 @@ public class Expression extends Node {
         return this;
     }
 
-    public Expression setEOF(Symbol EOF) {
+    public Expression setEOF(HashSet<Symbol> EOF) {
         this.EOF = EOF;
         return this;
     }
@@ -84,7 +104,7 @@ public class Expression extends Node {
 
         @Override
         public String toString() {
-            return "\"" + value.getValue() + "\"";
+            return "\"value\": " + "\"" + value.getValue() + "\"";
         }
     }
 
@@ -106,9 +126,10 @@ public class Expression extends Node {
 
         @Override
         public String toString() {
-            return "{\n\"left\": " + left.toString() + ",\n"
-                    + "\"operation\": " + "\"" + operation + "\"" + ",\n"
-                    + "\"right\": " + right.toString() + "\n}";
+            String str = "\"left\": " + "{\n" + left.toString() + "\n},";
+            str += "\"operation\": " + "\"" + operation + "\"" + ",\n";
+            str += "\"right\": {\n" + right.toString() + "\n}\n";
+            return str;
         }
     }
 
@@ -141,6 +162,9 @@ public class Expression extends Node {
                 Node newRight = parseTerm(null);
                 left = new ArithmeticOperation(parser, left, newRight, operation);
             }
+            if (EOF.contains(parser.currentToken) || comparisonOperations.contains(parser.lookahead.getValue())) {
+                return left;
+            }
             parser.getNext();
             return left;
         }
@@ -162,30 +186,13 @@ public class Expression extends Node {
         }
 
         private Node parseIdentifier() throws Exception {
-            Node result = null;
-
-            if (parser.currentToken.isValue()) {
-                result =  new Value(parser).parse();
-            } else {
-                switch (parser.currentToken.getType()) {
-                    case "Identifier":
-                        result = new IdentifierAccess(parser).parse();
-                        break;
-                    case "(":
-                        parser.match(Parser.OPEN_PARENTHESES);
-                        result = new Expression(parser).parse();
-                        parser.match(Parser.CLOSE_PARENTHESES);
-                    default:
-                        parser.ParserException("Invalid term");
-                }
-            }
-            return result;
+            return getCorps();
         }
 
         @Override
         public String toString() {
             String str = super.toString();
-            return "{\n\"ArithmeticOperation\": \n" + str + "\n \n}";
+            return "\"ArithmeticOperation\": {\n" + str + "\n \n}";
         }
     }
 
@@ -193,17 +200,18 @@ public class Expression extends Node {
         public ComparisonOperation(Parser parser, Node before) throws Exception {
             super(parser, before);
             parser.getNext();
+            parser.getNext();
         }
 
         public Node parse() throws Exception {
-            right = new Expression(parser).parse();
+            right = new Expression(parser).setEOF(EOF).parse();
             return this;
         }
 
         @Override
         public String toString() {
             String str = super.toString();
-            return "{\n\"ComparisonOperation\": \n" + str + "\n \n}";
+            return "\"ComparisonOperation\": {\n" + str + "\n \n}";
         }
     }
 }

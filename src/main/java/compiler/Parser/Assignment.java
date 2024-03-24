@@ -3,9 +3,13 @@ package compiler.Parser;
 import compiler.Lexer.Special;
 import compiler.Lexer.Symbol;
 
+import java.util.HashSet;
+
 public class Assignment extends Node {
     Node expression;
-    Symbol EOF = new Special(";");
+    HashSet<Symbol> EOF = new HashSet<Symbol>() {{
+        add(new Special(";"));
+    }};
 
     public Assignment(Parser parser) throws Exception {
         super(parser);
@@ -18,7 +22,7 @@ public class Assignment extends Node {
         return this;
     }
 
-    public Assignment setEOF(Symbol EOF) {
+    public Assignment setEOF(HashSet<Symbol> EOF) {
         this.EOF = EOF;
         return this;
     }
@@ -26,7 +30,7 @@ public class Assignment extends Node {
     @Override
     public String toString() {
         return "\"Assignment\": {\n"
-                + "\"expression\": " + expression.toString() + "\n"
+                + "\"expression\": {" + expression.toString() + "}\n"
                 + '}';
     }
 }

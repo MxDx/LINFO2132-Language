@@ -34,6 +34,11 @@ public class Statements extends Starting {
     public String toString() {
         StringBuilder str = new StringBuilder();
         str.append("{\n\"Statements\": [\n");
+        if (statements.isEmpty()) {
+            str.append("]");
+            str.append("\n}");
+            return str.toString();
+        }
         for (int i = 0; i < statements.size()-1; i++) {
             str.append(statements.get(i).toString());
             str.append(",\n");
@@ -70,10 +75,7 @@ public class Statements extends Starting {
                         case "Identifier" -> content = new Declaration(this.parser).parse();
                         case "Special" -> {
                             switch (parser.lookahead.getValue()) {
-                                case "(" -> content = new IdentifierAccess(this.parser).parse();
-                                case "=" -> content = new IdentifierAccess(this.parser).parse();
-                                case "[" -> content = new IdentifierAccess(this.parser).parse();
-                                case "." -> content = new IdentifierAccess(this.parser).parse();
+                                case "(", "[", "=", "." -> content = new IdentifierAccess(this.parser).parse();
                                 default -> parser.ParserException("Invalid Statement Identifier");
                             }
                         }
@@ -93,8 +95,9 @@ public class Statements extends Starting {
         }
         @Override
         public String toString() {
-            return "{\n"+ content +
-                    "\n}";
+            return "{\n"+
+                    "\"content\": " + "{\n" + content.toString() +
+                    "\n}" + "\n}";
         }
     }
 }

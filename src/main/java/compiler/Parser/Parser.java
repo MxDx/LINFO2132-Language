@@ -2,6 +2,8 @@ package compiler.Parser;
 
 import compiler.Lexer.*;
 
+import java.util.HashSet;
+
 public class Parser {
     public final static Symbol CLOSE_PARENTHESES = new Special(")");
     public final static Symbol OPEN_PARENTHESES = new Special("(");
@@ -13,6 +15,13 @@ public class Parser {
 
     public final static Symbol COMMA = new Special(",");
     public static final Symbol EQUALS = new Special("=");
+
+    static final HashSet<Symbol> EOF_COMMA = new HashSet<Symbol>(){{
+        add(Parser.COMMA);
+    }};
+    static final HashSet<Symbol> EOF_CLOSE_PARENTHESES = new HashSet<Symbol>(){{
+        add(Parser.CLOSE_PARENTHESES);
+    }};
     Symbol currentToken;
     Starting root;
     Lexer lexer;

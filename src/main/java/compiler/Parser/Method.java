@@ -39,15 +39,25 @@ public class Method extends Node{
     @Override
     public String toString() {
         StringBuilder parametersString = new StringBuilder();
-        for (Parameter parameter : parameters) {
-            parametersString.append("{"+parameter.toString()+"}").append(",");
+        for (int i = 0; i < parameters.size(); i++) {
+            parametersString.append("{\n");
+            parametersString.append(parameters.get(i).toString());
+            parametersString.append("\n}");
+            if (i != parameters.size() - 1) {
+                parametersString.append(", ");
+            }
         }
-        parametersString = new StringBuilder(parametersString.substring(0, parametersString.length() - 1));
-        return "\"Method\": {\n"
+        String str = "\"Method\": {\n"
                 + "\"name\": \""+ name.toString() + "\",\n"
-                + "\"returnType\": \""+ returnType.toString() + "\",\n"
-                + "\"parameters\": ["+ parametersString + "],\n"
-                + "\"block\": " + block.toString() + "\n"
+                + "\"returnType\": \""+ returnType.toString() + "\",\n";
+        if (!parameters.isEmpty()) {
+            str += "\"parameters\": [\n" + parametersString + "],\n";
+        } else {
+            str += "\"parameters\": [],\n";
+        }
+        str += "\"block\": " + block.toString() + "\n"
                 + '}';
+
+        return str;
     }
 }
