@@ -11,21 +11,24 @@ import java.util.LinkedList;
 
 public class Compiler {
     public static void main(String[] args) {
-        /*if (args.length < 1) {
+        if (args.length < 1) {
             System.out.println("No input file");
             return;
         }
 
         boolean showLexer = args[0].equals("-lexer");
-        if (showLexer && args.length < 2) {
+        boolean showParser = args[0].equals("-parser");
+        System.out.println("showLexer: " + showLexer);
+        System.out.println("showParser: " + showParser);
+        if ((showLexer ||showParser) && args.length < 2) {
             System.out.println("No input file");
             return;
         }
-        String inputPath = args[(showLexer ? 1 : 0)];*/
-        String inputPath = "src/main/java/compiler/test.txt";
-        boolean showLexer = false;
+
+        String inputPath = args[(showLexer||showParser ? 1 : 0)];
+        System.out.println("inputPath: " + inputPath); //LOCAL: String inputPath = "src/main/java/compiler/test.txt";
         Lexer lex = lexerGetter(inputPath, showLexer);
-        parserGetter(lex);
+        parserGetter(lex, showParser);
     }
 
     public static Lexer lexerGetter(String inputPath,boolean showLexer) {
@@ -54,16 +57,17 @@ public class Compiler {
             return null;
     }
 
-    public static void parserGetter(Lexer lex) {
+    public static void parserGetter(Lexer lex,boolean showParser) {
         try {
             Parser parser = new Parser(lex);
+            if (showParser) {
+                System.out.println(parser);
 
-            // TO DO: REMOVE THIS LINES
-            System.out.println(parser);
-            // Write to file
-            BufferedWriter writer = new BufferedWriter(new FileWriter("src/main/java/compiler/output.txt"));
-            writer.write(parser.toString());
-            writer.close();
+                // Write to file
+                BufferedWriter writer = new BufferedWriter(new FileWriter("src/main/java/compiler/output.txt"));
+                writer.write(parser.toString());
+                writer.close();
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
