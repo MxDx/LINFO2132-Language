@@ -11,6 +11,17 @@ public class VarType extends Symbol{
         super("VarType", value, 0, 0);
         Value = value;
     }
+    @Override
+    public String toString() {
+        if (isVector()) {
+            return "<" + this.Type + ","+ this.Value + "[]>";
+        }
+        if (isFinal()) {
+            return "<" + this.Type + ",final "+ this.Value + ">";
+        }
+        return "<" + this.Type + ","+ this.Value + ">";
+
+    }
 
     public void setVector() {
         Vector = true;

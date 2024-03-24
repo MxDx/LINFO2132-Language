@@ -1,3 +1,37 @@
+//Good luck
+
+final string message = "Hello";
+final bool run = true;
+
+struct Point {
+    int x;
+    int y;
+}
+
+int a = 3;
+
+def int square(int v) {
+    return v*v;
+}
+
+def void main() {
+    int value = readInt();
+    Point p = Point(a, a+value);
+    writeInt(square(value));
+    writeln();
+    int i;
+    for (i=1, i<a, i = i+1) {
+        while (value!=0) {
+            if (run){
+                value = value - 1;
+            } else {
+                write(message);
+            }
+        }
+    }
+    i = (i+2)*2;
+}
+
 for (i.y = 0, 10 > i *2 +1 , i.y[123] = 2) {
     int z = 69;
 }
