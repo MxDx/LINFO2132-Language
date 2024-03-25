@@ -50,8 +50,10 @@ public class Expression extends Node {
                     parser.ParserException("Invalid expression");
                 }
                 return result;
-            } else {
-                parser.ParserException("Invalid expression");
+            } else if (Objects.equals(parser.currentToken.getType(),"VarType")){
+                return new ArrayInitialization(parser).parse();
+            }
+                else {parser.ParserException("Invalid expression");
             }
         }
         return null;
@@ -59,6 +61,16 @@ public class Expression extends Node {
 
     public Node parse() throws Exception {
         corps = getCorps();
+
+        if (EOF.contains(parser.currentToken)) {
+            EOF.remove(parser.currentToken);
+            if (!EOF.contains(parser.currentToken)) {
+                if (corps instanceof Value) {
+                    return corps;
+                }
+                return this;
+            }
+        }
         if (arithmeticOperations.contains(parser.lookahead.getValue())) {
             Node result =  new ArithmeticOperation(parser, corps).setEOF(EOF).parse();
             if (EOF.contains(parser.currentToken)) {
@@ -72,15 +84,6 @@ public class Expression extends Node {
             return new ComparisonOperation(parser, corps).setEOF(EOF).parse();
         }
 
-        if (EOF.contains(parser.currentToken)) {
-            EOF.remove(parser.currentToken);
-            if (!EOF.contains(parser.currentToken)) {
-                if (corps instanceof Value) {
-                    return corps;
-                }
-                return this;
-            }
-        }
 
         if (EOF.contains(parser.lookahead)) {
             parser.getNext();

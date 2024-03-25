@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class Method extends Node{
     public Identifier name;
     public VarType returnType;
-    ArrayList<Parameter> parameters;
+    public ArrayList<Parameter> parameters;
     public Block block;
 
     public Method(Parser parser) throws Exception {

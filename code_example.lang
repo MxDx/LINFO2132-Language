@@ -55,7 +55,7 @@
 
 final int i = 3;
 final float j = 3.2*5.0;
-final k int = i*3;
+//final k int = i*3;
 final string message = "Hello";
 final bool isEmpty = true;
 

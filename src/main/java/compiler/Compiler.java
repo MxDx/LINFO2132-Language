@@ -11,7 +11,7 @@ import java.util.LinkedList;
 
 public class Compiler {
     public static void main(String[] args) {
-        if (args.length < 1) {
+        /*if (args.length < 1) {
             System.out.println("No input file");
             return;
         }
@@ -24,8 +24,11 @@ public class Compiler {
             System.out.println("No input file");
             return;
         }
-
-        String inputPath = args[(showLexer||showParser ? 1 : 0)];
+        */
+        //String inputPath = args[(showLexer||showParser ? 1 : 0)];
+        boolean showParser = true;
+        boolean showLexer = false;
+        String inputPath = "src/main/java/compiler/test.txt";
         System.out.println("inputPath: " + inputPath); //LOCAL: String inputPath = "src/main/java/compiler/test.txt";
         Lexer lex = lexerGetter(inputPath, showLexer);
         parserGetter(lex, showParser);

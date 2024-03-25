@@ -1,4 +1,5 @@
 //Good luck
+int[] c = int[5];  // new array of length 5
 
 final string message = "Hello";
 final bool run = true;

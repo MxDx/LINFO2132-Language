@@ -3,8 +3,8 @@ package compiler.Parser;
 import compiler.Lexer.VarType;
 
 public class Parameter extends Node{
-    VarType type;
-    String identifier;
+    public VarType type;
+    public String identifier;
     public Parameter(Parser parser) {
         super(parser);
     }
