@@ -29,7 +29,7 @@ dependencies {
     implementation("com.google.guava:guava:31.1-jre")
 
     // Use the json library from
-    implementation("org.json:json:20210307")
+    implementation("org.json:json:20231013")
 }
 
 application {
