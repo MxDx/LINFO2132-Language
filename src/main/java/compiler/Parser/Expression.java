@@ -86,10 +86,10 @@ public class Expression extends Node {
             if (EOF.contains(parser.currentToken)) {
                 return result;
             }
-            if (!comparisonOperations.contains(parser.lookahead.getValue())) {
-                parser.ParserException("Invalid expression");
+            if (comparisonOperations.contains(parser.lookahead.getValue())) {
+                return new ComparisonOperation(parser, result).setEOF(EOF).parse();
             }
-            return new ComparisonOperation(parser, result).setEOF(EOF).parse();
+            return result;
         } else if (comparisonOperations.contains(parser.lookahead.getValue()) || comparisonOperations.contains(parser.currentToken.getValue())) {
             return new ComparisonOperation(parser, corps).setEOF(EOF).parse();
         }
