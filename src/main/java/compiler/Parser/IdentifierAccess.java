@@ -54,21 +54,17 @@ public class IdentifierAccess extends Node {
     }
 
     public static class ArrayAccess extends IdentifierAccess {
-        public Integer index;
+        public Node index;
 
         public ArrayAccess(Parser parser,IdentifierAccess BaseIdentifier) throws Exception {
             super(parser, BaseIdentifier.identifier);
             parser.getNext();
-            if (parser.lookahead.getType().equals("MyInteger")) {
-                index = Integer.parseInt(parser.lookahead.getValue());
-                parser.getNext();
-            } else {
-                throw new Exception("Invalid Array Index");
+            parser.match(Parser.OPEN_BRACKETS);
+            EOF.add(Parser.CLOSE_BRACKETS);
+            index = new Expression(parser).setEOF(EOF).parse();
+            if (!parser.currentToken.getValue().equals("]")) {
+                parser.ParserException("Invalid Array Access");
             }
-            if (!parser.lookahead.getValue().equals("]")) {
-                throw new Exception("Invalid Array Access");
-            }
-            parser.getNext();
         }
 
         public IdentifierAccess parse() throws Exception {
@@ -78,7 +74,7 @@ public class IdentifierAccess extends Node {
         @Override
         public String toString() {
             String str = "\"ArrayAccess\": {\n"
-                    + "\"index\": " + index;
+                    + "\"index\": {" + index + "}";
             if (next != null) {
                 str += "\n, \"next\": {\n" + next + "\n}";
             }

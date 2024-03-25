@@ -2,7 +2,7 @@
 if (a == 1 && false == g) {
     //
 }
-i = (i+2)*2;
+i = (i+2)*-2%3;
 int[] c = int[5];  // new array of length 5
 
 final string message = "Hello";
@@ -13,7 +13,8 @@ struct Point {
     int y;
 }
 
-int a = 3;
+int a = -3;
+int b = x[readInt() * 2 + 2];
 
 def int square(int v) {
     return v*v;
@@ -25,9 +26,9 @@ def void main() {
     writeInt(square(value));
     writeln();
     int i;
-    for (i=1, i<a, i = i+1) {
+    for (i=1, i<-a, i = i+1) {
         while (value!=0) {
-            if (run){
+            if (!run){
                 value = value - 1;
             } else {
                 write(message);

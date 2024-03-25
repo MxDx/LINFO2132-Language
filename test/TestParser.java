@@ -280,7 +280,9 @@ public class TestParser {
         assertEquals("The field is not correct", "y", structAccess.field);
         assertTrue("The next element of the right side of the right operation is not an instance of IdentifierAccess.ArrayAccess", structAccess.next instanceof IdentifierAccess.ArrayAccess);
         IdentifierAccess.ArrayAccess arrayAccess = (IdentifierAccess.ArrayAccess) structAccess.next;
-        assertEquals("The index is not correct", 4, (int) arrayAccess.index);
+        assertTrue("The index is not an instance of Expression.Value", arrayAccess.index instanceof Expression.Value);
+        value = (Expression.Value) arrayAccess.index;
+        assertEquals("The index is not correct", "4", value.value.getValue());
 
         assertTrue("The right side of the right operation is not an instance of Value", operationRightMul.right instanceof Expression.Value);
         value = (Expression.Value) operationRightMul.right;

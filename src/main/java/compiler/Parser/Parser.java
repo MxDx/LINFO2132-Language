@@ -56,8 +56,12 @@ public class Parser {
     @Override
     public String toString() {
         String uglyJson =  root.toString();
-        JSONObject json = new JSONObject(uglyJson);
-        return json.toString(4);
+        try {
+            JSONObject json = new JSONObject(uglyJson);
+            return json.toString(4);
+        } catch (Exception e) {
+            return uglyJson;
+        }
     }
 
     public void ParserException(String message) throws Exception {

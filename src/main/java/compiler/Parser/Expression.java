@@ -14,6 +14,7 @@ public class Expression extends Node {
         add("-");
         add("*");
         add("/");
+        add("%");
     }};
 
     final static HashSet<String> comparisonOperations = new HashSet<>() {{
@@ -59,10 +60,14 @@ public class Expression extends Node {
                     parser.ParserException("Invalid expression");
                 }
                 return result;
-            } else if (Objects.equals(parser.currentToken.getType(),"VarType")){
+            } else if (Objects.equals(parser.currentToken.getType(), "VarType")) {
                 return new ArrayInitialization(parser).parse();
-            }
-                else {parser.ParserException("Invalid expression");
+            } else if (Objects.equals(parser.currentToken, new Special("-"))) {
+                return new Negative(parser).setEOF(EOF).parse();
+            } else if (Objects.equals(parser.currentToken, new Special("!"))) {
+                return new Bang(parser).setEOF(EOF).parse();
+            } else {
+                parser.ParserException("Invalid expression");
             }
         }
         return null;
@@ -125,6 +130,45 @@ public class Expression extends Node {
     public String toString() {
         return corps.toString();
     }
+
+    public static class Negative extends Expression {
+        public Node expression;
+        public Negative(Parser parser) throws Exception {
+            super(parser);
+            parser.match(new Special("-"));
+        }
+
+        public Node parse() throws Exception {
+            ArrayList<Symbol> newEOF = new ArrayList<>(EOF);
+            expression = new Expression(parser).setEOF(newEOF).parse();
+            return this;
+        }
+
+        @Override
+        public String toString() {
+            return "\"Negative\": {\n" + "\"expression\": {" + expression.toString() + "}\n}";
+        }
+    }
+
+    public static class Bang extends Expression {
+        public Node expression;
+        public Bang(Parser parser) throws Exception {
+            super(parser);
+            parser.match(new Special("!"));
+        }
+
+        public Node parse() throws Exception {
+            ArrayList<Symbol> newEOF = new ArrayList<>(EOF);
+            expression = new Expression(parser).setEOF(newEOF).parse();
+            return this;
+        }
+
+        @Override
+        public String toString() {
+            return "\"Bang\": {\n" + "\"expression\": {" + expression.toString() + "}\n}";
+        }
+    }
+
     public static class Value extends Expression {
         public Symbol value;
         public Value(Parser parser) throws Exception {
@@ -184,12 +228,14 @@ public class Expression extends Node {
         final static ArrayList<String> strong = new ArrayList<>() {{
             add("*");
             add("/");
+            add("%");
         }};
+        private boolean lastOperationStrong;
         public ArithmeticOperation(Parser parser, Node before) {
             super(parser, before);
-            if (Expression.arithmeticOperations.contains(parser.currentToken.getValue())) {
-                operation = parser.currentToken.getValue();
-            }
+            //if (Expression.arithmeticOperations.contains(parser.currentToken.getValue())) {
+            //    operation = parser.currentToken.getValue();
+            //}
         }
 
         public ArithmeticOperation(Parser parser, Node before, Node next, String operation) {
@@ -212,6 +258,7 @@ public class Expression extends Node {
                 }
                 String operation = parser.currentToken.getValue();
                 parser.getNext();
+                lastOperationStrong = strong.contains(operation);
                 Node newRight = parseTerm(null);
                 left = new ArithmeticOperation(parser, left, newRight, operation);
             }
@@ -227,11 +274,15 @@ public class Expression extends Node {
 
             if (start == null) {
                 result = parseIdentifier();
+                if (strong.contains(operation) && lastOperationStrong) {
+                    return result;
+                }
             }
 
             if (EOF.contains(parser.currentToken) || comparisonOperations.contains(parser.lookahead.getValue())) {
                 return result;
             }
+
 
             while (strong.contains(parser.lookahead.getValue()) || strong.contains(parser.currentToken.getValue())) {
                 if (EOF.contains(parser.currentToken)) {
@@ -241,6 +292,7 @@ public class Expression extends Node {
                     parser.getNext();
                 }
                 String operation = parser.currentToken.getValue();
+                lastOperationStrong = strong.contains(operation);
                 parser.getNext();
                 result = new ArithmeticOperation(parser, result, parseTerm(null), operation).setEOF(EOF);
             }
@@ -271,8 +323,14 @@ public class Expression extends Node {
 
         public Node parse() throws Exception {
             ArrayList<Symbol> newEOF = new ArrayList<>(EOF);
-            newEOF.add(new Special("&&"));
-            newEOF.add(new Special("||"));
+            Symbol AND = new Special("&&");
+            Symbol OR = new Special("||");
+            if (!EOF.contains(AND)) {
+                newEOF.add(AND);
+            }
+            if (!EOF.contains(OR)) {
+                newEOF.add(OR);
+            }
             right = new Expression(parser).setEOF(newEOF).parse();
             if (Expression.logicalOperations.contains(parser.currentToken.getValue())) {
                 return new LogicalOperation(parser, this).setEOF(EOF).parse();
