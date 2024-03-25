@@ -23,12 +23,12 @@ public class Compiler {
         if ((showLexer ||showParser) && args.length < 2) {
             System.out.println("No input file");
             return;
-        }
-        */
+        }*/
+
         //String inputPath = args[(showLexer||showParser ? 1 : 0)];
-        boolean showParser = true;
-        boolean showLexer = false;
         String inputPath = "src/main/java/compiler/test.txt";
+        boolean showLexer = false;
+        boolean showParser = true;
         System.out.println("inputPath: " + inputPath); //LOCAL: String inputPath = "src/main/java/compiler/test.txt";
         Lexer lex = lexerGetter(inputPath, showLexer);
         parserGetter(lex, showParser);
