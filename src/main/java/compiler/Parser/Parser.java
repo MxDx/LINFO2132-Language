@@ -17,10 +17,10 @@ public class Parser {
     public final static Symbol COMMA = new Special(",");
     public static final Symbol EQUALS = new Special("=");
 
-    private static ArrayList<Symbol> EOF_COMMA = new ArrayList<>(){{
+    private static final ArrayList<Symbol> EOF_COMMA = new ArrayList<>(){{
         add(Parser.COMMA);
     }};
-    private static ArrayList<Symbol> EOF_CLOSE_PARENTHESES = new ArrayList<>(){{
+    private static final ArrayList<Symbol> EOF_CLOSE_PARENTHESES = new ArrayList<>(){{
         add(Parser.CLOSE_PARENTHESES);
     }};
 
