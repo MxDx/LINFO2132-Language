@@ -17,7 +17,7 @@ public class TestLexer {
         assertEquals(lexer.getNextSymbol().toString(), "<Identifier,x>");
         assertEquals(lexer.getNextSymbol().toString(), "<VarType,int>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,=>");
-        assertEquals(lexer.getNextSymbol().toString(), "<MyInteger,2>");
+        assertEquals(lexer.getNextSymbol().toString(), "<int,2>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,;>");
     }
     @Test
@@ -29,7 +29,7 @@ public class TestLexer {
         assertEquals(lexer.getNextSymbol().toString(), "<VarType,float>");
         assertEquals(lexer.getNextSymbol().toString(), "<Identifier,pi>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,=>");
-        assertEquals(lexer.getNextSymbol().toString(), "<MyFloat,3.14>");
+        assertEquals(lexer.getNextSymbol().toString(), "<float,3.14>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,;>");
     }
     @Test
@@ -41,7 +41,7 @@ public class TestLexer {
         assertEquals(lexer.getNextSymbol().toString(), "<Special,(>");
         assertEquals(lexer.getNextSymbol().toString(), "<Identifier,x>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,>>");
-        assertEquals(lexer.getNextSymbol().toString(), "<MyInteger,0>");
+        assertEquals(lexer.getNextSymbol().toString(), "<int,0>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,)>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,{>");
         assertEquals(lexer.getNextSymbol().toString(), "<Identifier,print>");
@@ -60,14 +60,14 @@ public class TestLexer {
         assertEquals(lexer.getNextSymbol().toString(), "<Special,(>");
         assertEquals(lexer.getNextSymbol().toString(), "<Identifier,x>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,>>");
-        assertEquals(lexer.getNextSymbol().toString(), "<MyInteger,0>");
+        assertEquals(lexer.getNextSymbol().toString(), "<int,0>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,)>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,{>");
         assertEquals(lexer.getNextSymbol().toString(), "<Identifier,x>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,=>");
         assertEquals(lexer.getNextSymbol().toString(), "<Identifier,x>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,->");
-        assertEquals(lexer.getNextSymbol().toString(), "<MyInteger,1>");
+        assertEquals(lexer.getNextSymbol().toString(), "<int,1>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,;>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,}>");
     }
@@ -80,13 +80,13 @@ public class TestLexer {
         assertEquals(lexer.getNextSymbol().toString(), "<Identifier,x>");
         assertEquals(lexer.getNextSymbol().toString(), "<VarType,int>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,=>");
-        assertEquals(lexer.getNextSymbol().toString(), "<MyInteger,2>");
+        assertEquals(lexer.getNextSymbol().toString(), "<int,2>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,;>");
         assertEquals(lexer.getNextSymbol().toString(), "<Identifier,var>");
         assertEquals(lexer.getNextSymbol().toString(), "<Identifier,y>");
         assertEquals(lexer.getNextSymbol().toString(), "<VarType,int>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,=>");
-        assertEquals(lexer.getNextSymbol().toString(), "<MyInteger,3>");
+        assertEquals(lexer.getNextSymbol().toString(), "<int,3>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,;>");
     }
     @Test
@@ -103,17 +103,17 @@ public class TestLexer {
         assertEquals(lexer.getNextSymbol().toString(), "<VarType,int>");
         assertEquals(lexer.getNextSymbol().toString(), "<Identifier,i>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,=>");
-        assertEquals(lexer.getNextSymbol().toString(), "<MyInteger,0>");
+        assertEquals(lexer.getNextSymbol().toString(), "<int,0>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,;>");
         assertEquals(lexer.getNextSymbol().toString(), "<Identifier,i>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,<>");
-        assertEquals(lexer.getNextSymbol().toString(), "<MyInteger,10>");
+        assertEquals(lexer.getNextSymbol().toString(), "<int,10>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,;>");
         assertEquals(lexer.getNextSymbol().toString(), "<Identifier,i>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,=>");
         assertEquals(lexer.getNextSymbol().toString(), "<Identifier,i>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,+>");
-        assertEquals(lexer.getNextSymbol().toString(), "<MyInteger,1>");
+        assertEquals(lexer.getNextSymbol().toString(), "<int,1>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,)>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,{>");
         assertEquals(lexer.getNextSymbol().toString(), "<Identifier,print>");
@@ -132,7 +132,7 @@ public class TestLexer {
         assertEquals(lexer.getNextSymbol().toString(), "<Identifier,x>");
         assertEquals(lexer.getNextSymbol().toString(), "<VarType,int>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,=>");
-        assertEquals(lexer.getNextSymbol().toString(), "<MyInteger,2>");
+        assertEquals(lexer.getNextSymbol().toString(), "<int,2>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,;>");
     }
     @Test
@@ -150,7 +150,7 @@ public class TestLexer {
         assertEquals(lexer.getNextSymbol().toString(), "<VarType,string>");
         assertEquals(lexer.getNextSymbol().toString(), "<Identifier,s>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,=>");
-        assertEquals(lexer.getNextSymbol().toString(), "<MyString,Hello, World!>");
+        assertEquals(lexer.getNextSymbol().toString(), "<string,Hello, World!>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,;>");
     }
 
@@ -192,11 +192,11 @@ public class TestLexer {
         assertEquals(lexer.getNextSymbol().toString(), "<Identifier,x>");
         assertEquals(lexer.getNextSymbol().toString(), "<VarType,float>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,=>");
-        assertEquals(lexer.getNextSymbol().toString(), "<MyFloat,3.14>");
+        assertEquals(lexer.getNextSymbol().toString(), "<float,3.14>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,;>");
         assertEquals(lexer.getNextSymbol().toString(), "<Identifier,y>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,=>");
-        assertEquals(lexer.getNextSymbol().toString(), "<MyFloat,0.14>");
+        assertEquals(lexer.getNextSymbol().toString(), "<float,0.14>");
     }
 
     @Test
@@ -209,15 +209,15 @@ public class TestLexer {
         assertEquals(lexer.getNextSymbol().toString(), "<Identifier,x>");
         assertEquals(lexer.getNextSymbol().toString(), "<VarType,int>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,=>");
-        assertEquals(lexer.getNextSymbol().toString(), "<MyFloat,2.>");
-        assertEquals(lexer.getNextSymbol().toString(), "<MyFloat,0.3>");
+        assertEquals(lexer.getNextSymbol().toString(), "<float,2.>");
+        assertEquals(lexer.getNextSymbol().toString(), "<float,0.3>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,;>");
         assertEquals(lexer.getNextSymbol().toString(), "<Identifier,var>");
         assertEquals(lexer.getNextSymbol().toString(), "<Identifier,y>");
         assertEquals(lexer.getNextSymbol().toString(), "<VarType,int>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,=>");
-        assertEquals(lexer.getNextSymbol().toString(), "<MyFloat,3.14>");
-        assertEquals(lexer.getNextSymbol().toString(), "<MyFloat,0.15>");
+        assertEquals(lexer.getNextSymbol().toString(), "<float,3.14>");
+        assertEquals(lexer.getNextSymbol().toString(), "<float,0.15>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,;>");
     }
 
@@ -232,7 +232,7 @@ public class TestLexer {
             assertEquals(lexer.getNextSymbol().toString(), "<Identifier,x>");
             assertEquals(lexer.getNextSymbol().toString(), "<VarType,int>");
             assertEquals(lexer.getNextSymbol().toString(), "<Special,=>");
-            assertEquals(lexer.getNextSymbol().toString(), "<MyInteger,2>");
+            assertEquals(lexer.getNextSymbol().toString(), "<int,2>");
             lexer.getNextSymbol();
             fail("Supposed to raise an exception");
         } catch (Exception e) {
@@ -247,7 +247,7 @@ public class TestLexer {
             assertEquals(lexer.getNextSymbol().toString(), "<Identifier,x>");
             assertEquals(lexer.getNextSymbol().toString(), "<VarType,int>");
             assertEquals(lexer.getNextSymbol().toString(), "<Special,=>");
-            assertEquals(lexer.getNextSymbol().toString(), "<MyInteger,2>");
+            assertEquals(lexer.getNextSymbol().toString(), "<int,2>");
             lexer.getNextSymbol();
             fail("Supposed to raise an exception");
         } catch (Exception e) {
@@ -263,9 +263,9 @@ public class TestLexer {
         assertEquals(lexer.getNextSymbol().toString(), "<Identifier,x>");
         assertEquals(lexer.getNextSymbol().toString(), "<VarType,int>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,=>");
-        assertEquals(lexer.getNextSymbol().toString(), "<MyInteger,2>");
+        assertEquals(lexer.getNextSymbol().toString(), "<int,2>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,/>");
-        assertEquals(lexer.getNextSymbol().toString(), "<MyInteger,3>");
+        assertEquals(lexer.getNextSymbol().toString(), "<int,3>");
         assertEquals(lexer.getNextSymbol().toString(), "<Special,;>");
     }
 }

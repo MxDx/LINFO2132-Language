@@ -2,6 +2,8 @@ package compiler.SemanticAnalysis;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
+
 import compiler.Compiler;
 import compiler.Lexer.VarType;
 
@@ -76,6 +78,27 @@ public class IdentifierTable {
         }
         tableType.put(identifier, type);
         return true;
+    }
+
+    public IdentifierTable getParent() {
+        return parent;
+    }
+
+    @Override
+    public String toString() {
+        String str = "IdentifierTable: {\n";
+        for (String identifier : tableIdentifier.keySet()) {
+            str += "\t";
+            str += identifier + ": " + tableIdentifier.get(identifier) + ",\n";
+        }
+        str += "},\n";
+        str += "TypeTable: {\n";
+        for (String type : tableType.keySet()) {
+            str += "\t";
+            str += type + ": " + tableType.get(type) + "\n";
+        }
+        str += "}";
+        return str;
     }
 
 }

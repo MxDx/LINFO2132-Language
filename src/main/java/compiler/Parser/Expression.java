@@ -2,6 +2,9 @@ package compiler.Parser;
 
 import compiler.Lexer.Special;
 import compiler.Lexer.Symbol;
+import compiler.SemanticAnalysis.Type;
+import compiler.SemanticAnalysis.TypeVisitor;
+import compiler.SemanticAnalysis.UnaryType;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -186,6 +189,11 @@ public class Expression extends Node {
         @Override
         public String toString() {
             return "\"value\": " + "\"" + value.getValue() + "\"";
+        }
+
+        @Override
+        public Type accept(TypeVisitor visitor) {
+            return new UnaryType(value.getType());
         }
     }
 

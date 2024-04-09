@@ -1,7 +1,7 @@
 package compiler.Lexer;
 
 public class VarType extends Symbol {
-    private Boolean Vector = false;
+    private int vectorDepth = 0;
     private Boolean Final = false;
 
     public VarType(String value, int line, int i) {
@@ -23,12 +23,35 @@ public class VarType extends Symbol {
 
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (obj instanceof VarType s) {
+            VarType varType = (VarType) obj;
+            if (varType.isVector() == this.isVector() && varType.isFinal() == this.isFinal()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void setVector() {
-        Vector = true;
+        vectorDepth++;
     }
     public Boolean isVector() {
-        return Vector;
+        return vectorDepth > 0;
     }
+
+    public void setVectorDepth(int vectorDepth) {
+        this.vectorDepth = vectorDepth;
+    }
+
+    public int getVectorDepth() {
+        return vectorDepth;
+    }
+
     public void setFinal(Boolean finalValue) {
         Final = finalValue;
     }

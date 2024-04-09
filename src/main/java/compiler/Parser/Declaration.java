@@ -3,6 +3,8 @@ package compiler.Parser;
 import compiler.Lexer.Keyword;
 import compiler.Lexer.Symbol;
 import compiler.Lexer.VarType;
+import compiler.SemanticAnalysis.Type;
+import compiler.SemanticAnalysis.TypeVisitor;
 
 import java.util.Objects;
 
@@ -10,7 +12,7 @@ public class Declaration extends Node {
     public static final Symbol FINAL = new Keyword("final");
     public VarType type;
     public String identifier;
-    public Expression assignment;
+    public Node assignment;
 
     public Declaration(Parser parser) throws Exception {
         super(parser);
@@ -64,5 +66,10 @@ public class Declaration extends Node {
 
     public Node getAssignment() {
         return assignment;
+    }
+
+    @Override
+    public Type accept(TypeVisitor visitor) throws Exception {
+        return visitor.visit(this);
     }
 }

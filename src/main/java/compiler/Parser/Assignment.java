@@ -2,6 +2,8 @@ package compiler.Parser;
 
 import compiler.Lexer.Special;
 import compiler.Lexer.Symbol;
+import compiler.SemanticAnalysis.Type;
+import compiler.SemanticAnalysis.TypeVisitor;
 
 import java.util.ArrayList;
 
@@ -32,5 +34,14 @@ public class Assignment extends Node {
         return "\"Assignment\": {\n"
                 + "\"expression\": {" + expression.toString() + "}\n"
                 + '}';
+    }
+
+    public Node getExpression() {
+        return expression;
+    }
+
+    @Override
+    public Type accept(TypeVisitor visitor) throws Exception {
+        return expression.accept(visitor);
     }
 }

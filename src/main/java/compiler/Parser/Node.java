@@ -26,7 +26,7 @@ public abstract class Node {
         return super.toString();
     }
 
-    public Type accept(TypeVisitor visitor) {
+    public Type accept(TypeVisitor visitor) throws Exception {
         return visitor.visit(this);
     }
 }

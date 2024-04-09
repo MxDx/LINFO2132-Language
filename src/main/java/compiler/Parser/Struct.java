@@ -1,5 +1,8 @@
 package compiler.Parser;
 
+import compiler.SemanticAnalysis.Type;
+import compiler.SemanticAnalysis.TypeVisitor;
+
 import java.util.ArrayList;
 
 public class Struct extends  Node {
@@ -26,6 +29,14 @@ public class Struct extends  Node {
         return this;
     }
 
+    public ArrayList<Declaration> getDeclarations() {
+        return declarations;
+    }
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
     @Override
     public String toString() {
         String str = "\"Struct_Statement\": {\n"
@@ -39,5 +50,10 @@ public class Struct extends  Node {
         }
         str += "\n]\n}";
         return str;
+    }
+
+    @Override
+    public Type accept(TypeVisitor visitor) throws Exception {
+        return visitor.visit(this);
     }
 }

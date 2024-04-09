@@ -106,7 +106,8 @@ public class Statements extends Starting {
                     "\n}" + "\n}";
         }
 
-        public Type accept(TypeVisitor visitor) {
+        @Override
+        public Type accept(TypeVisitor visitor) throws Exception {
             return visitor.visit(this);
         }
     }

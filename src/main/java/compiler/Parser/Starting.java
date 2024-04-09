@@ -27,7 +27,8 @@ public class Starting extends Node{
         return str;
     }
 
-    public Type accept(TypeVisitor visitor) {
+    @Override
+    public Type accept(TypeVisitor visitor) throws Exception {
         return visitor.visit(this);
     }
 }

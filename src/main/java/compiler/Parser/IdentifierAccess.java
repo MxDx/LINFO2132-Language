@@ -2,6 +2,8 @@ package compiler.Parser;
 
 import compiler.Lexer.Special;
 import compiler.Lexer.Symbol;
+import compiler.SemanticAnalysis.Type;
+import compiler.SemanticAnalysis.TypeVisitor;
 
 import java.util.ArrayList;
 
@@ -39,6 +41,18 @@ public class IdentifierAccess extends Node {
         }
         return this;
     }
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public IdentifierAccess getNext() {
+        return next;
+    }
+
+    public Assignment getAssignment() {
+        return assignment;
+    }
     @Override
     public String toString() {
         String str = "\"IdentifierAccess\": {\n"
@@ -51,6 +65,15 @@ public class IdentifierAccess extends Node {
         }
         str += "\n}";
         return str;
+    }
+
+    @Override
+    public Type accept(TypeVisitor visitor) throws Exception {
+        return visitor.visit(this);
+    }
+
+    public Type accept(TypeVisitor visitor, Type type) throws Exception {
+        return null;
     }
 
     public static class ArrayAccess extends IdentifierAccess {
@@ -71,6 +94,10 @@ public class IdentifierAccess extends Node {
             return super.parse();
         }
 
+        public Node getIndex() {
+            return index;
+        }
+
         @Override
         public String toString() {
             String str = "\"ArrayAccess\": {\n"
@@ -83,6 +110,11 @@ public class IdentifierAccess extends Node {
             }
             str += "\n}";
             return str;
+        }
+
+        @Override
+        public Type accept(TypeVisitor visitor, Type type) throws Exception {
+            return visitor.visit(this, type);
         }
     }
 
@@ -103,6 +135,10 @@ public class IdentifierAccess extends Node {
             return super.parse();
         }
 
+        public String getField() {
+            return field;
+        }
+
         @Override
         public String toString() {
             String str = "\"StructAccess\": {\n"
@@ -115,6 +151,11 @@ public class IdentifierAccess extends Node {
             }
             str += "\n}";
             return str;
+        }
+
+        @Override
+        public Type accept(TypeVisitor visitor, Type type) throws Exception {
+            return visitor.visit(this, type);
         }
     }
 
@@ -164,6 +205,11 @@ public class IdentifierAccess extends Node {
             }
             str.append("\n}");
             return str.toString();
+        }
+
+        @Override
+        public Type accept(TypeVisitor visitor, Type type) throws Exception {
+            return visitor.visit(this, type);
         }
     }
 }
