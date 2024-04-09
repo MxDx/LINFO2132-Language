@@ -10,7 +10,7 @@ public class Declaration extends Node {
     public static final Symbol FINAL = new Keyword("final");
     public VarType type;
     public String identifier;
-    public Node assignment;
+    public Expression assignment;
 
     public Declaration(Parser parser) throws Exception {
         super(parser);
@@ -52,5 +52,17 @@ public class Declaration extends Node {
         }
         str += "\n}";
         return str;
+    }
+
+    public VarType getType() {
+        return type;
+    }
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public Node getAssignment() {
+        return assignment;
     }
 }

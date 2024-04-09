@@ -1,11 +1,14 @@
 package compiler.Parser;
 
 import compiler.Lexer.Symbol;
+import compiler.SemanticAnalysis.Type;
+import compiler.SemanticAnalysis.TypeVisitor;
+
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class Statements extends Starting {
-    public ArrayList<Node> statements;
+    public ArrayList<Statement> statements;
     Symbol EOF;
     public Statements(Parser parser) {
         super(parser);
@@ -20,7 +23,6 @@ public class Statements extends Starting {
             while (Objects.equals(parser.currentToken, Parser.SEMICOLON)) {
                 parser.getNext();
             }
-            //parser.getNext();
         }
         return this;
     }
@@ -53,6 +55,10 @@ public class Statements extends Starting {
 
         public Statement(Parser parser) {
             super(parser);
+        }
+
+        public Node getContent() {
+            return content;
         }
 
         public Statement parse() throws Exception {
@@ -98,6 +104,10 @@ public class Statements extends Starting {
             return "{\n"+
                     "\"content\": " + "{\n" + content.toString() +
                     "\n}" + "\n}";
+        }
+
+        public Type accept(TypeVisitor visitor) {
+            return visitor.visit(this);
         }
     }
 }

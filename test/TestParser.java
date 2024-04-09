@@ -20,7 +20,7 @@ public class TestParser {
     @Test
     public void testBasicDeclaration() throws Exception {
         String input = "int a;";
-        Starting root = parse(input);
+        Statements root = parse(input).getStatements();
 
         Statements statement = (Statements) root;
         assertEquals(1, statement.statements.size());
@@ -33,7 +33,7 @@ public class TestParser {
         assertNull("The declaration has an assignment", decl.assignment);
 
         input = "int a = 10;";
-        root = parse(input);
+        root = parse(input).getStatements();
 
         statement = (Statements) root;
         stmt = (Statements.Statement) statement.statements.get(0);
@@ -54,7 +54,7 @@ public class TestParser {
     @Test
     public void testComplexeDeclaration() throws Exception {
         String input = "final int[] a;";
-        Starting root = parse(input);
+        Statements root = parse(input).getStatements();
 
         Statements statement = (Statements) root;
         Statements.Statement stmt = (Statements.Statement) statement.statements.get(0);
@@ -71,7 +71,7 @@ public class TestParser {
         assertNull("The declaration has an assignment", decl.assignment);
 
         input = "int[] a = 10 * 10;";
-        root = parse(input);
+        root = parse(input).getStatements();
 
         statement = (Statements) root;
         stmt = (Statements.Statement) statement.statements.get(0);
@@ -98,7 +98,7 @@ public class TestParser {
     @Test
     public void testBasicWhile() throws Exception {
         String input = "while (a < 10) { int a = 10; }";
-        Starting root = parse(input);
+        Statements root = parse(input).getStatements();
 
         Statements statement = (Statements) root;
         Statements.Statement stmt = (Statements.Statement) statement.statements.get(0);
@@ -135,7 +135,7 @@ public class TestParser {
     @Test
     public void testComplexeWhile() throws Exception {
         String input = "while (a + 2 * 4 < (1 + 10) * 10) {}";
-        Starting root = parse(input);
+        Statements root = parse(input).getStatements();
 
         Statements statement = (Statements) root;
         Statements.Statement stmt = (Statements.Statement) statement.statements.get(0);
@@ -182,7 +182,7 @@ public class TestParser {
     @Test
     public void testBasicIf() throws Exception {
         String input = "if (a < 10) { int a = 10; }";
-        Starting root = parse(input);
+        Statements root = parse(input).getStatements();
 
         Statements statement = (Statements) root;
         Statements.Statement stmt = (Statements.Statement) statement.statements.get(0);
@@ -220,7 +220,7 @@ public class TestParser {
     // expression in complexe if : a + readInt(3 + a) * 4 < (1 + z.y[4]) * 10
     public void testComplexeIf() throws Exception {
         String input = "if (a + readInt(3 + a) * 4 < (1 + z.y[4]) * 10) {}";
-        Starting root = parse(input);
+        Statements root = parse(input).getStatements();
 
         Statements statement = (Statements) root;
         Statements.Statement stmt = (Statements.Statement) statement.statements.get(0);
@@ -293,7 +293,7 @@ public class TestParser {
     @Test
     public void testBasicFor() throws Exception {
         String input = "for (i = 0, i < 10, i = i + 1) { int a = 10; }";
-        Starting root = parse(input);
+        Statements root = parse(input).getStatements();
 
         Statements statement = (Statements) root;
         Statements.Statement stmt = (Statements.Statement) statement.statements.get(0);
@@ -355,7 +355,7 @@ public class TestParser {
     // for (i=1*readInt(square(2/a)), i*2 <100+4*readInt(), i = i+1*4+readInt())
     public void testComplexeFor() throws Exception {
         String input = "for (i=1*readInt(square(2/a)), i*2 <100+4*readInt(), i = i+1*4+readInt()) {}";
-        Starting root = parse(input);
+        Statements root = parse(input).getStatements();
 
         Statements statement = (Statements) root;
         Statements.Statement stmt = (Statements.Statement) statement.statements.get(0);
@@ -471,7 +471,7 @@ public class TestParser {
     @Test
     public void testBasicFunctionDef() throws Exception {
         String input = "def int test() { int a = 10; }";
-        Starting root = parse(input);
+        Statements root = parse(input).getStatements();
 
         Statements statement = (Statements) root;
         Statements.Statement stmt = (Statements.Statement) statement.statements.get(0);
@@ -495,7 +495,7 @@ public class TestParser {
     @Test
     public void testComplexeFunctionDef() throws Exception {
         String input = "def int test(int a, int b) { int a = 10; }";
-        Starting root = parse(input);
+        Statements root = parse(input).getStatements();
 
         Statements statement = (Statements) root;
         Statements.Statement stmt = (Statements.Statement) statement.statements.get(0);
@@ -523,7 +523,7 @@ public class TestParser {
     //@Test en travaux , je m'endors
     public void testArrayInit() throws Exception {
         String input = "int[] a = int[5]; ";
-        Starting root = parse(input);
+        Statements root = parse(input).getStatements();
 
         Statements statement = (Statements) root;
         Statements.Statement stmt = (Statements.Statement) statement.statements.get(0);
@@ -541,7 +541,7 @@ public class TestParser {
     @Test
     public void testBasicLogicalOperation() throws Exception{
         String input = "if (a < 10 && b > 5) {}";
-        Starting root = parse(input);
+        Statements root = parse(input).getStatements();
 
         Statements statement = (Statements) root;
         Statements.Statement stmt = (Statements.Statement) statement.statements.get(0);
@@ -577,7 +577,7 @@ public class TestParser {
     // a(2*readInt(1, 2) < (10 == b) || (c && b) == false
     public void testComplexeLogicalOperation() throws Exception {
         String input = "if (a(2*readInt(1, 2)) + 1 < (10 == b) || (c && b) == false) {}";
-        Starting root = parse(input);
+        Statements root = parse(input).getStatements();
 
         Statements statement = (Statements) root;
         Statements.Statement stmt = (Statements.Statement) statement.statements.get(0);

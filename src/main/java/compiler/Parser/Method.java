@@ -6,7 +6,7 @@ import compiler.Lexer.VarType;
 
 import java.util.ArrayList;
 
-public class Method extends Node{
+public class Method extends Node {
     public Identifier name;
     public VarType returnType;
     public ArrayList<Parameter> parameters;

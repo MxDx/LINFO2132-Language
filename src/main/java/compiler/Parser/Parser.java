@@ -34,7 +34,8 @@ public class Parser {
         this.lexer = lexer;
         currentToken = lexer.getNextSymbol();
         lookahead = lexer.getNextSymbol();
-        root = new Starting(this).parse();
+        root = new Starting(this);
+        root.parse();
     }
     public Starting getAST() {
         return root;
@@ -53,6 +54,10 @@ public class Parser {
         getNext();
     }
 
+    public Starting getRoot() {
+        return root;
+    }
+
     @Override
     public String toString() {
         String uglyJson =  root.toString();
@@ -60,6 +65,7 @@ public class Parser {
             JSONObject json = new JSONObject(uglyJson);
             return json.toString(4);
         } catch (Exception e) {
+            System.out.println("Returning ugly string: \n" + e.getMessage());
             return uglyJson;
         }
     }

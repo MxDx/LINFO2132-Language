@@ -5,12 +5,48 @@ package compiler;
 import compiler.Lexer.Lexer;
 import compiler.Lexer.Symbol;
 import compiler.Parser.Parser;
+import compiler.SemanticAnalysis.SemanticAnalysis;
 
 import java.io.*;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 public class Compiler {
+
+    private final static HashSet<String> keywords = new HashSet<>() {
+        {
+            add("void");
+            add("final");
+            add("if");
+            add("else");
+            add("while");
+            add("for");
+            add("return");
+            add("readInt");
+            add("readFloat");
+            add("readString");
+            add("writeInt");
+            add("writeFloat");
+            add("writeString");
+            add("write");
+            add("writeln");
+            add("true");
+            add("false");
+            add("struct");
+        }
+    };
+
+    private final static HashSet<String> basicTypes = new HashSet<>() {
+        {
+            add("int");
+            add("float");
+            add("string");
+            add("bool");
+        }
+    };
+
     public static void main(String[] args) {
+        /*
         if (args.length < 1) {
             System.out.println("No input file");
             return;
@@ -23,15 +59,16 @@ public class Compiler {
         if ((showLexer ||showParser) && args.length < 2) {
             System.out.println("No input file");
             return;
-        }
+        }*/
 
-        String inputPath = args[(showLexer||showParser ? 1 : 0)];
-        //String inputPath = "src/main/java/compiler/test.txt";
-        //boolean showLexer = false;
-        //boolean showParser = true;
+        //String inputPath = args[(showLexer||showParser ? 1 : 0)];
+        String inputPath = "src/main/java/compiler/test_semantic.txt";
+        boolean showLexer = false;
+        boolean showParser = true;
         System.out.println("inputPath: " + inputPath); //LOCAL: String inputPath = "src/main/java/compiler/test.txt";
         Lexer lex = lexerGetter(inputPath, showLexer);
-        parserGetter(lex, showParser);
+        Parser parser = parserGetter(lex, showParser);
+        semanticAnalysisGetter(parser);
     }
 
     public static Lexer lexerGetter(String inputPath,boolean showLexer) {
@@ -60,7 +97,7 @@ public class Compiler {
             return null;
     }
 
-    public static void parserGetter(Lexer lex,boolean showParser) {
+    public static Parser parserGetter(Lexer lex,boolean showParser) {
         try {
             Parser parser = new Parser(lex);
             if (showParser) {
@@ -71,8 +108,25 @@ public class Compiler {
                 writer.write(parser.toString());
                 writer.close();
             }
+            return parser;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static void semanticAnalysisGetter(Parser parser) {
+        try {
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static HashSet<String> getKeywords() {
+        return keywords;
+    }
+
+    public static HashSet<String> getBasicTypes() {
+        return basicTypes;
     }
 }

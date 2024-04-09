@@ -1,6 +1,6 @@
 package compiler.Lexer;
 
-public class VarType extends Symbol{
+public class VarType extends Symbol {
     private Boolean Vector = false;
     private Boolean Final = false;
 
