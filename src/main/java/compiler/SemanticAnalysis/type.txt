@@ -1,0 +1,30 @@
+if => boolean value
+while => boolean value
+
+expression {
+    Value
+    Operation {
+        ArithmeticOperation
+        ComparisonOperation
+        LogicalOperation
+    }
+}
+
+IdentifierAccess {
+    Assignment
+    IdentifierAccess {
+        Identifier
+        ArrayAccess
+        FunctionCall
+    }
+}
+
+
+// Equivalence ?
+1. Named equivalence (easy) => Name must be the same
+2. Structural equivalence (difficult) => Structure must be the same
+
+
+// Error to throw
+1. TypeError => Type mismatch
+2. StructError => Struct has the same name as a keyword
