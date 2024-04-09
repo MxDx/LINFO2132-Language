@@ -2,6 +2,7 @@ package compiler.Parser;
 
 import compiler.Lexer.Special;
 import compiler.Lexer.Symbol;
+import compiler.SemanticAnalysis.IdentifierType;
 import compiler.SemanticAnalysis.Type;
 import compiler.SemanticAnalysis.TypeVisitor;
 import compiler.SemanticAnalysis.UnaryType;
@@ -192,8 +193,9 @@ public class Expression extends Node {
         }
 
         @Override
-        public Type accept(TypeVisitor visitor) {
-            return new UnaryType(value.getType());
+        public IdentifierType accept(TypeVisitor visitor) {
+            Type type = visitor.getTable().getType(value.getType());
+            return new IdentifierType(type);
         }
     }
 

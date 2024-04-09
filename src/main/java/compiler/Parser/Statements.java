@@ -1,6 +1,7 @@
 package compiler.Parser;
 
 import compiler.Lexer.Symbol;
+import compiler.SemanticAnalysis.IdentifierType;
 import compiler.SemanticAnalysis.Type;
 import compiler.SemanticAnalysis.TypeVisitor;
 
@@ -107,7 +108,7 @@ public class Statements extends Starting {
         }
 
         @Override
-        public Type accept(TypeVisitor visitor) throws Exception {
+        public IdentifierType accept(TypeVisitor visitor) throws Exception {
             return visitor.visit(this);
         }
     }

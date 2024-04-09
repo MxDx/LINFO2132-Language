@@ -3,6 +3,7 @@ package compiler.Parser;
 import compiler.Lexer.Keyword;
 import compiler.Lexer.Symbol;
 import compiler.Lexer.VarType;
+import compiler.SemanticAnalysis.IdentifierType;
 import compiler.SemanticAnalysis.Type;
 import compiler.SemanticAnalysis.TypeVisitor;
 
@@ -69,7 +70,7 @@ public class Declaration extends Node {
     }
 
     @Override
-    public Type accept(TypeVisitor visitor) throws Exception {
+    public IdentifierType accept(TypeVisitor visitor) throws Exception {
         return visitor.visit(this);
     }
 }

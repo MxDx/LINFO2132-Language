@@ -2,6 +2,7 @@ package compiler.Parser;
 
 import compiler.Lexer.Special;
 import compiler.Lexer.Symbol;
+import compiler.SemanticAnalysis.IdentifierType;
 import compiler.SemanticAnalysis.Type;
 import compiler.SemanticAnalysis.TypeVisitor;
 
@@ -41,7 +42,7 @@ public class Assignment extends Node {
     }
 
     @Override
-    public Type accept(TypeVisitor visitor) throws Exception {
+    public IdentifierType accept(TypeVisitor visitor) throws Exception {
         return expression.accept(visitor);
     }
 }

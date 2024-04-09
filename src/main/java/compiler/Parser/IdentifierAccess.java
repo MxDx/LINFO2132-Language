@@ -2,6 +2,7 @@ package compiler.Parser;
 
 import compiler.Lexer.Special;
 import compiler.Lexer.Symbol;
+import compiler.SemanticAnalysis.IdentifierType;
 import compiler.SemanticAnalysis.Type;
 import compiler.SemanticAnalysis.TypeVisitor;
 
@@ -68,11 +69,11 @@ public class IdentifierAccess extends Node {
     }
 
     @Override
-    public Type accept(TypeVisitor visitor) throws Exception {
+    public IdentifierType accept(TypeVisitor visitor) throws Exception {
         return visitor.visit(this);
     }
 
-    public Type accept(TypeVisitor visitor, Type type) throws Exception {
+    public IdentifierType accept(TypeVisitor visitor, IdentifierType type) throws Exception {
         return null;
     }
 
@@ -113,7 +114,7 @@ public class IdentifierAccess extends Node {
         }
 
         @Override
-        public Type accept(TypeVisitor visitor, Type type) throws Exception {
+        public IdentifierType accept(TypeVisitor visitor, IdentifierType type) throws Exception {
             return visitor.visit(this, type);
         }
     }
@@ -154,7 +155,7 @@ public class IdentifierAccess extends Node {
         }
 
         @Override
-        public Type accept(TypeVisitor visitor, Type type) throws Exception {
+        public IdentifierType accept(TypeVisitor visitor, IdentifierType type) throws Exception {
             return visitor.visit(this, type);
         }
     }
@@ -208,7 +209,7 @@ public class IdentifierAccess extends Node {
         }
 
         @Override
-        public Type accept(TypeVisitor visitor, Type type) throws Exception {
+        public IdentifierType accept(TypeVisitor visitor, IdentifierType type) throws Exception {
             return visitor.visit(this, type);
         }
     }

@@ -15,11 +15,15 @@ public class TypeVisitor {
         this.table = new IdentifierTable(parent);
     }
 
-    public Type visit(Node node) {
+    public IdentifierTable getTable() {
+        return table;
+    }
+
+    public IdentifierType visit(Node node) {
         return null;
     }
 
-    public Type visit(Starting root) throws Exception {
+    public IdentifierType visit(Starting root) throws Exception {
         table = new IdentifierTable();
         Statements statements = root.getStatements();
         for (Statements.Statement statement : statements.statements) {
@@ -28,52 +32,48 @@ public class TypeVisitor {
         return null;
     }
 
-    public Type visit(Statements.Statement statement) throws Exception {
+    public IdentifierType visit(Statements.Statement statement) throws Exception {
         return statement.getContent().accept(this);
     }
 
-    public Type visit(Declaration declaration) throws Exception {
+    public IdentifierType visit(Declaration declaration) throws Exception {
         Type type = table.getType(declaration.getType().getValue());
         if (type == null) {
             SemanticAnalysis.SemanticException("TypeError","Type already declared", declaration);
         }
-        if (declaration.getType().isVector()) {
-            VarType varType = new VarType(type.getType().getValue());
-            varType.setVectorDepth(declaration.getType().getVectorDepth());
-            type = new UnaryType(varType);
-        }
-        if (!table.addIdentifier(declaration.getIdentifier(), type)) {
+        IdentifierType identifierType = new IdentifierType(type, declaration.getType());
+        if (!table.addIdentifier(declaration.getIdentifier(), identifierType)) {
             SemanticAnalysis.SemanticException("TypeError","Identifier already declared", declaration);
         }
 
         if (declaration.getAssignment() != null) {
-            Type assignment = declaration.getAssignment().accept(this);
+            IdentifierType assignment = declaration.getAssignment().accept(this);
             if (type == null) {
                 SemanticAnalysis.SemanticException("TypeError","Assignment type is null", declaration);
             }
-            if (!Objects.equals(type, assignment)) {
+            if (!Objects.equals(identifierType, assignment)) {
                 SemanticAnalysis.SemanticException("TypeError","Assignment type does not match declaration type", declaration);
             }
         }
 
-        return type;
+        return identifierType;
     }
 
-    public Type visit(Struct struct) throws Exception {
+    public IdentifierType visit(Struct struct) throws Exception {
         StructType structType = new StructType(struct, this);
         if (!table.addType(struct.getIdentifier(), structType)) {
             SemanticAnalysis.SemanticException("TypeError","Struct already declared", struct);
         }
-        return structType;
-    }
-
-    public Type visit(Expression expression) {
         return null;
     }
 
-    public Type visit(IdentifierAccess identifierAccess) throws Exception {
+    public IdentifierType visit(Expression expression) {
+        return null;
+    }
+
+    public IdentifierType visit(IdentifierAccess identifierAccess) throws Exception {
         String identifier = identifierAccess.getIdentifier();
-        Type type = table.getIdentifier(identifier);
+        IdentifierType type = table.getIdentifier(identifier);
         if (type == null) {
             SemanticAnalysis.SemanticException("TypeError","Identifier not declared", identifierAccess);
         }
@@ -81,7 +81,7 @@ public class TypeVisitor {
             type =  identifierAccess.getNext().accept(this, type);
         }
         if (identifierAccess.getAssignment() != null) {
-            Type assignment = identifierAccess.getAssignment().accept(this);
+            IdentifierType assignment = identifierAccess.getAssignment().accept(this);
             if (type == null) {
                 SemanticAnalysis.SemanticException("TypeError","Assignment type is null", identifierAccess.getAssignment());
             }
@@ -92,23 +92,20 @@ public class TypeVisitor {
         return type;
     }
 
-    public Type visit(IdentifierAccess.ArrayAccess arrayAccess, Type type) throws Exception {
-        if (!type.getType().isVector()) {
+    public IdentifierType visit(IdentifierAccess.ArrayAccess arrayAccess, IdentifierType type) throws Exception {
+        if (!type.isVector()) {
             SemanticAnalysis.SemanticException("TypeError","Identifier is not a vector", arrayAccess);
         }
-        Type indexType = arrayAccess.getIndex().accept(this);
-        if (!Objects.equals(indexType.getType().getValue(), "int")) {
+        IdentifierType indexType = arrayAccess.getIndex().accept(this);
+        if (!Objects.equals(indexType.getType(), table.getType("int"))) {
             SemanticAnalysis.SemanticException("TypeError","Index type is not int", arrayAccess);
         }
+        type = type.vectorPass();
         if (arrayAccess.getNext() != null) {
             return arrayAccess.getNext().accept(this, type);
         }
-        VarType varType = new VarType(type.getType().getValue());
-        varType.setVectorDepth(type.getType().getVectorDepth() - 1);
-        type = new UnaryType(varType);
-
         if (arrayAccess.getAssignment() != null) {
-            Type assignmentType = arrayAccess.getAssignment().accept(this);
+            IdentifierType assignmentType = arrayAccess.getAssignment().accept(this);
             if (assignmentType == null) {
                 SemanticAnalysis.SemanticException("TypeError","Assignment type is null", arrayAccess.getAssignment());
             }
@@ -120,12 +117,9 @@ public class TypeVisitor {
         return type;
     }
 
-    public Type visit(IdentifierAccess.StructAccess structAccess, Type type) throws Exception {
+    public IdentifierType visit(IdentifierAccess.StructAccess structAccess, IdentifierType type) throws Exception {
         // a[0].b
-        if (!(type instanceof StructType)) {
-            SemanticAnalysis.SemanticException("TypeError","Identifier is not a struct", structAccess);
-        }
-        StructType structType = (StructType) type;
+        StructType structType = (StructType) type.getType();
         type = structType.getField(structAccess.getField());
         if (type == null) {
             SemanticAnalysis.SemanticException("TypeError","Field not declared", structAccess);
@@ -134,7 +128,7 @@ public class TypeVisitor {
             return structAccess.getNext().accept(this, type);
         }
         if (structAccess.getAssignment() != null) {
-            Type assignmentType = structAccess.getAssignment().accept(this);
+            IdentifierType assignmentType = structAccess.getAssignment().accept(this);
             if (assignmentType == null) {
                 SemanticAnalysis.SemanticException("TypeError","Assignment type is null", structAccess.getAssignment());
             }
@@ -146,7 +140,7 @@ public class TypeVisitor {
         return type;
     }
 
-    public Type visit(IdentifierAccess.FunctionCall functionCall, Type type) {
+    public IdentifierType visit(IdentifierAccess.FunctionCall functionCall, IdentifierType type) {
         return null;
     }
 }

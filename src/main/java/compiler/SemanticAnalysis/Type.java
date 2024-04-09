@@ -36,13 +36,13 @@ public abstract class Type {
     }
 
     @Override
-    public String toString() {
-        return type.toString();
+    public int hashCode() {
+        return type.hashCode();
     }
 
     @Override
-    public Type clone() {
-        return new UnaryType(type);
+    public String toString() {
+        return type.toString();
     }
 
 }

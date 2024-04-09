@@ -11,4 +11,9 @@ public class UnaryType extends Type {
     public UnaryType(String type) {
         super(new VarType(type));
     }
+
+    @Override
+    public String toString() {
+        return getType().toString();
+    }
 }

@@ -9,7 +9,7 @@ import compiler.Lexer.VarType;
 
 public class IdentifierTable {
     private IdentifierTable parent;
-    private HashMap<String, Type> tableIdentifier;
+    private HashMap<String, IdentifierType> tableIdentifier;
     private HashMap<String, Type> tableType;
 
     public IdentifierTable() {
@@ -36,7 +36,7 @@ public class IdentifierTable {
         return null;
     }
 
-    public Type getIdentifier(String identifier) {
+    public IdentifierType getIdentifier(String identifier) {
         if (tableIdentifier.containsKey(identifier)) {
             return tableIdentifier.get(identifier);
         }
@@ -46,7 +46,7 @@ public class IdentifierTable {
         return null;
     }
 
-    public boolean addIdentifier(String identifier, Type type) {
+    public boolean addIdentifier(String identifier, IdentifierType type) {
         if (tableIdentifier.containsKey(identifier)) {
             return false;
         }
@@ -89,7 +89,7 @@ public class IdentifierTable {
         String str = "IdentifierTable: {\n";
         for (String identifier : tableIdentifier.keySet()) {
             str += "\t";
-            str += identifier + ": " + tableIdentifier.get(identifier) + ",\n";
+            str += identifier + ": " + tableIdentifier.get(identifier).toString() + ",\n";
         }
         str += "},\n";
         str += "TypeTable: {\n";

@@ -8,13 +8,8 @@ import java.util.HashMap;
 
 public class StructType extends Type {
 
-    private HashMap<String, Type> fields;
+    private HashMap<String, IdentifierType> fields;
     private IdentifierTable table;
-
-    public StructType(StructType structType) {
-        super(null);
-        fields = (HashMap<String, Type>) structType.getFields().clone();
-    }
 
     public StructType(Struct struct, TypeVisitor visitor) throws Exception {
         super(null);
@@ -30,24 +25,17 @@ public class StructType extends Type {
             if (fields.containsKey(identifier)) {
                 SemanticAnalysis.SemanticException("TypeError", "Field already declared", declaration);
             }
-            type = new UnaryType(varType);
-            fields.put(identifier, type);
+            IdentifierType identifierType = new IdentifierType(type, varType);
+            fields.put(identifier, identifierType);
         }
     }
 
-    public HashMap<String, Type> getFields() {
+    public HashMap<String, IdentifierType> getFields() {
         return fields;
     }
 
-    public Type getField(String field) {
-        Type type = fields.get(field);
-        if (type.isVector()) {
-            int vectorDepth = type.getVectorDepth();
-            type = table.getType(type.getType().getValue()).clone();
-            type.setVectorDepth(vectorDepth);
-            return type;
-        }
-        return table.getType(type.getType().getValue());
+    public IdentifierType getField(String field) {
+        return fields.get(field);
     }
 
     @Override
@@ -79,10 +67,5 @@ public class StructType extends Type {
         }
         str += "\t}";
         return str;
-    }
-
-    @Override
-    public Type clone() {
-        return new StructType(this);
     }
 }

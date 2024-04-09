@@ -1,6 +1,6 @@
 package compiler.Parser;
 
-import compiler.SemanticAnalysis.Type;
+import compiler.SemanticAnalysis.IdentifierType;
 import compiler.SemanticAnalysis.TypeVisitor;
 
 public abstract class Node {
@@ -26,7 +26,7 @@ public abstract class Node {
         return super.toString();
     }
 
-    public Type accept(TypeVisitor visitor) throws Exception {
+    public IdentifierType accept(TypeVisitor visitor) throws Exception {
         return visitor.visit(this);
     }
 }

@@ -1,5 +1,6 @@
 package compiler.Parser;
 
+import compiler.SemanticAnalysis.IdentifierType;
 import compiler.SemanticAnalysis.Type;
 import compiler.SemanticAnalysis.TypeVisitor;
 
@@ -28,7 +29,7 @@ public class Starting extends Node{
     }
 
     @Override
-    public Type accept(TypeVisitor visitor) throws Exception {
+    public IdentifierType accept(TypeVisitor visitor) throws Exception {
         return visitor.visit(this);
     }
 }
