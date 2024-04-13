@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 
+
 public class TestParser {
     private static Starting parse(String input) throws Exception {
         StringReader reader = new StringReader(input);
@@ -22,69 +23,69 @@ public class TestParser {
         String input = "int a;";
         Statements root = parse(input).getStatements();
 
-        Statements statement = (Statements) root;
+        Statements statement = root;
         assertEquals(1, statement.statements.size());
-        Statements.Statement stmt = (Statements.Statement) statement.statements.get(0);
+        Statements.Statement stmt = statement.statements.get(0);
         assertTrue("The statement is not an  instance of Declaration", stmt.content instanceof Declaration);
-        Declaration decl = (Declaration) stmt.content;
-        assertEquals("The declaration has the wrong type", new VarType("int"), decl.type);
-        assertEquals("The declaration has the wrong identifier", "a", decl.identifier);
+        Declaration declaration = (Declaration) stmt.content;
+        assertEquals("The declaration has the wrong type", new VarType("int"), declaration.type);
+        assertEquals("The declaration has the wrong identifier", "a", declaration.identifier);
 
-        assertNull("The declaration has an assignment", decl.assignment);
+        assertNull("The declaration has an assignment", declaration.assignment);
 
         input = "int a = 10;";
         root = parse(input).getStatements();
 
-        statement = (Statements) root;
-        stmt = (Statements.Statement) statement.statements.get(0);
+        statement = root;
+        stmt = statement.statements.get(0);
         assertTrue("The statement is not an instance of Declaration", stmt.content instanceof Declaration);
-        decl = (Declaration) stmt.content;
-        assertEquals("The declaration has the wrong type", new VarType("int"), decl.type);
-        assertEquals("The declaration has the wrong identifier", "a", decl.identifier);
+        declaration = (Declaration) stmt.content;
+        assertEquals("The declaration has the wrong type", new VarType("int"), declaration.type);
+        assertEquals("The declaration has the wrong identifier", "a", declaration.identifier);
 
-        assertNotNull("The declaration has no assignment", decl.assignment);
+        assertNotNull("The declaration has no assignment", declaration.assignment);
 
-        assertTrue("The assignment is not an instance of Expression", decl.assignment instanceof Expression);
-        Expression expression = (Expression) decl.assignment;
+        assertTrue("The assignment is not an instance of Expression", declaration.assignment instanceof Expression);
+        Expression expression = (Expression) declaration.assignment;
         assertTrue("The expression is not an instance of Expression.Value", expression instanceof Expression.Value);
         Expression.Value value = (Expression.Value) expression;
         assertEquals("The value is not correct", "10", value.value.getValue());
     }
 
     @Test
-    public void testComplexeDeclaration() throws Exception {
+    public void testComplexDeclaration() throws Exception {
         String input = "final int[] a;";
         Statements root = parse(input).getStatements();
 
-        Statements statement = (Statements) root;
-        Statements.Statement stmt = (Statements.Statement) statement.statements.get(0);
+        Statements statement = root;
+        Statements.Statement stmt = statement.statements.get(0);
         assertTrue("The statement is not an instance of Declaration", stmt.content instanceof Declaration);
-        Declaration decl = (Declaration) stmt.content;
+        Declaration declaration = (Declaration) stmt.content;
 
         VarType expectedType = new VarType("int");
         expectedType.setVector();
         expectedType.setFinal(true);
-        assertEquals("The type is not correct", expectedType, decl.type);
-        assertEquals("The identifier is not correct", "a", decl.identifier);
-        assertTrue("The declaration is not final", decl.type.isFinal());
-        assertTrue("The declaration is not a vector", decl.type.isVector());
-        assertNull("The declaration has an assignment", decl.assignment);
+        assertEquals("The type is not correct", expectedType, declaration.type);
+        assertEquals("The identifier is not correct", "a", declaration.identifier);
+        assertTrue("The declaration is not final", declaration.type.isFinal());
+        assertTrue("The declaration is not a vector", declaration.type.isVector());
+        assertNull("The declaration has an assignment", declaration.assignment);
 
         input = "int[] a = 10 * 10;";
         root = parse(input).getStatements();
 
-        statement = (Statements) root;
-        stmt = (Statements.Statement) statement.statements.get(0);
+        statement = root;
+        stmt = statement.statements.get(0);
         assertTrue("The statement is not an instance of Declaration", stmt.content instanceof Declaration);
-        decl = (Declaration) stmt.content;
+        declaration = (Declaration) stmt.content;
         expectedType = new VarType("int");
         expectedType.setVector();
-        assertEquals("The type is not correct", expectedType, decl.type);
-        assertEquals("The identifier is not correct", "a", decl.identifier);
-        assertNotNull("The declaration has no assignment", decl.assignment);
+        assertEquals("The type is not correct", expectedType, declaration.type);
+        assertEquals("The identifier is not correct", "a", declaration.identifier);
+        assertNotNull("The declaration has no assignment", declaration.assignment);
 
-        assertTrue("The assignment is not an instance of Expression", decl.assignment instanceof Expression);
-        Expression expression = (Expression) decl.assignment;
+        assertTrue("The assignment is not an instance of Expression", declaration.assignment instanceof Expression);
+        Expression expression = (Expression) declaration.assignment;
         assertTrue("The expression is not an instance of Operation", expression instanceof Expression.Operation);
         Expression.Operation operation = (Expression.Operation) expression;
         assertTrue("The left side of the operation is not an instance of Value", operation.left instanceof Expression.Value);
@@ -98,10 +99,10 @@ public class TestParser {
     @Test
     public void testBasicWhile() throws Exception {
         String input = "while (a < 10) { int a = 10; }";
-        Statements root = parse(input).getStatements();
 
-        Statements statement = (Statements) root;
-        Statements.Statement stmt = (Statements.Statement) statement.statements.get(0);
+        Statements statement;
+        statement = parse(input).getStatements();
+        Statements.Statement stmt = statement.statements.get(0);
         assertTrue("The statement is not an instance of While", stmt.content instanceof While);
         While wh = (While) stmt.content;
 
@@ -121,24 +122,23 @@ public class TestParser {
         Block block = wh.block;
         assertNotNull("The inside of the while loop is null", block);
         assertEquals("The block has the wrong number of statements", 1, block.statements.statements.size());
-        Statements.Statement innerStmt = (Statements.Statement) block.statements.statements.get(0);
-        Declaration decl = (Declaration) innerStmt.content;
-        assertEquals("The declaration has the wrong type", new VarType("int"), decl.type);
-        assertEquals("The declaration has the wrong identifier", "a", decl.identifier);
-        assertNotNull("The declaration has no assignment", decl.assignment);
+        Statements.Statement innerStmt = block.statements.statements.get(0);
+        Declaration declaration = (Declaration) innerStmt.content;
+        assertEquals("The declaration has the wrong type", new VarType("int"), declaration.type);
+        assertEquals("The declaration has the wrong identifier", "a", declaration.identifier);
+        assertNotNull("The declaration has no assignment", declaration.assignment);
 
-        assertTrue("The assignment is not an instance of Expression.Value", decl.assignment instanceof Expression.Value);
-        Expression.Value innerValue = (Expression.Value) decl.assignment;
+        assertTrue("The assignment is not an instance of Expression.Value", declaration.assignment instanceof Expression.Value);
+        Expression.Value innerValue = (Expression.Value) declaration.assignment;
         assertEquals("The value is not correct", "10", innerValue.value.getValue());
     }
 
     @Test
-    public void testComplexeWhile() throws Exception {
+    public void testComplexWhile() throws Exception {
         String input = "while (a + 2 * 4 < (1 + 10) * 10) {}";
         Statements root = parse(input).getStatements();
 
-        Statements statement = (Statements) root;
-        Statements.Statement stmt = (Statements.Statement) statement.statements.get(0);
+        Statements.Statement stmt = root.statements.get(0);
         assertTrue("The statement is not an instance of While", stmt.content instanceof While);
         While wh = (While) stmt.content;
 
@@ -150,8 +150,8 @@ public class TestParser {
         assertTrue("The left side of the operation is not an instance of Operation", operationComp.left instanceof Expression.Operation);
         Expression.Operation operationLeft = (Expression.Operation) operationComp.left;
         assertTrue("The left side of the left operation is not an instance of IdentifierAccess", operationLeft.left instanceof IdentifierAccess);
-        IdentifierAccess identifer = (IdentifierAccess) operationLeft.left;
-        assertEquals("The identifier is not correct", "a", identifer.identifier);
+        IdentifierAccess identifier = (IdentifierAccess) operationLeft.left;
+        assertEquals("The identifier is not correct", "a", identifier.identifier);
         assertTrue("The right side of the left operation is not an instance of Operation", operationLeft.right instanceof Expression.Operation);
         Expression.Operation operationRight = (Expression.Operation) operationLeft.right;
         assertTrue("The left side of the right operation is not an instance of Value", operationRight.left instanceof Expression.Value);
@@ -184,8 +184,7 @@ public class TestParser {
         String input = "if (a < 10) { int a = 10; }";
         Statements root = parse(input).getStatements();
 
-        Statements statement = (Statements) root;
-        Statements.Statement stmt = (Statements.Statement) statement.statements.get(0);
+        Statements.Statement stmt = root.statements.get(0);
         assertTrue("The statement is not an instance of If", stmt.content instanceof If);
         If ifTested = (If) stmt.content;
 
@@ -205,25 +204,24 @@ public class TestParser {
         Block block = ifTested.block;
         assertNotNull("The inside of the if block is null", block);
         assertEquals("The block has the wrong number of statements", 1, block.statements.statements.size());
-        Statements.Statement innerStmt = (Statements.Statement) block.statements.statements.get(0);
-        Declaration decl = (Declaration) innerStmt.content;
-        assertEquals("The declaration has the wrong type", new VarType("int"), decl.type);
-        assertEquals("The declaration has the wrong identifier", "a", decl.identifier);
-        assertNotNull("The declaration has no assignment", decl.assignment);
+        Statements.Statement innerStmt = block.statements.statements.get(0);
+        Declaration declaration = (Declaration) innerStmt.content;
+        assertEquals("The declaration has the wrong type", new VarType("int"), declaration.type);
+        assertEquals("The declaration has the wrong identifier", "a", declaration.identifier);
+        assertNotNull("The declaration has no assignment", declaration.assignment);
 
-        assertTrue("The assignment is not an instance of Expression.Value", decl.assignment instanceof Expression.Value);
-        Expression.Value innerValue = (Expression.Value) decl.assignment;
+        assertTrue("The assignment is not an instance of Expression.Value", declaration.assignment instanceof Expression.Value);
+        Expression.Value innerValue = (Expression.Value) declaration.assignment;
         assertEquals("The value is not correct", "10", innerValue.value.getValue());
     }
 
     @Test
-    // expression in complexe if : a + readInt(3 + a) * 4 < (1 + z.y[4]) * 10
-    public void testComplexeIf() throws Exception {
+    // expression in complex if : a + readInt(3 + a) * 4 < (1 + z.y[4]) * 10
+    public void testComplexIf() throws Exception {
         String input = "if (a + readInt(3 + a) * 4 < (1 + z.y[4]) * 10) {}";
         Statements root = parse(input).getStatements();
 
-        Statements statement = (Statements) root;
-        Statements.Statement stmt = (Statements.Statement) statement.statements.get(0);
+        Statements.Statement stmt = root.statements.get(0);
         assertTrue("The statement is not an instance of If", stmt.content instanceof If);
         If ifTested = (If) stmt.content;
 
@@ -295,15 +293,14 @@ public class TestParser {
         String input = "for (i = 0, i < 10, i = i + 1) { int a = 10; }";
         Statements root = parse(input).getStatements();
 
-        Statements statement = (Statements) root;
-        Statements.Statement stmt = (Statements.Statement) statement.statements.get(0);
+        Statements.Statement stmt = root.statements.get(0);
         assertTrue("The statement is not an instance of For", stmt.content instanceof For);
         For forTested = (For) stmt.content;
 
-        assertTrue("The first assignement is not an instance of IdentifierAccess", forTested.firstAssignment instanceof IdentifierAccess);
+        assertTrue("The first assignment is not an instance of IdentifierAccess", forTested.firstAssignment instanceof IdentifierAccess);
         IdentifierAccess firstAssign = (IdentifierAccess) forTested.firstAssignment;
         assertEquals("The identifier is not correct", "i", firstAssign.identifier);
-        assertNotNull("The first assignement has an assignment", firstAssign.assignment);
+        assertNotNull("The first assignment has an assignment", firstAssign.assignment);
         Assignment assign = firstAssign.assignment;
         assertTrue("The assignment is not an instance of Expression.Value", assign.expression instanceof Expression.Value);
         Expression.Value value = (Expression.Value) assign.expression;
@@ -321,11 +318,11 @@ public class TestParser {
         value = (Expression.Value) operation.right;
         assertEquals("The value is not correct", "10", value.value.getValue());
 
-        assertTrue("The second assignement is not an instance of IdentifierAccess", forTested.secondAssignment instanceof IdentifierAccess);
+        assertTrue("The second assignment is not an instance of IdentifierAccess", forTested.secondAssignment instanceof IdentifierAccess);
         IdentifierAccess secondAssign = (IdentifierAccess) forTested.secondAssignment;
         assertEquals("The identifier is not correct", "i", secondAssign.identifier);
-        assertNotNull("The second assignement has an assignment", secondAssign.assignment);
-        assign = (Assignment) secondAssign.assignment;
+        assertNotNull("The second assignment has an assignment", secondAssign.assignment);
+        assign = secondAssign.assignment;
         assertTrue("The assignment is not an instance of Expression.Operation", assign.expression instanceof Expression.Operation);
         operation = (Expression.Operation) assign.expression;
         assertTrue("The left side of the operation is not an instance of IdentifierAccess", operation.left instanceof IdentifierAccess);
@@ -339,33 +336,32 @@ public class TestParser {
         Block block = forTested.block;
         assertNotNull("The inside of the for block is null", block);
         assertEquals("The block has the wrong number of statements", 1, block.statements.statements.size());
-        Statements.Statement innerStmt = (Statements.Statement) block.statements.statements.get(0);
-        Declaration decl = (Declaration) innerStmt.content;
-        assertEquals("The declaration has the wrong type", new VarType("int"), decl.type);
-        assertEquals("The declaration has the wrong identifier", "a", decl.identifier);
-        assertNotNull("The declaration has no assignment", decl.assignment);
+        Statements.Statement innerStmt = block.statements.statements.get(0);
+        Declaration declaration = (Declaration) innerStmt.content;
+        assertEquals("The declaration has the wrong type", new VarType("int"), declaration.type);
+        assertEquals("The declaration has the wrong identifier", "a", declaration.identifier);
+        assertNotNull("The declaration has no assignment", declaration.assignment);
 
-        assertTrue("The assignment is not an instance of Expression.Value", decl.assignment instanceof Expression.Value);
-        Expression.Value innerValue = (Expression.Value) decl.assignment;
+        assertTrue("The assignment is not an instance of Expression.Value", declaration.assignment instanceof Expression.Value);
+        Expression.Value innerValue = (Expression.Value) declaration.assignment;
         assertEquals("The value is not correct", "10", innerValue.value.getValue());
 
     }
 
     @Test
     // for (i=1*readInt(square(2/a)), i*2 <100+4*readInt(), i = i+1*4+readInt())
-    public void testComplexeFor() throws Exception {
+    public void testComplexFor() throws Exception {
         String input = "for (i=1*readInt(square(2/a)), i*2 <100+4*readInt(), i = i+1*4+readInt()) {}";
         Statements root = parse(input).getStatements();
 
-        Statements statement = (Statements) root;
-        Statements.Statement stmt = (Statements.Statement) statement.statements.get(0);
+        Statements.Statement stmt = root.statements.get(0);
         assertTrue("The statement is not an instance of For", stmt.content instanceof For);
         For forTested = (For) stmt.content;
 
-        assertTrue("The first assignement is not an instance of IdentifierAccess", forTested.firstAssignment instanceof IdentifierAccess);
+        assertTrue("The first assignment is not an instance of IdentifierAccess", forTested.firstAssignment instanceof IdentifierAccess);
         IdentifierAccess firstAssign = (IdentifierAccess) forTested.firstAssignment;
         assertEquals("The identifier is not correct", "i", firstAssign.identifier);
-        assertNotNull("The first assignement has an assignment", firstAssign.assignment);
+        assertNotNull("The first assignment has an assignment", firstAssign.assignment);
         Assignment assign = firstAssign.assignment;
         assertTrue("The assignment is not an instance of Expression.Operation", assign.expression instanceof Expression.Operation);
         Expression.Operation operation = (Expression.Operation) assign.expression;
@@ -436,11 +432,11 @@ public class TestParser {
         functionCall = (IdentifierAccess.FunctionCall) identifier.next;
         assertEquals("The number of arguments is not correct", 0, functionCall.arguments.size());
 
-        assertTrue("The second assignement is not an instance of IdentifierAccess", forTested.secondAssignment instanceof IdentifierAccess);
+        assertTrue("The second assignment is not an instance of IdentifierAccess", forTested.secondAssignment instanceof IdentifierAccess);
         IdentifierAccess secondAssign = (IdentifierAccess) forTested.secondAssignment;
         assertEquals("The identifier is not correct", "i", secondAssign.identifier);
-        assertNotNull("The second assignement has an assignment", secondAssign.assignment);
-        assign = (Assignment) secondAssign.assignment;
+        assertNotNull("The second assignment has an assignment", secondAssign.assignment);
+        assign = secondAssign.assignment;
         assertTrue("The assignment is not an instance of Expression.Operation", assign.expression instanceof Expression.Operation);
         operation = (Expression.Operation) assign.expression;
         assertEquals("The operation is not correct", "+", operation.operation);
@@ -473,8 +469,7 @@ public class TestParser {
         String input = "def int test() { int a = 10; }";
         Statements root = parse(input).getStatements();
 
-        Statements statement = (Statements) root;
-        Statements.Statement stmt = (Statements.Statement) statement.statements.get(0);
+        Statements.Statement stmt = root.statements.get(0);
         assertTrue("The statement is not an instance of FunctionDef", stmt.content instanceof Method);
 
         Method method = (Method) stmt.content;
@@ -483,22 +478,21 @@ public class TestParser {
         assertEquals("The method has the wrong number of arguments", 0, method.parameters.size());
         assertNotNull("The method has no block", method.block);
         assertEquals("The block has the wrong number of statements", 1, method.block.statements.statements.size());
-        Statements.Statement innerStmt = (Statements.Statement) method.block.statements.statements.get(0);
-        Declaration decl = (Declaration) innerStmt.content;
-        assertEquals("The declaration has the wrong type", new VarType("int"), decl.type);
-        assertEquals("The declaration has the wrong identifier", "a", decl.identifier);
-        assertNotNull("The declaration has no assignment", decl.assignment);
-        assertTrue("The assignment is not an instance of Expression.Value", decl.assignment instanceof Expression.Value);
-        Expression.Value innerValue = (Expression.Value) decl.assignment;
+        Statements.Statement innerStmt = method.block.statements.statements.get(0);
+        Declaration declaration = (Declaration) innerStmt.content;
+        assertEquals("The declaration has the wrong type", new VarType("int"), declaration.type);
+        assertEquals("The declaration has the wrong identifier", "a", declaration.identifier);
+        assertNotNull("The declaration has no assignment", declaration.assignment);
+        assertTrue("The assignment is not an instance of Expression.Value", declaration.assignment instanceof Expression.Value);
+        Expression.Value innerValue = (Expression.Value) declaration.assignment;
         assertEquals("The value is not correct", "10", innerValue.value.getValue());
     }
     @Test
-    public void testComplexeFunctionDef() throws Exception {
+    public void testComplexFunctionDef() throws Exception {
         String input = "def int test(int a, int b) { int a = 10; }";
         Statements root = parse(input).getStatements();
 
-        Statements statement = (Statements) root;
-        Statements.Statement stmt = (Statements.Statement) statement.statements.get(0);
+        Statements.Statement stmt = root.statements.get(0);
         assertTrue("The statement is not an instance of FunctionDef", stmt.content instanceof Method);
 
         Method method = (Method) stmt.content;
@@ -511,29 +505,34 @@ public class TestParser {
         assertEquals("The second argument has the wrong identifier", "b", method.parameters.get(1).identifier);
         assertNotNull("The method has no block", method.block);
         assertEquals("The block has the wrong number of statements", 1, method.block.statements.statements.size());
-        Statements.Statement innerStmt = (Statements.Statement) method.block.statements.statements.get(0);
-        Declaration decl = (Declaration) innerStmt.content;
-        assertEquals("The declaration has the wrong type", new VarType("int"), decl.type);
-        assertEquals("The declaration has the wrong identifier", "a", decl.identifier);
-        assertNotNull("The declaration has no assignment", decl.assignment);
-        assertTrue("The assignment is not an instance of Expression.Value", decl.assignment instanceof Expression.Value);
-        Expression.Value innerValue = (Expression.Value) decl.assignment;
+        Statements.Statement innerStmt = method.block.statements.statements.get(0);
+        Declaration declaration = (Declaration) innerStmt.content;
+        assertEquals("The declaration has the wrong type", new VarType("int"), declaration.type);
+        assertEquals("The declaration has the wrong identifier", "a", declaration.identifier);
+        assertNotNull("The declaration has no assignment", declaration.assignment);
+        assertTrue("The assignment is not an instance of Expression.Value", declaration.assignment instanceof Expression.Value);
+        Expression.Value innerValue = (Expression.Value) declaration.assignment;
         assertEquals("The value is not correct", "10", innerValue.value.getValue());
     }
-    //@Test en travaux , je m'endors
+
+    @Test
     public void testArrayInit() throws Exception {
         String input = "int[] a = int[5]; ";
         Statements root = parse(input).getStatements();
 
-        Statements statement = (Statements) root;
-        Statements.Statement stmt = (Statements.Statement) statement.statements.get(0);
+        Statements.Statement stmt;
+        stmt = root.statements.get(0);
         assertTrue("The statement is not an instance of Declaration", stmt.content instanceof Declaration);
-        Declaration decl = (Declaration) stmt.content;
-        assertEquals("The declaration has the wrong type", new VarType("int"), decl.type);
-        assertEquals("The declaration has the wrong identifier", "a", decl.identifier);
-        assertNotNull("The declaration has no assignment", decl.assignment);
-        assertTrue("The assignment is not an instance of ArrayInitialization", (decl.assignment  instanceof ArrayInitialization));
-        ArrayInitialization arrayInit = (ArrayInitialization) decl.assignment;
+        Declaration declaration = (Declaration) stmt.content;
+        VarType expectedType = new VarType("int");
+        expectedType.setVector();
+        assertEquals("The declaration has the wrong type", expectedType, declaration.type);
+        assertEquals("The declaration has the wrong identifier", "a", declaration.identifier);
+        assertNotNull("The declaration has no assignment", declaration.assignment);
+        assertTrue("The assignment is not an instance of ArrayInitialization", (declaration.assignment  instanceof Expression));
+        Expression expression = (Expression) declaration.assignment;
+        assertTrue("The expression is not an instance of ArrayInitialization", expression.corps instanceof ArrayInitialization);
+        ArrayInitialization arrayInit = (ArrayInitialization) expression.corps;
         assertEquals("The array has the wrong type", new VarType("int"), arrayInit.type);
         assertEquals("The array has the wrong size", "5", ((Expression.Value) arrayInit.expression).value.getValue());
 
@@ -543,8 +542,7 @@ public class TestParser {
         String input = "if (a < 10 && b > 5) {}";
         Statements root = parse(input).getStatements();
 
-        Statements statement = (Statements) root;
-        Statements.Statement stmt = (Statements.Statement) statement.statements.get(0);
+        Statements.Statement stmt = root.statements.get(0);
         assertTrue("The statement is not an instance of If", stmt.content instanceof If);
         If ifTested = (If) stmt.content;
 
@@ -575,12 +573,11 @@ public class TestParser {
 
     @Test
     // a(2*readInt(1, 2) < (10 == b) || (c && b) == false
-    public void testComplexeLogicalOperation() throws Exception {
+    public void testComplexLogicalOperation() throws Exception {
         String input = "if (a(2*readInt(1, 2)) + 1 < (10 == b) || (c && b) == false) {}";
         Statements root = parse(input).getStatements();
 
-        Statements statement = (Statements) root;
-        Statements.Statement stmt = (Statements.Statement) statement.statements.get(0);
+        Statements.Statement stmt = root.statements.get(0);
         assertTrue("The statement is not an instance of If", stmt.content instanceof If);
         If ifTested = (If) stmt.content;
 
@@ -655,7 +652,170 @@ public class TestParser {
     }
 
     @Test
-    public void testError() throws Exception {
+    public void testBasicStruct() throws Exception {
+        String input = "struct a { int a; int b; }";
+        Statements root = parse(input).getStatements();
+
+        Statements.Statement stmt = root.statements.get(0);
+        assertTrue("The statement is not an instance of Struct", stmt.content instanceof Struct);
+
+        Struct struct = (Struct) stmt.content;
+        assertEquals("The struct has the wrong identifier", "a", struct.getIdentifier());
+        assertEquals("The struct has the wrong number of fields", 2, struct.getDeclarations().size());
+        assertEquals("The first field has the wrong type", new VarType("int"), struct.getDeclarations().get(0).type);
+        assertEquals("The first field has the wrong identifier", "a", struct.getDeclarations().get(0).identifier);
+        assertEquals("The second field has the wrong type", new VarType("int"), struct.getDeclarations().get(1).type);
+        assertEquals("The second field has the wrong identifier", "b", struct.getDeclarations().get(1).identifier);
+    }
+
+    @Test
+    public void testComplexStruct() throws Exception {
+        String input = "struct a { int a; int b; } struct b { a a; int b; }";
+        Statements root = parse(input).getStatements();
+
+        Statements.Statement stmt = root.statements.get(0);
+        assertTrue("The statement is not an instance of Struct", stmt.content instanceof Struct);
+
+        Struct struct = (Struct) stmt.content;
+        assertEquals("The struct has the wrong identifier", "a", struct.getIdentifier());
+        assertEquals("The struct has the wrong number of fields", 2, struct.getDeclarations().size());
+        assertEquals("The first field has the wrong type", new VarType("int"), struct.getDeclarations().get(0).type);
+        assertEquals("The first field has the wrong identifier", "a", struct.getDeclarations().get(0).identifier);
+        assertEquals("The second field has the wrong type", new VarType("int"), struct.getDeclarations().get(1).type);
+        assertEquals("The second field has the wrong identifier", "b", struct.getDeclarations().get(1).identifier);
+
+        stmt = root.statements.get(1);
+        assertTrue("The statement is not an instance of Struct", stmt.content instanceof Struct);
+
+        struct = (Struct) stmt.content;
+        assertEquals("The struct has the wrong identifier", "b", struct.getIdentifier());
+        assertEquals("The struct has the wrong number of fields", 2, struct.getDeclarations().size());
+        assertEquals("The first field has the wrong type", new VarType("a"), struct.getDeclarations().get(0).type);
+        assertEquals("The first field has the wrong identifier", "a", struct.getDeclarations().get(0).identifier);
+        assertEquals("The second field has the wrong type", new VarType("int"), struct.getDeclarations().get(1).type);
+        assertEquals("The second field has the wrong identifier", "b", struct.getDeclarations().get(1).identifier);
+    }
+
+    @Test
+    public void testBangOperation() throws Exception {
+        String input = "if (!(a)) {}";
+        Statements root = parse(input).getStatements();
+
+        Statements.Statement stmt = root.statements.get(0);
+        assertTrue("The statement is not an instance of If", stmt.content instanceof If);
+        If ifTested = (If) stmt.content;
+
+        assertTrue("The expression is not an instance of Expression", ifTested.expression instanceof Expression);
+        Expression expression = (Expression) ifTested.expression;
+        assertTrue("The expression is not an instance of Bang", expression.corps instanceof Expression.Bang);
+        Expression.Bang bang = (Expression.Bang) expression.corps;
+        assertTrue("The expression is not an instance of Expression", bang.expression instanceof Expression);
+        expression = (Expression) bang.expression;
+        assertTrue("The expression is not an instance of IdentifierAccess", expression.corps instanceof IdentifierAccess);
+        IdentifierAccess identifier = (IdentifierAccess) expression.corps;
+        assertEquals("The identifier is not correct", "a", identifier.identifier);
+    }
+
+    @Test
+    public void testBasicArrayAccess() throws Exception {
+        String input = "int b = a[1];";
+        Statements root = parse(input).getStatements();
+
+        Statements.Statement stmt = root.statements.get(0);
+        assertTrue("The statement is not an instance of Declaration", stmt.content instanceof Declaration);
+        Declaration declaration = (Declaration) stmt.content;
+        assertEquals("The declaration has the wrong type", new VarType("int"), declaration.type);
+        assertEquals("The declaration has the wrong identifier", "b", declaration.identifier);
+        assertNotNull("The declaration has no assignment", declaration.assignment);
+        assertTrue("The assignment is not an instance of Expression", declaration.assignment instanceof Expression);
+        Expression expression = (Expression) declaration.assignment;
+        assertTrue("The expression is not an instance of IdentifierAccess", expression.corps instanceof IdentifierAccess);
+        IdentifierAccess identifier = (IdentifierAccess) expression.corps;
+        assertTrue("The assignment is not an instance of IdentifierAccess.ArrayAccess", identifier.next instanceof IdentifierAccess.ArrayAccess);
+        IdentifierAccess.ArrayAccess arrayAccess = (IdentifierAccess.ArrayAccess) identifier.next;
+        assertEquals("The identifier is not correct", "a", arrayAccess.identifier);
+        assertTrue("The index is not an instance of Expression.Value", arrayAccess.index instanceof Expression.Value);
+        Expression.Value value = (Expression.Value) arrayAccess.index;
+        assertEquals("The value is not correct", "1", value.value.getValue());
+    }
+
+    @Test
+    public void testComplexArrayAccess() throws Exception {
+        String input = "int b = a[1][2];";
+        Statements root = parse(input).getStatements();
+
+        Statements.Statement stmt = root.statements.get(0);
+        assertTrue("The statement is not an instance of Declaration", stmt.content instanceof Declaration);
+        Declaration declaration = (Declaration) stmt.content;
+        assertEquals("The declaration has the wrong type", new VarType("int"), declaration.type);
+        assertEquals("The declaration has the wrong identifier", "b", declaration.identifier);
+        assertNotNull("The declaration has no assignment", declaration.assignment);
+        assertTrue("The assignment is not an instance of Expression", declaration.assignment instanceof Expression);
+        Expression expression = (Expression) declaration.assignment;
+        assertTrue("The expression is not an instance of IdentifierAccess", expression.corps instanceof IdentifierAccess);
+        IdentifierAccess identifier = (IdentifierAccess) expression.corps;
+        assertTrue("The assignment is not an instance of IdentifierAccess.ArrayAccess", identifier.next instanceof IdentifierAccess.ArrayAccess);
+        IdentifierAccess.ArrayAccess arrayAccess = (IdentifierAccess.ArrayAccess) identifier.next;
+        assertEquals("The identifier is not correct", "a", arrayAccess.identifier);
+        assertTrue("The index is not an instance of Expression.Value", arrayAccess.index instanceof Expression.Value);
+        Expression.Value value = (Expression.Value) arrayAccess.index;
+        assertEquals("The value is not correct", "1", value.value.getValue());
+        assertTrue("The next element of the index is not an instance of IdentifierAccess.ArrayAccess", arrayAccess.next instanceof IdentifierAccess.ArrayAccess);
+        arrayAccess = (IdentifierAccess.ArrayAccess) arrayAccess.next;
+        value = (Expression.Value) arrayAccess.index;
+        assertEquals("The value is not correct", "2", value.value.getValue());
+    }
+
+    @Test
+    public void testBasicArrayAssign() throws Exception {
+        String input = "a[1] = 2;";
+        Statements root = parse(input).getStatements();
+
+        Statements.Statement stmt;
+        stmt = root.statements.get(0);
+        assertTrue("The statement is not an instance of IdentifierAccess", stmt.content instanceof IdentifierAccess);
+        IdentifierAccess identifier = (IdentifierAccess) stmt.content;
+        assertTrue("The next element of the identifier is not an instance of IdentifierAccess.ArrayAccess", identifier.next instanceof IdentifierAccess.ArrayAccess);
+        IdentifierAccess.ArrayAccess arrayAccess = (IdentifierAccess.ArrayAccess) identifier.next;
+        assertEquals("The identifier is not correct", "a", arrayAccess.identifier);
+        assertTrue("The index is not an instance of Expression.Value", arrayAccess.index instanceof Expression.Value);
+        Expression.Value value = (Expression.Value) arrayAccess.index;
+        assertEquals("The value is not correct", "1", value.value.getValue());
+        assertNotNull("The identifier has no assignment", arrayAccess.assignment);
+        Assignment assign = arrayAccess.assignment;
+        assertTrue("The assignment is not an instance of Expression", assign.expression instanceof Expression);
+        Expression expression = (Expression) assign.expression;
+        assertTrue("The expression is not an instance of Expression.Value", expression instanceof Expression.Value);
+        value = (Expression.Value) expression;
+        assertEquals("The value is not correct", "2", value.value.getValue());
+    }
+
+    @Test
+    public void testNegative() throws Exception {
+        String input = "int a = -1;";
+        Statements root = parse(input).getStatements();
+
+        Statements.Statement stmt = root.statements.get(0);
+        assertTrue("The statement is not an instance of Declaration", stmt.content instanceof Declaration);
+        Declaration declaration = (Declaration) stmt.content;
+        assertEquals("The declaration has the wrong type", new VarType("int"), declaration.type);
+        assertEquals("The declaration has the wrong identifier", "a", declaration.identifier);
+        assertNotNull("The declaration has no assignment", declaration.assignment);
+        assertTrue("The assignment is not an instance of Expression", declaration.assignment instanceof Expression);
+        Expression expression = (Expression) declaration.assignment;
+        assertTrue("The expression is not an instance of ArithmeticOperation", expression.corps instanceof Expression.ArithmeticOperation);
+        Expression.ArithmeticOperation arithmeticOperation = (Expression.ArithmeticOperation) expression.corps;
+        assertEquals("The operation is not correct", "-", arithmeticOperation.operation);
+        assertTrue("The left side of the operation is not an instance of Value", arithmeticOperation.left instanceof Expression.Value);
+        Expression.Value value = (Expression.Value) arithmeticOperation.left;
+        assertEquals("The value is not correct", "0", value.value.getValue());
+        assertTrue("The right side of the operation is not an instance of Value", arithmeticOperation.right instanceof Expression.Value);
+        value = (Expression.Value) arithmeticOperation.right;
+        assertEquals("The value is not correct", "1", value.value.getValue());
+    }
+
+    @Test
+    public void testError() {
 
         try {
             String input = "int a = 10";
