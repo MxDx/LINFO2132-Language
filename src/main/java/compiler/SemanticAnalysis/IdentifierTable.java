@@ -24,6 +24,9 @@ public class IdentifierTable {
 
     public IdentifierTable(IdentifierTable parent) {
         this.parent = parent;
+        tableIdentifier = new HashMap<>();
+        tableType = new HashMap<>();
+
     }
 
     public Type getType(String identifier) {

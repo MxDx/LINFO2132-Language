@@ -173,6 +173,11 @@ public class IdentifierAccess extends Node {
             parser.getNext();
             parser.match(Parser.OPEN_PARENTHESES);
         }
+
+        public ArrayList<Node> getArguments() {
+            return arguments;
+        }
+
         public IdentifierAccess parse() throws Exception {
 
             while (!parser.currentToken.getValue().equals(")")) {

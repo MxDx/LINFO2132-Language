@@ -3,7 +3,7 @@ package compiler.SemanticAnalysis;
 import compiler.Lexer.VarType;
 
 public class IdentifierType {
-    private final Type type;
+    protected Type type;
     private int vectorDepth;
     private boolean Final;
     public IdentifierType(Type type) {
@@ -22,6 +22,11 @@ public class IdentifierType {
         this.type = identifierType.getType();
         this.vectorDepth = identifierType.getVectorDepth();
         this.Final = identifierType.isFinal();
+    }
+
+    public void setVarType(VarType varType) {
+        this.vectorDepth = varType.getVectorDepth();
+        this.Final = varType.isFinal();
     }
 
     public Type getType() {
@@ -54,6 +59,10 @@ public class IdentifierType {
         this.Final = Final;
     }
 
+    public boolean isVoid() {
+        return type == null;
+    }
+
     public IdentifierType getNext() {
         return null;
     }
@@ -61,7 +70,7 @@ public class IdentifierType {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof IdentifierType identifierType) {
-            return type.equals(identifierType.getType()) && vectorDepth == identifierType.getVectorDepth() && Final == identifierType.isFinal();
+            return type.equals(identifierType.getType()) && vectorDepth == identifierType.getVectorDepth();
         }
         return false;
     }
@@ -76,7 +85,11 @@ public class IdentifierType {
             str = ", final";
         }
         str += ' ';
-        str += type.toString();
+        if (type != null) {
+            str += type.toString();
+        } else {
+            str += "void";
+        }
         return str;
     }
 }

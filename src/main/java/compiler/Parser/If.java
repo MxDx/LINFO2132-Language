@@ -52,6 +52,13 @@ public class If extends Node{
         return visitor.visit(this);
     }
 
+    public Node getBlock() {
+        return block;
+    }
+    public Node getElseStatement() {
+        return elseStatement;
+    }
+
     private static class Else extends Node {
         Block block;
 
@@ -64,11 +71,20 @@ public class If extends Node{
             return this;
         }
 
+        public Node getBlock() {
+            return block;
+        }
+
         @Override
         public String toString() {
             return "\"ELSE_Statement\": {\n"
                     + "\"block\": " + block.toString() + "\n"
                     + '}';
+        }
+
+        @Override
+        public IdentifierType accept(TypeVisitor visitor) throws Exception {
+            return block.accept(visitor);
         }
     }
 }

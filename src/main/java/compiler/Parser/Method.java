@@ -3,6 +3,8 @@ package compiler.Parser;
 
 import compiler.Lexer.Identifier;
 import compiler.Lexer.VarType;
+import compiler.SemanticAnalysis.IdentifierType;
+import compiler.SemanticAnalysis.TypeVisitor;
 
 import java.util.ArrayList;
 
@@ -15,6 +17,19 @@ public class Method extends Node {
     public Method(Parser parser) throws Exception {
         super(parser);
         parser.getNext();
+    }
+
+    public Identifier getName() {
+        return name;
+    }
+    public VarType getReturnType() {
+        return returnType;
+    }
+    public ArrayList<Parameter> getParameters() {
+        return parameters;
+    }
+    public Block getBlock() {
+        return block;
     }
 
     public Node parse() throws Exception {
@@ -59,5 +74,10 @@ public class Method extends Node {
                 + '}';
 
         return str;
+    }
+
+    @Override
+    public IdentifierType accept(TypeVisitor visitor) throws Exception {
+        return visitor.visit(this);
     }
 }

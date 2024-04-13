@@ -1,5 +1,8 @@
 package compiler.Parser;
 
+import compiler.SemanticAnalysis.IdentifierType;
+import compiler.SemanticAnalysis.TypeVisitor;
+
 public class For extends Node{
     public Node firstAssignment;
     public Node expression;
@@ -30,6 +33,22 @@ public class For extends Node{
         return this;
     }
 
+    public Node getFirstAssignment() {
+        return firstAssignment;
+    }
+
+    public Node getExpression() {
+        return expression;
+    }
+
+    public Node getSecondAssignment() {
+        return secondAssignment;
+    }
+
+    public Node getBlock() {
+        return block;
+    }
+
     @Override
     public String toString() {
         return "\"FOR_Statement\": {\n"
@@ -38,5 +57,10 @@ public class For extends Node{
                 + "\"secondAssignment\": {\n" + secondAssignment.toString() + "},\n"
                 + "\"block\": " + block.toString() + "\n"
                 + '}';
+    }
+
+    @Override
+    public IdentifierType accept(TypeVisitor visitor) throws Exception {
+        return visitor.visit(this);
     }
 }

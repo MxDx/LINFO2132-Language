@@ -2,6 +2,8 @@ package compiler.Parser;
 
 import compiler.Lexer.Symbol;
 import compiler.Lexer.VarType;
+import compiler.SemanticAnalysis.IdentifierType;
+import compiler.SemanticAnalysis.TypeVisitor;
 
 import java.util.ArrayList;
 
@@ -17,6 +19,15 @@ public class ArrayInitialization extends Node{
         this.type = (VarType) parser.currentToken;
         parser.getNext();
     }
+
+    public Node getIndex() {
+        return expression;
+    }
+
+    public VarType getType() {
+        return type;
+    }
+
     public ArrayInitialization parse() throws Exception {
         parser.match(Parser.OPEN_BRACKETS);
         expression = new Expression(parser).setEOF(EOF).parse();
@@ -29,5 +40,10 @@ public class ArrayInitialization extends Node{
                 + "\"type\": \""+ type.toString() + "\",\n"
                 + "\"expression\": {" + expression.toString() + "}\n"
                 + '}';
+    }
+
+    @Override
+    public IdentifierType accept(TypeVisitor visitor) throws Exception {
+        return visitor.visit(this);
     }
 }

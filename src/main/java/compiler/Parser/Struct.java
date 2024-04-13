@@ -16,9 +16,7 @@ public class Struct extends  Node {
     }
 
     public Struct parse() throws Exception {
-        if (!parser.currentToken.getType().equals("Identifier")) {
-            parser.ParserException("Invalid Identifier");
-        }
+
         identifier = parser.currentToken.getValue();
         parser.getNext();
         parser.match(Parser.OPEN_BRACES);
