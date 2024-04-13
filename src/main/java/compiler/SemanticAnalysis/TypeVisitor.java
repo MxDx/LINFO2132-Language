@@ -8,6 +8,7 @@ import compiler.SemanticAnalysis.Type.StructType;
 import compiler.SemanticAnalysis.Type.Type;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class TypeVisitor {
@@ -97,6 +98,14 @@ public class TypeVisitor {
             str += "< " + struct.getIdentifier() + " >";
             SemanticAnalysis.SemanticException("StructError", str, struct);
         }
+        List<IdentifierType> fields_List = structType.getFields().values().stream().toList();
+        ArrayList<IdentifierType> fields = new ArrayList<>(fields_List);
+        FuncType constructor = new FuncType(new IdentifierType(structType), fields);
+        if (!table.addConstructor(struct.getIdentifier(), constructor)) {
+            String str = "Constructor already declared: ";
+            str += "< " + struct.getIdentifier() + " >";
+            SemanticAnalysis.SemanticException("StructError", str, struct);
+        }
         return null;
     }
 
@@ -131,7 +140,7 @@ public class TypeVisitor {
         assert expression != null;
         IdentifierType type = expression.accept(this);
         if (!Objects.equals(type.getType(), table.getType("bool"))) {
-            SemanticAnalysis.SemanticException("TypeError","While expression is not boolean", expression);
+            SemanticAnalysis.SemanticException("MissingConditionError","While expression is not boolean", expression);
         }
         Node block = whileStatement.getBlock();
         if (block != null) {

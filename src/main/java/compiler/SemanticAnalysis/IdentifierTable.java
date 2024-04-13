@@ -85,6 +85,23 @@ public class IdentifierTable {
         return true;
     }
 
+    public boolean addConstructor(String identifier, IdentifierType type) {
+        if (!tableType.containsKey(identifier)) {
+            return false;
+        }
+        if (tableIdentifier.containsKey(identifier)) {
+            return false;
+        }
+        if (Compiler.getKeywords().contains(identifier)) {
+            return false;
+        }
+        if (Compiler.getBasicTypes().contains(identifier)) {
+            return false;
+        }
+        tableIdentifier.put(identifier, type);
+        return true;
+    }
+
     public IdentifierTable getParent() {
         return parent;
     }

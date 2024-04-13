@@ -13,7 +13,7 @@ public class StructType extends Type {
 
     private final HashMap<String, IdentifierType> fields;
     public StructType(Struct struct, TypeVisitor visitor) throws Exception {
-        super(null);
+        super(new VarType(struct.getIdentifier()));
         fields = new HashMap<>();
         for (Declaration declaration : struct.getDeclarations()) {
             String identifier = declaration.getIdentifier();

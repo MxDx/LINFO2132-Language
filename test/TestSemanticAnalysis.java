@@ -27,7 +27,7 @@ public class TestSemanticAnalysis {
             assert false;
         }
         catch (TypeError e){
-            String expectedErrorMessage = "Assignment type does not match declaration type:  <VarType,int> !=  <VarType,string> at line 1 token 1 with node type Declaration";
+            String expectedErrorMessage = "Assignment type does not match declaration type: \"<int>\" != \"<string>\" at line 1 token 1 with node type Declaration";
             assertEquals(expectedErrorMessage, e.getMessage());
         }
         input = "int a = 10;";
@@ -83,7 +83,7 @@ public class TestSemanticAnalysis {
             assert false;
         }
         catch (OperatorError e){
-            String expectedErrorMessage = "Arithmetic operation [ + ] cannot be applied to types:  <VarType,int> and  <VarType,string> at line 1 token 6 with node type ArithmeticOperation";
+            String expectedErrorMessage = "Arithmetic operation [ + ] cannot be applied to types: \"<int>\" and \"<string>\" at line 1 token 6 with node type ArithmeticOperation";
             assertEquals(expectedErrorMessage, e.getMessage());
         }
         input = "int a = 10 + 10;";
@@ -106,7 +106,7 @@ public class TestSemanticAnalysis {
             assert false;
         }
         catch (OperatorError e){
-            String expectedErrorMessage = "Logical operation [ && ] cannot be applied to types:  <VarType,int> and  <VarType,bool> at line 1 token 5 with node type LogicalOperation";
+            String expectedErrorMessage = "Logical operation [ && ] cannot be applied to types: \"<int>\" and \"<bool>\" at line 1 token 5 with node type LogicalOperation";
             assertEquals(expectedErrorMessage, e.getMessage());
         }
         input = "bool a = true && true;";
@@ -129,7 +129,7 @@ public class TestSemanticAnalysis {
             assert false;
         }
         catch (OperatorError e){
-            String expectedErrorMessage = "Comparison operation [ > ] cannot be applied to types:  <VarType,string> and  <VarType,int> at line 1 token 4 with node type ComparisonOperation";
+            String expectedErrorMessage = "Comparison operation [ > ] cannot be applied to types: \"<string>\" and \"<int>\" at line 1 token 4 with node type ComparisonOperation";
             assertEquals(expectedErrorMessage, e.getMessage());
         }
         input = "bool a = 10 == 10;";
@@ -152,7 +152,7 @@ public class TestSemanticAnalysis {
             assert false;
         }
         catch (TypeError e){
-            String expectedErrorMessage = "Assignment type does not match declaration type:  <VarType,bool> !=  <VarType,int> at line 1 token 1 with node type Declaration";
+            String expectedErrorMessage = "Assignment type does not match declaration type: \"<bool>\" != \"<int>\" at line 1 token 1 with node type Declaration";
             assertEquals(expectedErrorMessage, e.getMessage());
         }
         input = "bool a = !(true);";
@@ -180,7 +180,7 @@ public class TestSemanticAnalysis {
             assert false;
         }
         catch (ArgumentError e){
-            String expectedErrorMessage = "Function call parameters do not match function declaration:  <VarType,int> !=  <VarType,string> at line 3 token 1 with node type FunctionCall";
+            String expectedErrorMessage = "Function call parameters do not match function declaration: \"<int>\" != \"<string>\" at line 3 token 1 with node type FunctionCall";
             assertEquals(expectedErrorMessage, e.getMessage());
         }
         input = """
@@ -242,7 +242,7 @@ public class TestSemanticAnalysis {
             assert false;
         }
         catch (ReturnError e){
-            String expectedErrorMessage = "Return type does not match function return type:  <VarType,int> !=  <VarType,string> at line 2 token 1 with node type Return";
+            String expectedErrorMessage = "Return type does not match function return type: \"<int>\" != \"<string>\" at line 2 token 1 with node type Return";
             assertEquals(expectedErrorMessage, e.getMessage());
         }
         input = """
@@ -375,7 +375,211 @@ public class TestSemanticAnalysis {
         }
 
     }
+    @Test
+    public void complexTestWhileLoop() throws Exception {
+        String input = """
+                def int a(){
+                    int b = 0;
+                    int i = 0;
+                    while (i){
+                        b = b + 1;}
+                    return b;}
+                a();
+                """;
+        Parser parser = getParser(input);
+        try {
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
+            assert false;
+        } catch (MissingConditionError e) {
+            String expectedErrorMessage = "While expression is not boolean at line 4 token 3 with node type Expression";
+            assertEquals(expectedErrorMessage, e.getMessage());
+        }
 
+        input = """
+                def int a(){
+                    int b = 0;
+                    int i = 0;
+                    while (i < 10){
+                        b = b + 1;}
+                    return b;}
+                a();
+                """;
+        parser = getParser(input);
+        try {
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
+            assert true;
+        } catch (Exception e) {
+            assert false;
+        }
+    }
+    @Test
+    public void complexTestFunctionCall() throws Exception {
+        String input = """
+                def int a(int c){
+                    return 10;}
+                def int b(){
+                    return 20;}
+                a(b());
+                """;
+        Parser parser = getParser(input);
+        try {
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
+            assert true;
+        } catch (Exception e) {
+            assert false;
+        }
 
+        input = """
+                def int a(int c){
+                    return 10;}
+                def int b(){
+                    return 20;}
+                a(b() + 10.0);
+                """;
+        parser = getParser(input);
+        try {
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
+            assert false;
+        } catch (ArgumentError e) {
+            String expectedErrorMessage = "Function call parameters do not match function declaration: \"<int>\" != \"<float>\" at line 5 token 1 with node type FunctionCall";
+            assertEquals(expectedErrorMessage, e.getMessage());
+        }
+    }
+    @Test
+    public void complexTestFunctionDef() throws Exception {
+        String input = """
+                def float main(int b, int[] c) {
+                    int value;
+                    int i;
+                    for (i=1, i<100, i = i+1) {
+                        while (value!=3) {
+                            if (i > 10){
+                                // ....
+                                return 1.0;
+                            } else {
+                                // ....
+                                return 0;
+                            }
+                        }
+                    }
+                                
+                    i = (i+2)*2;
+                    return i;
+                }
+                """;
+        Parser parser = getParser(input);
+        try {
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
+            assert true;
+        } catch (Exception e) {
+            assert false;
+        }
+
+        input = """
+                def float main(int b, int[] c) {
+                    int value;
+                    int i;
+                    for (i=1, i<100, i = i+1) {
+                        while (value!=3) {
+                            if (i > 10){
+                                // ....
+                                return 1.0;
+                            } else {
+                                // ....
+                                return 0;
+                            }
+                        }
+                    }
+                                
+                    i = (i+2)*2;
+                    return i;
+                }
+                main(1, 2);
+                """;
+        parser = getParser(input);
+        try {
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
+            assert false;
+        } catch (ArgumentError e) {
+            String expectedErrorMessage = "Function call parameters do not match function declaration: \"<int[]>\" != \"<int>\" at line 19 token 1 with node type FunctionCall";
+            assertEquals(expectedErrorMessage, e.getMessage());
+        }
+
+        input = """
+                def float main(int b, int[] c) {
+                    int value;
+                    int i;
+                    for (i=1, i<100, i = i+1) {
+                        while (value!=3) {
+                            if (i > 10){
+                                // ....
+                                return 1.0;
+                            } else {
+                                // ....
+                                return "Hello World";
+                            }
+                        }
+                    }
+                                
+                    i = (i+2)*2;
+                    return i;
+                }
+                """;
+        parser = getParser(input);
+        try {
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
+            assert false;
+        } catch (ReturnError e) {
+            String expectedErrorMessage = "Return type does not match function return type: \"<float>\" != \"<string>\" at line 11 token 1 with node type Return";
+            assertEquals(expectedErrorMessage, e.getMessage());
+        }
+
+    }
+    @Test
+    public void complexTestMixedExpression() throws Exception {
+        String input = """
+                int a = 10;
+                float b = 20.0;
+                bool res = a > b;
+                    """;
+        Parser parser = getParser(input);
+        try {
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
+            assert true;
+        } catch (Exception e) {
+            assert false;
+        }
+
+        input = """
+                int a = 10;
+                float b = 20.0;
+                int res = a + b;
+                    """;
+        parser = getParser(input);
+        try {
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
+            assert false;
+        } catch (TypeError e) {
+            String expectedErrorMessage = "Assignment type does not match declaration type: \"<int>\" != \"<float>\" at line 3 token 1 with node type Declaration";
+            assertEquals(expectedErrorMessage, e.getMessage());
+        }
+    }
+    @Test
+    public void complexTestConstructor() throws Exception {
+        String input = """
+                struct a{
+                    int b;
+                    int c;}
+                a x = a(10, 20);
+                """;
+        Parser parser = getParser(input);
+        try {
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
+            assert true;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            assert false;
+        }
+    }
 
 }
