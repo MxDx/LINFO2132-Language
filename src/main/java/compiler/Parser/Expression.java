@@ -118,9 +118,10 @@ public class Expression extends Node {
             EOF.add(parser.currentToken);
         } else if (logicalOperations.contains(parser.currentToken.getValue())) {
             return corps;
-        } else {
-            parser.ParserException("Invalid expression");
         }
+        //else {
+        //    parser.ParserException("Invalid expression");
+        //} Removed for if (true == (1 > 0))
 
         return corps;
     }
@@ -133,6 +134,11 @@ public class Expression extends Node {
     @Override
     public String toString() {
         return corps.toString();
+    }
+
+    @Override
+    public IdentifierType accept(TypeVisitor visitor) throws Exception {
+        return null;
     }
 
     public static class Negative extends Expression {
@@ -152,6 +158,12 @@ public class Expression extends Node {
         public String toString() {
             return "\"Negative\": {\n" + "\"expression\": {" + expression.toString() + "}\n}";
         }
+
+        @Override
+        public IdentifierType accept(TypeVisitor visitor) throws Exception {
+            return expression.accept(visitor);
+        }
+
     }
 
     public static class Bang extends Expression {
@@ -170,6 +182,11 @@ public class Expression extends Node {
         @Override
         public String toString() {
             return "\"Bang\": {\n" + "\"expression\": {" + expression.toString() + "}\n}";
+        }
+
+        @Override
+        public IdentifierType accept(TypeVisitor visitor) throws Exception {
+            return expression.accept(visitor);
         }
     }
 
@@ -214,6 +231,14 @@ public class Expression extends Node {
             super(parser);
             this.operation = operation;
             left = before;
+        }
+
+        public Node getLeft() {
+            return left;
+        }
+
+        public Node getRight() {
+            return right;
         }
 
         public Node parse() throws Exception {
@@ -353,6 +378,11 @@ public class Expression extends Node {
             String str = super.toString();
             return "\"ComparisonOperation\": {\n" + str + "\n \n}";
         }
+
+        @Override
+        public IdentifierType accept(TypeVisitor visitor) throws Exception {
+            return visitor.visit(this);
+        }
     }
     public static class LogicalOperation extends Operation {
         public LogicalOperation(Parser parser, Node before) throws Exception {
@@ -369,6 +399,11 @@ public class Expression extends Node {
         public String toString() {
             String str = super.toString();
             return "\"LogicalOperation\": {\n" + str + "\n \n}";
+        }
+
+        @Override
+        public IdentifierType accept(TypeVisitor visitor) throws Exception {
+            return visitor.visit(this);
         }
     }
 }

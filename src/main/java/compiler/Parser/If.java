@@ -2,6 +2,8 @@ package compiler.Parser;
 
 import compiler.Lexer.Keyword;
 import compiler.Lexer.Symbol;
+import compiler.SemanticAnalysis.IdentifierType;
+import compiler.SemanticAnalysis.TypeVisitor;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -17,6 +19,10 @@ public class If extends Node{
     public If(Parser parser) throws Exception {
         super(parser);
         parser.getNext();
+    }
+
+    public Node getExpression() {
+        return expression;
     }
     public Node parse() throws Exception {
         parser.match(Parser.OPEN_PARENTHESES);
@@ -39,6 +45,11 @@ public class If extends Node{
         }
         str += '}';
         return str;
+    }
+
+    @Override
+    public IdentifierType accept(TypeVisitor visitor) throws Exception {
+        return visitor.visit(this);
     }
 
     private static class Else extends Node {

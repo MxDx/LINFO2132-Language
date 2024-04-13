@@ -1,6 +1,5 @@
 package compiler.SemanticAnalysis;
 
-import compiler.Lexer.VarType;
 import compiler.Parser.*;
 
 import java.util.Objects;
@@ -67,8 +66,45 @@ public class TypeVisitor {
         return null;
     }
 
+    public IdentifierType visit(If ifStatement) throws Exception {
+        Node expression = ifStatement.getExpression();
+        if (expression == null) {
+            SemanticAnalysis.SemanticException("MissingConditionError","If expression is null", ifStatement);
+        }
+        assert expression != null;
+        IdentifierType type = expression.accept(this);
+        if (!Objects.equals(type.getType(), table.getType("bool"))) {
+            SemanticAnalysis.SemanticException("TypeError","If expression is not boolean", expression);
+        }
+        return null;
+    }
+
     public IdentifierType visit(Expression expression) {
         return null;
+    }
+
+    public IdentifierType visit(Expression.ComparisonOperation comparisonOperation) throws Exception {
+        IdentifierType left = comparisonOperation.getLeft().accept(this);
+        IdentifierType right = comparisonOperation.getRight().accept(this);
+        if (Objects.equals(left.getType(), table.getType("int")) && Objects.equals(right.getType(), table.getType("float"))) {
+            return new IdentifierType(table.getType("bool"));
+        }
+        if (Objects.equals(left.getType(), table.getType("float")) && Objects.equals(right.getType(), table.getType("int"))) {
+            return new IdentifierType(table.getType("bool"));
+        }
+        if (!Objects.equals(left.getType(), right.getType())) {
+            SemanticAnalysis.SemanticException("TypeError","Logical operation types do not match", comparisonOperation);
+        }
+        return new IdentifierType(table.getType("bool"));
+    }
+
+    public IdentifierType visit(Expression.LogicalOperation logicalOperation) throws Exception {
+        IdentifierType left = logicalOperation.getLeft().accept(this);
+        IdentifierType right = logicalOperation.getRight().accept(this);
+        if (!Objects.equals(left.getType(), table.getType("bool")) || !Objects.equals(right.getType(), table.getType("bool"))) {
+            SemanticAnalysis.SemanticException("TypeError","Logical operation types are not boolean", logicalOperation);
+        }
+        return new IdentifierType(table.getType("bool"));
     }
 
     public IdentifierType visit(IdentifierAccess identifierAccess) throws Exception {
