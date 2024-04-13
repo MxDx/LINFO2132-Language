@@ -28,7 +28,10 @@ public abstract class Type {
 
     @Override
     public String toString() {
-        return type.toString();
+        StringBuilder str = new StringBuilder("\"<");
+        str.append(type.getValue());
+        str.append(">");
+        return str.toString();
     }
 
 }

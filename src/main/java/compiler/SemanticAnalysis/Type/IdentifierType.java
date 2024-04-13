@@ -77,19 +77,22 @@ public class IdentifierType {
 
     @Override
     public String toString() {
-        String str = "";
-        if (isVector()) {
-            str += "[]";
-        }
-        if (isFinal()) {
-            str = ", final";
-        }
-        str += ' ';
-        if (type != null) {
-            str += type.toString();
+        StringBuilder str = new StringBuilder("\"<");
+        if (type.getType() != null) {
+            str.append(type.getType().getValue());
         } else {
-            str += "void";
+            str.append("void");
+            str.append(">\"");
+            return str.toString();
         }
-        return str;
+        if (vectorDepth > 0) {
+            str.append("[]".repeat(vectorDepth));
+        }
+        if (Final) {
+            str.append(", final");
+        }
+        str.append(">");
+        str.append("\"");
+        return str.toString();
     }
 }

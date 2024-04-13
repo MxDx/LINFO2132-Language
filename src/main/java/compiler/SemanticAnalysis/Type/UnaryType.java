@@ -10,6 +10,9 @@ public class UnaryType extends Type {
 
     @Override
     public String toString() {
-        return getType().toString();
+        StringBuilder str = new StringBuilder("\"<");
+        str.append(type.getValue());
+        str.append(">\"");
+        return str.toString();
     }
 }

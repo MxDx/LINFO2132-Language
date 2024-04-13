@@ -23,7 +23,7 @@ public class TestSemanticAnalysis {
         String input = "int a = \"Hello World\";";
         Parser parser = getParser(input);
         try{
-            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, true);
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
             assert false;
         }
         catch (TypeError e){
@@ -33,7 +33,7 @@ public class TestSemanticAnalysis {
         input = "int a = 10;";
         parser = getParser(input);
         try {
-            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, true);
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
             assert true;
         }
         catch (Exception e){
@@ -51,7 +51,7 @@ public class TestSemanticAnalysis {
                 """;
         Parser parser = getParser(input);
         try{
-            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, true);
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
             assert false;
         }
         catch (StructError e){
@@ -65,7 +65,7 @@ public class TestSemanticAnalysis {
                 """;
         parser = getParser(input);
         try {
-            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, true);
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
             assert true;
         }
         catch (Exception e){
@@ -79,7 +79,7 @@ public class TestSemanticAnalysis {
         String input = "int a = 10 + \"Hello World\";";
         Parser parser = getParser(input);
         try{
-            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, true);
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
             assert false;
         }
         catch (OperatorError e){
@@ -89,7 +89,7 @@ public class TestSemanticAnalysis {
         input = "int a = 10 + 10;";
         parser = getParser(input);
         try {
-            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, true);
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
             assert true;
         }
         catch (Exception e){
@@ -102,7 +102,7 @@ public class TestSemanticAnalysis {
         String input = "bool a = 10 && true;";
         Parser parser = getParser(input);
         try{
-            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, true);
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
             assert false;
         }
         catch (OperatorError e){
@@ -112,7 +112,7 @@ public class TestSemanticAnalysis {
         input = "bool a = true && true;";
         parser = getParser(input);
         try {
-            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, true);
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
             assert true;
         }
         catch (Exception e){
@@ -125,7 +125,7 @@ public class TestSemanticAnalysis {
         String input = "bool a = \"Hello World\" > 10;";
         Parser parser = getParser(input);
         try{
-            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, true);
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
             assert false;
         }
         catch (OperatorError e){
@@ -135,7 +135,7 @@ public class TestSemanticAnalysis {
         input = "bool a = 10 == 10;";
         parser = getParser(input);
         try {
-            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, true);
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
             assert true;
         }
         catch (Exception e){
@@ -148,7 +148,7 @@ public class TestSemanticAnalysis {
         String input = "bool a = !(10);";
         Parser parser = getParser(input);
         try{
-            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, true);
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
             assert false;
         }
         catch (TypeError e){
@@ -158,7 +158,7 @@ public class TestSemanticAnalysis {
         input = "bool a = !(true);";
         parser = getParser(input);
         try {
-            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, true);
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
             assert true;
         }
         catch (Exception e){
@@ -176,7 +176,7 @@ public class TestSemanticAnalysis {
                 """;
         Parser parser = getParser(input);
         try{
-            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, true);
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
             assert false;
         }
         catch (ArgumentError e){
@@ -190,7 +190,7 @@ public class TestSemanticAnalysis {
                 """;
         parser = getParser(input);
         try {
-            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, true);
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
             assert true;
         }
         catch (Exception e){
@@ -207,7 +207,7 @@ public class TestSemanticAnalysis {
                 """;
         Parser parser = getParser(input);
         try{
-            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, true);
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
             assert false;
         }
         catch (MissingConditionError e){
@@ -221,7 +221,7 @@ public class TestSemanticAnalysis {
                 """;
         parser = getParser(input);
         try {
-            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, true);
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
             assert true;
         }
         catch (Exception e){
@@ -238,7 +238,7 @@ public class TestSemanticAnalysis {
                 """;
         Parser parser = getParser(input);
         try{
-            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, true);
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
             assert false;
         }
         catch (ReturnError e){
@@ -252,7 +252,7 @@ public class TestSemanticAnalysis {
                 """;
         parser = getParser(input);
         try {
-            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, true);
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
             assert true;
         }
         catch (Exception e){
@@ -271,7 +271,7 @@ public class TestSemanticAnalysis {
                     """;
         Parser parser = getParser(input);
         try {
-            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, true);
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
             assert false;
         } catch (ScopeError e) {
             String expectedErrorMessage = "Identifier not declared: < b > at line 4 token 1 with node type IdentifierAccess";
@@ -286,7 +286,7 @@ public class TestSemanticAnalysis {
                     """;
         parser = getParser(input);
         try {
-            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, true);
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
             assert true;
         } catch (Exception e) {
             assert false;
@@ -310,7 +310,7 @@ public class TestSemanticAnalysis {
 
         Parser parser = getParser(input);
         try {
-            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, true);
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
             assert false;
         } catch (DeclarationError e) {
             String expectedErrorMessage = "Identifier already declared: < a > at line 4 token 1 with node type Method";
@@ -329,7 +329,7 @@ public class TestSemanticAnalysis {
                 """;
         parser = getParser(input);
         try {
-            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, true);
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
             assert true;
         } catch (Exception e) {
             assert false;
@@ -349,7 +349,7 @@ public class TestSemanticAnalysis {
                 """;
         Parser parser = getParser(input);
         try {
-            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, true);
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
             assert false;
         } catch (MissingConditionError e) {
             String expectedErrorMessage = "For expression is not boolean at line 4 token 7 with node type Expression";
@@ -368,7 +368,7 @@ public class TestSemanticAnalysis {
                 """;
         parser = getParser(input);
         try {
-            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, true);
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
             assert true;
         } catch (Exception e) {
             assert false;

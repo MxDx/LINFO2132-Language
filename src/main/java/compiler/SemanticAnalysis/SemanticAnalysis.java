@@ -3,22 +3,27 @@ package compiler.SemanticAnalysis;
 import compiler.Parser.Parser;
 import compiler.Parser.Node;
 import compiler.SemanticAnalysis.Errors.*;
+import org.json.JSONObject;
 
 public class SemanticAnalysis {
     public SemanticAnalysis(Parser parser) throws Exception{
         TypeVisitor visitor = new TypeVisitor();
         parser.getRoot().accept(visitor);
-        System.out.println("Semantic Analysis Complete");
-        System.out.println("No errors found");
-        System.out.println(visitor.table.toString());
+
     }
-    public SemanticAnalysis(Parser parser,Boolean quiet) throws Exception{
+    public SemanticAnalysis(Parser parser, Boolean show) throws Exception{
         TypeVisitor visitor = new TypeVisitor();
         parser.getRoot().accept(visitor);
-        if (!quiet) {
+        if (show) {
             System.out.println("Semantic Analysis Complete");
             System.out.println("No errors found");
-            System.out.println(visitor.table.toString());
+            String json = visitor.getTable().toString();
+            try {
+                JSONObject jsonObject = new JSONObject(json);
+                System.out.println(jsonObject.toString(4));
+            } catch (Exception e) {
+                System.out.println(json);
+            }
         }
     }
 

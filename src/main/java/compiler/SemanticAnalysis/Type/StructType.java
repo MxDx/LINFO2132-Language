@@ -59,12 +59,17 @@ public class StructType extends Type {
 
     @Override
     public String toString() {
-        StringBuilder str = new StringBuilder("StructType: {\n");
+        StringBuilder str = new StringBuilder("{\n\"StructType\": {\n");
         for (String field : fields.keySet()) {
-            str.append("\t\t");
-            str.append(field).append(": ").append(fields.get(field)).append("\n");
+            str.append("\"").append(field);
+            str.append("\"").append(": ");
+            str.append(fields.get(field)).append(",\n");
         }
-        str.append("\t}");
+        if (!fields.isEmpty()) {
+            str.replace(str.length() - 2, str.length(), "\n"); // remove last ",\n
+        }
+        str.append("}\n");
+        str.append("}");
         return str.toString();
     }
 }

@@ -65,10 +65,11 @@ public class Compiler {
         String inputPath = "src/main/java/compiler/test_semantic.txt";
         boolean showLexer = false;
         boolean showParser = false;
+        boolean showSemantic = true;
         System.out.println("inputPath: " + inputPath); //LOCAL: String inputPath = "src/main/java/compiler/test.txt";
         Lexer lex = lexerGetter(inputPath, showLexer);
         Parser parser = parserGetter(lex, showParser);
-        semanticAnalysisGetter(parser);
+        semanticAnalysisGetter(parser, showSemantic);
     }
 
     public static Lexer lexerGetter(String inputPath,boolean showLexer) {
@@ -114,9 +115,9 @@ public class Compiler {
         }
     }
 
-    public static void semanticAnalysisGetter(Parser parser) {
+    public static void semanticAnalysisGetter(Parser parser, boolean showSemantic) {
         try {
-            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser);
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, showSemantic);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -91,18 +91,30 @@ public class IdentifierTable {
 
     @Override
     public String toString() {
-        StringBuilder str = new StringBuilder("IdentifierTable: {\n");
+        StringBuilder str = new StringBuilder("{\n\"IdentifierTable\": {\n");
         for (String identifier : tableIdentifier.keySet()) {
-            str.append("\t");
-            str.append(identifier).append(": ").append(tableIdentifier.get(identifier).toString()).append(",\n");
+            str.append("\"");
+            str.append(identifier).append("\"").append(": ");
+            IdentifierType type = tableIdentifier.get(identifier);
+            str.append(type);
+            str.append(",\n");
+        }
+        if (!tableIdentifier.isEmpty()) {
+            str.replace(str.length() - 2, str.length(), "\n");
         }
         str.append("},\n");
-        str.append("TypeTable: {\n");
+        str.append("\"TypeTable\": {\n");
         for (String type : tableType.keySet()) {
-            str.append("\t");
-            str.append(type).append(": ").append(tableType.get(type)).append("\n");
+            str.append("\"");
+            str.append(type).append("\"").append(": ");
+            str.append(tableType.get(type));
+            str.append(",\n");
+        }
+        if (!tableType.isEmpty()) {
+            str.replace(str.length() - 2, str.length(), "\n");
         }
         str.append("}");
+        str.append("}\n");
         return str.toString();
     }
 

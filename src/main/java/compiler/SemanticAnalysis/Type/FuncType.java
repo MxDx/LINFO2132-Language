@@ -41,15 +41,22 @@ public class FuncType extends IdentifierType {
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
-        str.append("FuncType: {\n");
-        str.append("\t\treturnType: ").append(returnType.toString()).append("\n");
-        str.append("\t\tparameters: [\n");
+        str.append("{\n");
+        str.append("\"FuncType\": {\n");
+        str.append("\"returnType\": ").append(returnType.toString()).append(",\n");
+        str.append("\"parameters\": {\n");
+        int i = 0;
         for (IdentifierType parameter : parameters) {
-            str.append("\t\t\t");
-            str.append(parameter.toString()).append("\n");
+            str.append("\"parameter").append(i).append("\": ");
+            str.append(parameter.toString()).append(",\n");
+            i++;
         }
-        str.append("\t]\n");
-        str.append("\t}");
+        if (!parameters.isEmpty()) {
+            str.deleteCharAt(str.length() - 2);
+        }
+        str.append("}\n");
+        str.append("}\n");
+        str.append("}");
         return str.toString();
     }
 }
