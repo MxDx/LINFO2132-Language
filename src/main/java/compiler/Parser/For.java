@@ -1,6 +1,6 @@
 package compiler.Parser;
 
-import compiler.SemanticAnalysis.IdentifierType;
+import compiler.SemanticAnalysis.Type.IdentifierType;
 import compiler.SemanticAnalysis.TypeVisitor;
 
 public class For extends Node{

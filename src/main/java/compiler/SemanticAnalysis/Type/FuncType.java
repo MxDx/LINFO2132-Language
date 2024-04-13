@@ -1,4 +1,4 @@
-package compiler.SemanticAnalysis;
+package compiler.SemanticAnalysis.Type;
 
 import java.util.ArrayList;
 

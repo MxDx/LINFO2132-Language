@@ -3,8 +3,7 @@ package compiler.Parser;
 import compiler.Lexer.Keyword;
 import compiler.Lexer.Symbol;
 import compiler.Lexer.VarType;
-import compiler.SemanticAnalysis.IdentifierType;
-import compiler.SemanticAnalysis.Type;
+import compiler.SemanticAnalysis.Type.IdentifierType;
 import compiler.SemanticAnalysis.TypeVisitor;
 
 import java.util.Objects;

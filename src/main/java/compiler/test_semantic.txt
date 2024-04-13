@@ -3,7 +3,7 @@ int g = (h+2)*-2%3;
 
 int[] array = int[5];  // new array of length 5
 
-int azerty = 1 + true;
+int azerty = 1 + 2;
 struct caca {
     int a;
     int b;

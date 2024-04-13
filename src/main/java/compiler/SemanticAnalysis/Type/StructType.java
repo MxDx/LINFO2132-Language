@@ -1,8 +1,11 @@
-package compiler.SemanticAnalysis;
+package compiler.SemanticAnalysis.Type;
 
 import compiler.Lexer.VarType;
 import compiler.Parser.Declaration;
 import compiler.Parser.Struct;
+import compiler.SemanticAnalysis.IdentifierTable;
+import compiler.SemanticAnalysis.SemanticAnalysis;
+import compiler.SemanticAnalysis.TypeVisitor;
 
 import java.util.HashMap;
 
@@ -13,12 +16,12 @@ public class StructType extends Type {
 
     public StructType(Struct struct, TypeVisitor visitor) throws Exception {
         super(null);
-        table = visitor.table;
+        table = visitor.getTable();
         fields = new HashMap<>();
         for (Declaration declaration : struct.getDeclarations()) {
             String identifier = declaration.getIdentifier();
             VarType varType = declaration.getType();
-            Type type = visitor.table.getType(varType.getValue());
+            Type type = visitor.getTable().getType(varType.getValue());
             if (type == null) {
                 SemanticAnalysis.SemanticException("TypeError", "Field type does not exist", declaration);
             }

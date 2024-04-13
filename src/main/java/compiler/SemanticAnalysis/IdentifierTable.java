@@ -2,10 +2,12 @@ package compiler.SemanticAnalysis;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
 
 import compiler.Compiler;
 import compiler.Lexer.VarType;
+import compiler.SemanticAnalysis.Type.IdentifierType;
+import compiler.SemanticAnalysis.Type.Type;
+import compiler.SemanticAnalysis.Type.UnaryType;
 
 public class IdentifierTable {
     private IdentifierTable parent;

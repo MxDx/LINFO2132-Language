@@ -3,10 +3,9 @@ package compiler.Parser;
 import compiler.Lexer.MyInteger;
 import compiler.Lexer.Special;
 import compiler.Lexer.Symbol;
-import compiler.SemanticAnalysis.IdentifierType;
-import compiler.SemanticAnalysis.Type;
+import compiler.SemanticAnalysis.Type.IdentifierType;
+import compiler.SemanticAnalysis.Type.Type;
 import compiler.SemanticAnalysis.TypeVisitor;
-import compiler.SemanticAnalysis.UnaryType;
 
 import java.util.ArrayList;
 import java.util.HashSet;

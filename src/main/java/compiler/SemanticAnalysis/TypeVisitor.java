@@ -2,6 +2,10 @@ package compiler.SemanticAnalysis;
 
 import compiler.Lexer.VarType;
 import compiler.Parser.*;
+import compiler.SemanticAnalysis.Type.FuncType;
+import compiler.SemanticAnalysis.Type.IdentifierType;
+import compiler.SemanticAnalysis.Type.StructType;
+import compiler.SemanticAnalysis.Type.Type;
 
 import java.util.ArrayList;
 import java.util.Objects;
