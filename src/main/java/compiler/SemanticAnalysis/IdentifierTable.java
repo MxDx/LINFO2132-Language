@@ -10,9 +10,9 @@ import compiler.SemanticAnalysis.Type.Type;
 import compiler.SemanticAnalysis.Type.UnaryType;
 
 public class IdentifierTable {
-    private IdentifierTable parent;
-    private HashMap<String, IdentifierType> tableIdentifier;
-    private HashMap<String, Type> tableType;
+    private final IdentifierTable parent;
+    private final HashMap<String, IdentifierType> tableIdentifier;
+    private final HashMap<String, Type> tableType;
 
     public IdentifierTable() {
         parent = null;
@@ -91,19 +91,19 @@ public class IdentifierTable {
 
     @Override
     public String toString() {
-        String str = "IdentifierTable: {\n";
+        StringBuilder str = new StringBuilder("IdentifierTable: {\n");
         for (String identifier : tableIdentifier.keySet()) {
-            str += "\t";
-            str += identifier + ": " + tableIdentifier.get(identifier).toString() + ",\n";
+            str.append("\t");
+            str.append(identifier).append(": ").append(tableIdentifier.get(identifier).toString()).append(",\n");
         }
-        str += "},\n";
-        str += "TypeTable: {\n";
+        str.append("},\n");
+        str.append("TypeTable: {\n");
         for (String type : tableType.keySet()) {
-            str += "\t";
-            str += type + ": " + tableType.get(type) + "\n";
+            str.append("\t");
+            str.append(type).append(": ").append(tableType.get(type)).append("\n");
         }
-        str += "}";
-        return str;
+        str.append("}");
+        return str.toString();
     }
 
 }

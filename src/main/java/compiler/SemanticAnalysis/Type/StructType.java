@@ -11,12 +11,9 @@ import java.util.HashMap;
 
 public class StructType extends Type {
 
-    private HashMap<String, IdentifierType> fields;
-    private IdentifierTable table;
-
+    private final HashMap<String, IdentifierType> fields;
     public StructType(Struct struct, TypeVisitor visitor) throws Exception {
         super(null);
-        table = visitor.getTable();
         fields = new HashMap<>();
         for (Declaration declaration : struct.getDeclarations()) {
             String identifier = declaration.getIdentifier();
@@ -43,8 +40,7 @@ public class StructType extends Type {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof StructType) {
-            StructType structType = (StructType) obj;
+        if (obj instanceof StructType structType) {
             if (fields.size() != structType.fields.size()) {
                 return false;
             }
@@ -63,12 +59,12 @@ public class StructType extends Type {
 
     @Override
     public String toString() {
-        String str = "StructType: {\n";
+        StringBuilder str = new StringBuilder("StructType: {\n");
         for (String field : fields.keySet()) {
-            str += "\t\t";
-            str += field + ": " + fields.get(field) + "\n";
+            str.append("\t\t");
+            str.append(field).append(": ").append(fields.get(field)).append("\n");
         }
-        str += "\t}";
-        return str;
+        str.append("\t}");
+        return str.toString();
     }
 }

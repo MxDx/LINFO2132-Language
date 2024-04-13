@@ -8,10 +8,6 @@ public class UnaryType extends Type {
         super(type);
     }
 
-    public UnaryType(String type) {
-        super(new VarType(type));
-    }
-
     @Override
     public String toString() {
         return getType().toString();

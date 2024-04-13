@@ -5,8 +5,8 @@ import compiler.SemanticAnalysis.TypeVisitor;
 
 public abstract class Node {
     public Parser parser;
-    private int line;
-    private int tokenNumber;
+    private final int line;
+    private final int tokenNumber;
     public Node(Parser parser) {
         this.parser = parser;
         this.line = parser.currentToken.getLine();
@@ -27,6 +27,6 @@ public abstract class Node {
     }
 
     public IdentifierType accept(TypeVisitor visitor) throws Exception {
-        return visitor.visit(this);
+        return visitor.visit();
     }
 }

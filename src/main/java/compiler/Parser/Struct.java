@@ -37,17 +37,17 @@ public class Struct extends  Node {
 
     @Override
     public String toString() {
-        String str = "\"Struct_Statement\": {\n"
+        StringBuilder str = new StringBuilder("\"Struct_Statement\": {\n"
                 + "\"identifier\": \"" + identifier + "\",\n"
-                + "\"declarations\": [\n";
+                + "\"declarations\": [\n");
         for (int i = 0; i < declarations.size(); i++) {
-            str += "{\n" + declarations.get(i).toString() + "\n}";
+            str.append("{\n").append(declarations.get(i).toString()).append("\n}");
             if (i != declarations.size() - 1) {
-                str += ",\n";
+                str.append(",\n");
             }
         }
-        str += "\n]\n}";
-        return str;
+        str.append("\n]\n}");
+        return str.toString();
     }
 
     @Override

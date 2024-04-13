@@ -3,9 +3,9 @@ package compiler.SemanticAnalysis.Type;
 import java.util.ArrayList;
 
 public class FuncType extends IdentifierType {
-    private IdentifierType returnType;
-    private ArrayList<IdentifierType> parameters;
-    private boolean isVoid;
+    private final IdentifierType returnType;
+    private final ArrayList<IdentifierType> parameters;
+    private final boolean isVoid;
 
     public FuncType(IdentifierType returnType, ArrayList<IdentifierType> parameters) {
         super(null);

@@ -35,7 +35,7 @@ public class TypeVisitor {
         return returnType;
     }
 
-    public IdentifierType visit(Node node) {
+    public IdentifierType visit() {
         return null;
     }
 

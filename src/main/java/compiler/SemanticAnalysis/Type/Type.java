@@ -15,8 +15,7 @@ public abstract class Type {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof UnaryType) {
-            UnaryType unaryType = (UnaryType) obj;
+        if (obj instanceof UnaryType unaryType) {
             return type.equals(unaryType.getType());
         }
         return false;
