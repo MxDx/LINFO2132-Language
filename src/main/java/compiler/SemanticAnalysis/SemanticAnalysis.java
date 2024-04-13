@@ -2,6 +2,7 @@ package compiler.SemanticAnalysis;
 
 import compiler.Parser.Parser;
 import compiler.Parser.Node;
+import compiler.SemanticAnalysis.Errors.*;
 
 public class SemanticAnalysis {
     public SemanticAnalysis(Parser parser) throws Exception{
