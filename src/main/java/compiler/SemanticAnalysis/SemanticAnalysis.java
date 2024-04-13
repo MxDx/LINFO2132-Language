@@ -13,10 +13,30 @@ public class SemanticAnalysis {
     }
 
     public static void SemanticException(String typeError, String message, Node node) throws Exception {
-       String str = "{" + typeError + "}" + " " + message;
+       String str = message;
        str += " at line " + node.getLine() + " token " + node.getTokenNumber();
        str += " with node type " + node.getClass().getSimpleName();
 
-       throw new Exception(str);
+       switch (typeError) {
+           case "TypeError":
+                throw new TypeError(str);
+           case "StructError":
+                throw new StructError(str);
+           case "OperatorError":
+                throw new OperatorError(str);
+           case "ArgumentError":
+                throw new ArgumentError(str);
+           case "MissingConditionError":
+                throw new MissingConditionError(str);
+           case "ReturnError":
+                throw new ReturnError(str);
+           case "ScopeError":
+               throw new ScopeError(str);
+           default:
+                throw new Exception(str);
+       }
+
+       //throw new Exception(str);
     }
 }
+
