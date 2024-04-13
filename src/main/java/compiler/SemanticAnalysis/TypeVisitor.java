@@ -84,7 +84,7 @@ public class TypeVisitor {
         if (!table.addIdentifier(declaration.getIdentifier(), identifierType)) {
             String str = "Identifier already declared: ";
             str += "< " + declaration.getIdentifier() + " >";
-            SemanticAnalysis.SemanticException("TypeError", str, declaration);
+            SemanticAnalysis.SemanticException("DeclarationError", str, declaration);
         }
 
         return identifierType;
@@ -93,7 +93,7 @@ public class TypeVisitor {
     public IdentifierType visit(Struct struct) throws Exception {
         StructType structType = new StructType(struct, this);
         if (!table.addType(struct.getIdentifier(), structType)) {
-            String str = "Struct already declared: ";
+            String str = "Struct already declared or reserved keyword: ";
             str += "< " + struct.getIdentifier() + " >";
             SemanticAnalysis.SemanticException("StructError", str, struct);
         }
@@ -108,7 +108,7 @@ public class TypeVisitor {
         assert expression != null;
         IdentifierType type = expression.accept(this);
         if (!Objects.equals(type.getType(), table.getType("bool"))) {
-            SemanticAnalysis.SemanticException("TypeError","If expression is not boolean", expression);
+            SemanticAnalysis.SemanticException("MissingConditionError","If expression is not boolean", expression);
         }
         Node block = ifStatement.getBlock();
         if (block != null) {
@@ -156,7 +156,7 @@ public class TypeVisitor {
         assert expression != null;
         IdentifierType type = expression.accept(this);
         if (!Objects.equals(type.getType(), table.getType("bool"))) {
-            SemanticAnalysis.SemanticException("TypeError","For expression is not boolean", expression);
+            SemanticAnalysis.SemanticException("MissingConditionError","For expression is not boolean", expression);
         }
 
         Node secondAssignment = forStatement.getSecondAssignment();
@@ -211,7 +211,7 @@ public class TypeVisitor {
         if (!table.addIdentifier(identifier, funcType)) {
             String str = "Identifier already declared: ";
             str += "< " + identifier + " >";
-            SemanticAnalysis.SemanticException("TypeError", str, function);
+            SemanticAnalysis.SemanticException("DeclarationError", str, function);
         }
 
         Block block = function.getBlock();
@@ -242,7 +242,7 @@ public class TypeVisitor {
             String str = "Return type does not match function return type: ";
             str += type + " != ";
             str += "void";
-            SemanticAnalysis.SemanticException("TypeError", str, returnStatement);
+            SemanticAnalysis.SemanticException("ReturnError", str, returnStatement);
         }
 
         if (Objects.equals(returnType.getType(), table.getType("float")) && Objects.equals(type.getType(), table.getType("int"))) {
@@ -253,7 +253,7 @@ public class TypeVisitor {
             String str = "Return type does not match function return type: ";
             str += returnType + " != ";
             str += type;
-            SemanticAnalysis.SemanticException("TypeError",str, returnStatement);
+            SemanticAnalysis.SemanticException("ReturnError",str, returnStatement);
         }
         return null;
     }
@@ -272,7 +272,12 @@ public class TypeVisitor {
             return new IdentifierType(table.getType("bool"));
         }
         if (!Objects.equals(left.getType(), right.getType())) {
-            SemanticAnalysis.SemanticException("OperatorError","Logical operation types do not match", comparisonOperation);
+            String str = "Comparison operation [ ";
+            str += comparisonOperation.getOperator();
+            str += " ] cannot be applied to types: ";
+            str += left + " and ";
+            str += right;
+            SemanticAnalysis.SemanticException("OperatorError",str, comparisonOperation);
         }
         return new IdentifierType(table.getType("bool"));
     }
@@ -292,7 +297,12 @@ public class TypeVisitor {
         if (Objects.equals(left.getType(), table.getType("float")) && Objects.equals(right.getType(), table.getType("int"))) {
             return new IdentifierType(table.getType("float"));
         }
-        SemanticAnalysis.SemanticException("OperatorError","Arithmetic operation types do not match", arithmeticOperation);
+        String str = "Arithmetic operation [ ";
+        str += arithmeticOperation.getOperator();
+        str += " ] cannot be applied to types: ";
+        str += left + " and ";
+        str += right;
+        SemanticAnalysis.SemanticException("OperatorError",str, arithmeticOperation);
         return null;
     }
 
@@ -300,7 +310,12 @@ public class TypeVisitor {
         IdentifierType left = logicalOperation.getLeft().accept(this);
         IdentifierType right = logicalOperation.getRight().accept(this);
         if (!Objects.equals(left.getType(), table.getType("bool")) || !Objects.equals(right.getType(), table.getType("bool"))) {
-            SemanticAnalysis.SemanticException("OperatorError","Logical operation types are not boolean", logicalOperation);
+            String str = "Logical operation [ ";
+            str += logicalOperation.getOperator();
+            str += " ] cannot be applied to types: ";
+            str += left + " and ";
+            str += right;
+            SemanticAnalysis.SemanticException("OperatorError",str, logicalOperation);
         }
         return new IdentifierType(table.getType("bool"));
     }

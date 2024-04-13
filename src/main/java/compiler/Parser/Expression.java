@@ -228,6 +228,10 @@ public class Expression extends Node {
             return right;
         }
 
+        public String getOperator() {
+            return operation;
+        }
+
         public Node parse() throws Exception {
             return this;
         }

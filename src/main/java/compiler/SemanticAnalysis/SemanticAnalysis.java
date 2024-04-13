@@ -12,6 +12,15 @@ public class SemanticAnalysis {
         System.out.println("No errors found");
         System.out.println(visitor.table.toString());
     }
+    public SemanticAnalysis(Parser parser,Boolean quiet) throws Exception{
+        TypeVisitor visitor = new TypeVisitor();
+        parser.getRoot().accept(visitor);
+        if (!quiet) {
+            System.out.println("Semantic Analysis Complete");
+            System.out.println("No errors found");
+            System.out.println(visitor.table.toString());
+        }
+    }
 
     public static void SemanticException(String typeError, String message, Node node) throws Exception {
        String str = message;
@@ -33,6 +42,8 @@ public class SemanticAnalysis {
                 throw new ReturnError(str);
            case "ScopeError":
                throw new ScopeError(str);
+           case "DeclarationError":
+               throw new DeclarationError(str);
            default:
                 throw new Exception(str);
        }
