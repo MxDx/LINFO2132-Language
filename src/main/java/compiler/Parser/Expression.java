@@ -1,5 +1,6 @@
 package compiler.Parser;
 
+import compiler.Lexer.MyInteger;
 import compiler.Lexer.Special;
 import compiler.Lexer.Symbol;
 import compiler.SemanticAnalysis.IdentifierType;
@@ -67,7 +68,8 @@ public class Expression extends Node {
             } else if (Objects.equals(parser.currentToken.getType(), "VarType")) {
                 return new ArrayInitialization(parser).parse();
             } else if (Objects.equals(parser.currentToken, new Special("-"))) {
-                return new Negative(parser).setEOF(EOF).parse();
+                Value sucre = new Value(parser, new MyInteger("0", parser.currentToken.getLine(), parser.currentToken.getTokenNumber()));
+                return new ArithmeticOperation(parser, sucre).setEOF(EOF).parse();
             } else if (Objects.equals(parser.currentToken, new Special("!"))) {
                 return new Bang(parser).setEOF(EOF).parse();
             } else {
@@ -101,6 +103,9 @@ public class Expression extends Node {
             return result;
         } else if (comparisonOperations.contains(parser.lookahead.getValue()) || comparisonOperations.contains(parser.currentToken.getValue())) {
             return new ComparisonOperation(parser, corps).setEOF(EOF).parse();
+        } else if (logicalOperations.contains(parser.lookahead.getValue()) && !EOF.contains(parser.lookahead) ) {
+            parser.getNext();
+            return new LogicalOperation(parser, corps).setEOF(EOF).parse();
         }
 
         if (logicalOperations.contains(parser.lookahead.getValue())) {
@@ -138,32 +143,7 @@ public class Expression extends Node {
 
     @Override
     public IdentifierType accept(TypeVisitor visitor) throws Exception {
-        return null;
-    }
-
-    public static class Negative extends Expression {
-        public Node expression;
-        public Negative(Parser parser) throws Exception {
-            super(parser);
-            parser.match(new Special("-"));
-        }
-
-        public Node parse() throws Exception {
-            ArrayList<Symbol> newEOF = new ArrayList<>(EOF);
-            expression = new Expression(parser).setEOF(newEOF).parse();
-            return this;
-        }
-
-        @Override
-        public String toString() {
-            return "\"Negative\": {\n" + "\"expression\": {" + expression.toString() + "}\n}";
-        }
-
-        @Override
-        public IdentifierType accept(TypeVisitor visitor) throws Exception {
-            return expression.accept(visitor);
-        }
-
+        return corps.accept(visitor);
     }
 
     public static class Bang extends Expression {
@@ -171,11 +151,14 @@ public class Expression extends Node {
         public Bang(Parser parser) throws Exception {
             super(parser);
             parser.match(new Special("!"));
+            parser.match(Parser.OPEN_PARENTHESES);
         }
 
         public Node parse() throws Exception {
-            ArrayList<Symbol> newEOF = new ArrayList<>(EOF);
+            ArrayList<Symbol> newEOF = new ArrayList<>();
+            newEOF.add(Parser.CLOSE_PARENTHESES);
             expression = new Expression(parser).setEOF(newEOF).parse();
+            parser.match(Parser.CLOSE_PARENTHESES);
             return this;
         }
 
@@ -198,6 +181,11 @@ public class Expression extends Node {
                 parser.ParserException("Invalid value");
             }
             value = parser.currentToken;
+        }
+
+        public Value(Parser parser, Symbol value) {
+            super(parser);
+            this.value = value;
         }
 
         public Expression parse() throws Exception {
@@ -342,6 +330,11 @@ public class Expression extends Node {
         public String toString() {
             String str = super.toString();
             return "\"ArithmeticOperation\": {\n" + str + "\n \n}";
+        }
+
+        @Override
+        public IdentifierType accept(TypeVisitor visitor) throws Exception {
+            return visitor.visit(this);
         }
     }
 

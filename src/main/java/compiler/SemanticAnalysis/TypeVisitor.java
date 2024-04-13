@@ -51,7 +51,10 @@ public class TypeVisitor {
                 SemanticAnalysis.SemanticException("TypeError","Assignment type is null", declaration);
             }
             if (!Objects.equals(identifierType, assignment)) {
-                SemanticAnalysis.SemanticException("TypeError","Assignment type does not match declaration type", declaration);
+                String str = "Assignment type does not match declaration type: ";
+                str += identifierType + " != ";
+                str += assignment;
+                SemanticAnalysis.SemanticException("TypeError",str, declaration);
             }
         }
 
@@ -96,6 +99,25 @@ public class TypeVisitor {
             SemanticAnalysis.SemanticException("TypeError","Logical operation types do not match", comparisonOperation);
         }
         return new IdentifierType(table.getType("bool"));
+    }
+
+    public IdentifierType visit(Expression.ArithmeticOperation arithmeticOperation) throws Exception {
+        IdentifierType left = arithmeticOperation.getLeft().accept(this);
+        IdentifierType right = arithmeticOperation.getRight().accept(this);
+        if (Objects.equals(left.getType(), table.getType("int")) && Objects.equals(right.getType(), table.getType("int"))) {
+            return new IdentifierType(table.getType("int"));
+        }
+        if (Objects.equals(left.getType(), table.getType("float")) && Objects.equals(right.getType(), table.getType("float"))) {
+            return new IdentifierType(table.getType("float"));
+        }
+        if (Objects.equals(left.getType(), table.getType("int")) && Objects.equals(right.getType(), table.getType("float"))) {
+            return new IdentifierType(table.getType("float"));
+        }
+        if (Objects.equals(left.getType(), table.getType("float")) && Objects.equals(right.getType(), table.getType("int"))) {
+            return new IdentifierType(table.getType("float"));
+        }
+        SemanticAnalysis.SemanticException("TypeError","Arithmetic operation types do not match", arithmeticOperation);
+        return null;
     }
 
     public IdentifierType visit(Expression.LogicalOperation logicalOperation) throws Exception {
@@ -169,7 +191,10 @@ public class TypeVisitor {
                 SemanticAnalysis.SemanticException("TypeError","Assignment type is null", structAccess.getAssignment());
             }
             if (!Objects.equals(type, assignmentType)) {
-                SemanticAnalysis.SemanticException("TypeError","Assignment type does not match declaration type", structAccess.getAssignment());
+                String str = "Assignment type does not match declaration type: ";
+                str += type + " != ";
+                str += assignmentType;
+                SemanticAnalysis.SemanticException("TypeError",str, structAccess.getAssignment());
             }
         }
 
