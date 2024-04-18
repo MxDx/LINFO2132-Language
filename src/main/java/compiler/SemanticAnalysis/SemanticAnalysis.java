@@ -28,7 +28,9 @@ public class SemanticAnalysis {
     }
 
     public static void SemanticException(String typeError, String message, Node node) throws Exception {
-       String str = message;
+       String str = "";
+       str += "{ " + typeError + " } : ";
+       str += message;
        str += " at line " + node.getLine() + " token " + node.getTokenNumber();
        str += " with node type " + node.getClass().getSimpleName();
 

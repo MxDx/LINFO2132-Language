@@ -43,7 +43,11 @@ public class FuncType extends IdentifierType {
         StringBuilder str = new StringBuilder();
         str.append("{\n");
         str.append("\"FuncType\": {\n");
-        str.append("\"returnType\": ").append(returnType.toString()).append(",\n");
+        if (isVoid) {
+            str.append("\"returnType\": ").append(" void").append(",\n");
+        } else {
+            str.append("\"returnType\": ").append(returnType.toString()).append(",\n");
+        }
         str.append("\"parameters\": {\n");
         int i = 0;
         for (IdentifierType parameter : parameters) {

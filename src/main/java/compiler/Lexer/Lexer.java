@@ -128,7 +128,8 @@ public class Lexer {
             //System.out.println("End of file");
             if (!libs.isEmpty()) {
                 this.input = libs.pop();
-                this.lastChar = '\n';
+                this.lastChar = ' ';
+                this.line = 1;
                 return getNextSymbol();
             }
             if (fileReading) {
@@ -136,7 +137,8 @@ public class Lexer {
             }
             fileReading = true;
             this.input = file;
-            this.lastChar = '\n';
+            this.lastChar = ' ';
+            this.line = 1;
             return getNextSymbol();
         }
     }

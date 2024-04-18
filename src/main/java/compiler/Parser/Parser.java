@@ -75,7 +75,7 @@ public class Parser {
         error += "\twith token: " + currentToken.getValue() + "\n";
         error += "\tat line: " + currentToken.getLine() + "\n";
         error += "\tat token number: " + currentToken.getTokenNumber() + "\n";
-        throw new Exception(error);
+        throw new ParserException(error);
     }
 
     public static ArrayList<Symbol> EOF_COMMA() {
@@ -86,4 +86,10 @@ public class Parser {
         return new ArrayList<>(EOF_CLOSE_PARENTHESES);
     }
 
+}
+
+class ParserException extends Exception {
+    public ParserException(String message) {
+        super(message);
+    }
 }

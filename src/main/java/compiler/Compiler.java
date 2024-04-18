@@ -23,14 +23,6 @@ public class Compiler {
             add("while");
             add("for");
             add("return");
-            add("readInt");
-            add("readFloat");
-            add("readString");
-            add("writeInt");
-            add("writeFloat");
-            add("writeString");
-            add("write");
-            add("writeln");
             add("true");
             add("false");
             add("struct");

@@ -27,9 +27,15 @@ public class Return extends Node{
 
     @Override
     public String toString() {
-        return "\"RETURN_Statement\": {\n"
-                + "\"expression\": {\n"+ expression.toString() + "\n}\n"
-                + '}';
+        String str =  "\"RETURN_Statement\":";
+        if (expression == null) {
+            str += "\"empty\"";
+        } else {
+            str += "{\n"
+                    + "\"expression\": {\n"+ expression + "\n}\n"
+                    + '}';
+        }
+        return str;
     }
 
     @Override

@@ -9,6 +9,11 @@ struct caca {
     int b;
 };
 
+def int main2() {
+    int c;
+    return c;
+}
+
 def int square(int v) {
     return v*v;
 }

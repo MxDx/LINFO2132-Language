@@ -27,7 +27,7 @@ public class TestSemanticAnalysis {
             assert false;
         }
         catch (TypeError e){
-            String expectedErrorMessage = "Assignment type does not match declaration type: \"<int>\" != \"<string>\" at line 1 token 1 with node type Declaration";
+            String expectedErrorMessage = "{ TypeError } : Assignment type does not match declaration type: \"<int>\" != \"<string>\" at line 1 token 1 with node type Declaration";
             assertEquals(expectedErrorMessage, e.getMessage());
         }
         input = "int a = 10;";
@@ -55,7 +55,7 @@ public class TestSemanticAnalysis {
             assert false;
         }
         catch (StructError e){
-            String expectedErrorMessage = "Struct already declared or reserved keyword: < while > at line 1 token 1 with node type Struct";
+            String expectedErrorMessage = "{ StructError } : Struct already declared or reserved keyword: < while > at line 1 token 1 with node type Struct";
             assertEquals(expectedErrorMessage, e.getMessage());
         }
         input = """
@@ -83,7 +83,7 @@ public class TestSemanticAnalysis {
             assert false;
         }
         catch (OperatorError e){
-            String expectedErrorMessage = "Arithmetic operation [ + ] cannot be applied to types: \"<int>\" and \"<string>\" at line 1 token 6 with node type ArithmeticOperation";
+            String expectedErrorMessage = "{ OperatorError } : Arithmetic operation [ + ] cannot be applied to types: \"<int>\" and \"<string>\" at line 1 token 6 with node type ArithmeticOperation";
             assertEquals(expectedErrorMessage, e.getMessage());
         }
         input = "int a = 10 + 10;";
@@ -106,7 +106,7 @@ public class TestSemanticAnalysis {
             assert false;
         }
         catch (OperatorError e){
-            String expectedErrorMessage = "Logical operation [ && ] cannot be applied to types: \"<int>\" and \"<bool>\" at line 1 token 5 with node type LogicalOperation";
+            String expectedErrorMessage = "{ OperatorError } : Logical operation [ && ] cannot be applied to types: \"<int>\" and \"<bool>\" at line 1 token 5 with node type LogicalOperation";
             assertEquals(expectedErrorMessage, e.getMessage());
         }
         input = "bool a = true && true;";
@@ -129,7 +129,7 @@ public class TestSemanticAnalysis {
             assert false;
         }
         catch (OperatorError e){
-            String expectedErrorMessage = "Comparison operation [ > ] cannot be applied to types: \"<string>\" and \"<int>\" at line 1 token 4 with node type ComparisonOperation";
+            String expectedErrorMessage = "{ OperatorError } : Comparison operation [ > ] cannot be applied to types: \"<string>\" and \"<int>\" at line 1 token 4 with node type ComparisonOperation";
             assertEquals(expectedErrorMessage, e.getMessage());
         }
         input = "bool a = 10 == 10;";
@@ -152,7 +152,7 @@ public class TestSemanticAnalysis {
             assert false;
         }
         catch (TypeError e){
-            String expectedErrorMessage = "Assignment type does not match declaration type: \"<bool>\" != \"<int>\" at line 1 token 1 with node type Declaration";
+            String expectedErrorMessage = "{ TypeError } : Assignment type does not match declaration type: \"<bool>\" != \"<int>\" at line 1 token 1 with node type Declaration";
             assertEquals(expectedErrorMessage, e.getMessage());
         }
         input = "bool a = !(true);";
@@ -180,7 +180,7 @@ public class TestSemanticAnalysis {
             assert false;
         }
         catch (ArgumentError e){
-            String expectedErrorMessage = "Function call parameters do not match function declaration: \"<int>\" != \"<string>\" at line 3 token 1 with node type FunctionCall";
+            String expectedErrorMessage = "{ ArgumentError } : Function call parameters do not match function declaration: \"<int>\" != \"<string>\" at line 3 token 1 with node type FunctionCall";
             assertEquals(expectedErrorMessage, e.getMessage());
         }
         input = """
@@ -211,7 +211,7 @@ public class TestSemanticAnalysis {
             assert false;
         }
         catch (MissingConditionError e){
-            String expectedErrorMessage = "If expression is not boolean at line 2 token 3 with node type Expression";
+            String expectedErrorMessage = "{ MissingConditionError } : If expression is not boolean at line 2 token 3 with node type Expression";
             assertEquals(expectedErrorMessage, e.getMessage());
         }
         input = """
@@ -242,7 +242,7 @@ public class TestSemanticAnalysis {
             assert false;
         }
         catch (ReturnError e){
-            String expectedErrorMessage = "Return type does not match function return type: \"<int>\" != \"<string>\" at line 2 token 1 with node type Return";
+            String expectedErrorMessage = "{ ReturnError } : Return type does not match function return type: \"<int>\" != \"<string>\" at line 2 token 1 with node type Return";
             assertEquals(expectedErrorMessage, e.getMessage());
         }
         input = """
@@ -274,7 +274,7 @@ public class TestSemanticAnalysis {
             SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
             assert false;
         } catch (ScopeError e) {
-            String expectedErrorMessage = "Identifier not declared: < b > at line 4 token 1 with node type IdentifierAccess";
+            String expectedErrorMessage = "{ ScopeError } : Identifier not declared: < b > at line 4 token 1 with node type IdentifierAccess";
             assertEquals(expectedErrorMessage, e.getMessage());
         }
         input = """
@@ -313,7 +313,7 @@ public class TestSemanticAnalysis {
             SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
             assert false;
         } catch (DeclarationError e) {
-            String expectedErrorMessage = "Identifier already declared: < a > at line 4 token 1 with node type Method";
+            String expectedErrorMessage = "{ DeclarationError } : Identifier already declared: < a > at line 4 token 1 with node type Method";
             assertEquals(expectedErrorMessage, e.getMessage());
         }
         input = """
@@ -352,7 +352,7 @@ public class TestSemanticAnalysis {
             SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
             assert false;
         } catch (MissingConditionError e) {
-            String expectedErrorMessage = "For expression is not boolean at line 4 token 7 with node type Expression";
+            String expectedErrorMessage = "{ MissingConditionError } : For expression is not boolean at line 4 token 7 with node type Expression";
             assertEquals(expectedErrorMessage, e.getMessage());
         }
 
@@ -391,7 +391,7 @@ public class TestSemanticAnalysis {
             SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
             assert false;
         } catch (MissingConditionError e) {
-            String expectedErrorMessage = "While expression is not boolean at line 4 token 3 with node type Expression";
+            String expectedErrorMessage = "{ MissingConditionError } : While expression is not boolean at line 4 token 3 with node type Expression";
             assertEquals(expectedErrorMessage, e.getMessage());
         }
 
@@ -441,7 +441,7 @@ public class TestSemanticAnalysis {
             SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
             assert false;
         } catch (ArgumentError e) {
-            String expectedErrorMessage = "Function call parameters do not match function declaration: \"<int>\" != \"<float>\" at line 5 token 1 with node type FunctionCall";
+            String expectedErrorMessage = "{ ArgumentError } : Function call parameters do not match function declaration: \"<int>\" != \"<float>\" at line 5 token 1 with node type FunctionCall";
             assertEquals(expectedErrorMessage, e.getMessage());
         }
     }
@@ -501,7 +501,7 @@ public class TestSemanticAnalysis {
             SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
             assert false;
         } catch (ArgumentError e) {
-            String expectedErrorMessage = "Function call parameters do not match function declaration: \"<int[]>\" != \"<int>\" at line 19 token 1 with node type FunctionCall";
+            String expectedErrorMessage = "{ ArgumentError } : Function call parameters do not match function declaration: \"<int[]>\" != \"<int>\" at line 19 token 1 with node type FunctionCall";
             assertEquals(expectedErrorMessage, e.getMessage());
         }
 
@@ -530,7 +530,7 @@ public class TestSemanticAnalysis {
             SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
             assert false;
         } catch (ReturnError e) {
-            String expectedErrorMessage = "Return type does not match function return type: \"<float>\" != \"<string>\" at line 11 token 1 with node type Return";
+            String expectedErrorMessage = "{ ReturnError } : Return type does not match function return type: \"<float>\" != \"<string>\" at line 11 token 1 with node type Return";
             assertEquals(expectedErrorMessage, e.getMessage());
         }
 
@@ -560,7 +560,7 @@ public class TestSemanticAnalysis {
             SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
             assert false;
         } catch (TypeError e) {
-            String expectedErrorMessage = "Assignment type does not match declaration type: \"<int>\" != \"<float>\" at line 3 token 1 with node type Declaration";
+            String expectedErrorMessage = "{ TypeError } : Assignment type does not match declaration type: \"<int>\" != \"<float>\" at line 3 token 1 with node type Declaration";
             assertEquals(expectedErrorMessage, e.getMessage());
         }
     }

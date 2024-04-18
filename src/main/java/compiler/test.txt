@@ -1,7 +1,10 @@
 //Good luck
+int a;
+bool g;
 if (a == 1 && false == g) {
     //
 }
+int i;
 i = (i+2)*-2%3;
 int[] c = int[5];  // new array of length 5
 
@@ -13,40 +16,16 @@ struct Point {
     int y;
 }
 
-int a = -3;
+int[] x;
+a = -3;
 int b = x[readInt() * 2 + 2];
 
 def int square(int v) {
     return v*v;
 }
 
-def void main() {
-    int value = readInt();
-    Point p = Point(a, a+value);
-    writeInt(square(value));
-    writeln();
-    int i;
-    for (i=1, i<-a, i = i+1) {
-        while (value!=0) {
-            if (!run){
-                value = value - 1;
-            } else {
-                write(message);
-            }
-        }
-    }
-    i = (i+2)*2;
-}
-
-for (i.y = 0, 10 > i *2 +1 , i.y[123] = 2) {
+for (i = 0, 10 > i *2 +1 , i = 2) {
     int z = 69;
-}
-
-int i = 0;
-
-struct Point {
-    int x;
-    int y;
 }
 
 struct Person {
@@ -55,16 +34,10 @@ struct Person {
     int[] history;
 }
 
-final int i = 3;
 final float j = 3.2*5.0;
 //final k int = i*3;
-final string[] message = "Hello";
+//final string[] message = "Hello";
 final bool isEmpty = true;
-
-
-def int[] square(int[] v, int x) {
-    return v[1]*v +2*x.w;
-}
 
 def Point copyPoints(Point[] p) {
     return Point(p[0].x+p[1].x, p[0].y+p[1].y);
@@ -72,7 +45,7 @@ def Point copyPoints(Point[] p) {
 
 def void main() {
     int value = readInt();
-    writeln(square(value));
+    writeInt(square(value));
     int i;
     for (i=1, i*2 <100+4*readInt(), i = i+1*4+readInt()) {
         while (value!=3*2+1) {
@@ -83,6 +56,5 @@ def void main() {
             }
         }
     }
-
     i = (i+2)*2 + 1+2*2;
 }

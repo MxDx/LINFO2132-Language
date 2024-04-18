@@ -345,6 +345,9 @@ public class TypeVisitor {
             if (type == null) {
                 SemanticAnalysis.SemanticException("TypeError","Assignment type is null", identifierAccess.getAssignment());
             }
+            if (type.isFinal()) {
+                SemanticAnalysis.SemanticException("DeclarationError", "Assigning a value to a final variable", identifierAccess.getAssignment());
+            }
             if (!Objects.equals(type, assignment)) {
                 String str = "Assignment type does not match declaration type: ";
                 str += type + " != ";
@@ -357,7 +360,7 @@ public class TypeVisitor {
 
     public IdentifierType visit(IdentifierAccess.ArrayAccess arrayAccess, IdentifierType type) throws Exception {
         if (!type.isVector()) {
-            SemanticAnalysis.SemanticException("TypeError","Identifier is not a vector", arrayAccess);
+            SemanticAnalysis.SemanticException("TypeError", "Identifier is not a vector", arrayAccess);
         }
         IdentifierType indexType = arrayAccess.getIndex().accept(this);
         if (!Objects.equals(indexType.getType(), table.getType("int"))) {
@@ -382,6 +385,10 @@ public class TypeVisitor {
 
     public IdentifierType visit(IdentifierAccess.StructAccess structAccess, IdentifierType type) throws Exception {
         // a[0].b
+        Type baseType = type.getType();
+        if (!(baseType instanceof StructType)) {
+            SemanticAnalysis.SemanticException("TypeError", "Variable is not structure", structAccess);
+        }
         StructType structType = (StructType) type.getType();
         type = structType.getField(structAccess.getField());
         if (type == null) {
@@ -407,6 +414,10 @@ public class TypeVisitor {
     }
 
     public IdentifierType visit(IdentifierAccess.FunctionCall functionCall, IdentifierType type) throws Exception {
+        if (!(type instanceof FuncType)) {
+            SemanticAnalysis.SemanticException("TypeError", "Variable is not function", functionCall);
+        }
+        assert type instanceof FuncType;
         FuncType funcType = (FuncType) type;
         ArrayList<IdentifierType> parameters = funcType.getParameters();
         ArrayList<Node> arguments = functionCall.getArguments();
