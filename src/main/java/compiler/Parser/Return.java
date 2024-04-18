@@ -15,6 +15,11 @@ public class Return extends Node{
     }
 
     public Node parse() throws Exception {
+        if (parser.currentToken.equals(Parser.SEMICOLON)) {
+            parser.getNext();
+            this.expression = null;
+            return this;
+        }
         expression = new Expression(parser).parse();
         parser.match(Parser.SEMICOLON);
         return this;

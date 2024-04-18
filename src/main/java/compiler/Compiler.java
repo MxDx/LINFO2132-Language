@@ -10,6 +10,7 @@ import compiler.SemanticAnalysis.SemanticAnalysis;
 import java.io.*;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Stack;
 
 public class Compiler {
 
@@ -46,14 +47,15 @@ public class Compiler {
     };
 
     public static void main(String[] args) {
-        /*
-        if (args.length < 1) {
+
+        /*if (args.length < 1) {
             System.out.println("No input file");
             return;
         }
 
         boolean showLexer = args[0].equals("-lexer");
         boolean showParser = args[0].equals("-parser");
+        boolean showSemantic = args[0].equals("-semantic");
         System.out.println("showLexer: " + showLexer);
         System.out.println("showParser: " + showParser);
         if ((showLexer ||showParser) && args.length < 2) {
@@ -62,9 +64,9 @@ public class Compiler {
         }*/
 
         //String inputPath = args[(showLexer||showParser ? 1 : 0)];
-        String inputPath = "src/main/java/compiler/test_semantic.txt";
+        String inputPath = "src/main/java/compiler/test.txt";
         boolean showLexer = false;
-        boolean showParser = false;
+        boolean showParser = true;
         boolean showSemantic = true;
         System.out.println("inputPath: " + inputPath); //LOCAL: String inputPath = "src/main/java/compiler/test.txt";
         Lexer lex = lexerGetter(inputPath, showLexer);
@@ -77,7 +79,8 @@ public class Compiler {
             try {
                 File myObj = new File(inputPath);
                 Reader reader = new FileReader(myObj);
-                Lexer lex = new Lexer(reader);
+                Stack<Reader> std = getStdLib();
+                Lexer lex = new Lexer(reader, std);
                 if (showLexer) {
                     while (true) {
                         Symbol s = lex.getNextSymbol();
@@ -129,5 +132,22 @@ public class Compiler {
 
     public static HashSet<String> getBasicTypes() {
         return basicTypes;
+    }
+
+    private static Stack<Reader> getStdLib() {
+        // Getting all the file from the stdlib folder with .pedro extension
+        File folder = new File("src/main/java/compiler/std");
+        File[] listOfFiles = folder.listFiles();
+        Stack<Reader> stdLibs = new Stack<>();
+        for (File file : listOfFiles) {
+            if (file.isFile() && file.getName().endsWith(".pedro")) {
+                try {
+                    stdLibs.push(new FileReader(file));
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return stdLibs;
     }
 }

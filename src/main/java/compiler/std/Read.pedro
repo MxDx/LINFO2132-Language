@@ -1,0 +1,9 @@
+def int readInt() {
+    return 0;
+}
+def float readFloat() {
+    return 0.0;
+}
+def string readString() {
+    return "";
+}

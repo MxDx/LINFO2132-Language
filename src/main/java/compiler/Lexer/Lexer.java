@@ -2,8 +2,10 @@ package compiler.Lexer;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Stack;
 
 public class Lexer {
 
@@ -35,18 +37,31 @@ public class Lexer {
     };
     //'+', '-', '*', '/', '%', '<', '>', '=', '!', '&', '|', '(', ')', '{', '}', ';', ',', '[', ']', '.'
     public LinkedList<Symbol> symbolList;
-    private final Reader input;
+    private Reader input;
+    private final Reader file;
+    private boolean fileReading = false;
+    private final Stack<Reader> libs;
     private int line = 1;
     private int tokenNumber = 1;
 
-    public Lexer(Reader input) throws Exception {
+    public Lexer(Reader input, Stack<Reader> libs) throws Exception {
         symbolList = new LinkedList<>();
-        this.input = input;
-        int c = input.read();
+        this.libs = libs;
+        this.file = input;
+        if (!libs.isEmpty()) {
+            this.input = libs.pop();
+        } else {
+            this.input = input;
+        }
+        int c = this.input.read();
         if (c == -1) {
             throw new IOException("Empty file");
         }
         this.lastChar = (char) c;
+    }
+
+    public Lexer(Reader input) throws Exception {
+        this(input, new Stack<>());
     }
     
     public Symbol getNextSymbol() throws Exception {
@@ -111,8 +126,19 @@ public class Lexer {
             }
         } catch (EndOfFileException e) {
             //System.out.println("End of file");
+            if (!libs.isEmpty()) {
+                this.input = libs.pop();
+                this.lastChar = '\n';
+                return getNextSymbol();
+            }
+            if (fileReading) {
+                return null;
+            }
+            fileReading = true;
+            this.input = file;
+            this.lastChar = '\n';
+            return getNextSymbol();
         }
-        return null;
     }
 
     private char nextUsefulChar(Reader input) throws IOException {
