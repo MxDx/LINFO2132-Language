@@ -581,5 +581,49 @@ public class TestSemanticAnalysis {
             assert false;
         }
     }
+    @Test
+    public void complexTestOperation() throws Exception{
+        String input = """
+                int a = 10;
+                int b = 20;
+                int c = a + b;
+                int d = a - b;
+                int e = a * b;
+                int f = a / b;
+                int g = a % b;
+                bool h = a > b;
+                bool i = a < b;
+                bool j = a >= b;
+                bool k = a <= b;
+                bool l = a == b;
+                bool m = a != b;
+                float x = 10.0;
+                float y = 20.0;
+                float z = x + y;
+                float w = x - y;
+                float v = x * y;
+                float u = x / y;
+                bool n = x > y;
+                bool o = x < y;
+                bool p = x >= y;
+                bool q = x <= y;
+                bool r = x == y;
+                bool s = x != y;
+                string str = "Hello";
+                string str2 = "World";
+                string str3 = str + str2;
+                string str4 = str + " " + str2;
+                bool str5 = str == str2;
+                bool str6 = str != str2;
+                """;
+        Parser parser = getParser(input);
+        try {
+            SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser, false);
+            assert true;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            assert false;
+        }
+    }
 
 }
