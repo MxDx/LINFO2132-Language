@@ -1,5 +1,6 @@
 package compiler.Parser;
 
+import compiler.CodeGenerator.CodeGenerator;
 import compiler.SemanticAnalysis.Type.IdentifierType;
 import compiler.SemanticAnalysis.TypeVisitor;
 
@@ -27,5 +28,9 @@ public class Block extends Node{
     @Override
     public IdentifierType accept(TypeVisitor visitor) throws Exception {
         return visitor.visit(this);
+    }
+    @Override
+    public void accept(CodeGenerator generator) {
+        generator.generateCode(this.statements);
     }
 }

@@ -74,9 +74,6 @@ public class Declaration extends Node {
         return visitor.visit(this);
     }
     @Override
-    public void accept(CodeGenerator generator, String identifier) {
-        generator.generateCode(this, identifier);
-    }
     public void accept(CodeGenerator generator) {
         generator.generateCode(this);
     }

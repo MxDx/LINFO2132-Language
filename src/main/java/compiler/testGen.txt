@@ -1,2 +1,4 @@
+def void square(int x) {
+}
 int a = 10;
 string b = "Hello World!";

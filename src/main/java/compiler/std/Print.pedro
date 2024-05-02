@@ -1,0 +1,11 @@
+def void printlnString(string s) {
+}
+
+def void printlnInt(int i) {
+}
+
+def void printlnFloat(float f) {
+}
+
+def void printlnBool(bool b) {
+}

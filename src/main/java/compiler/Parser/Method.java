@@ -1,6 +1,7 @@
 package compiler.Parser;
 
 
+import compiler.CodeGenerator.CodeGenerator;
 import compiler.Lexer.Identifier;
 import compiler.Lexer.VarType;
 import compiler.SemanticAnalysis.Type.IdentifierType;
@@ -79,5 +80,9 @@ public class Method extends Node {
     @Override
     public IdentifierType accept(TypeVisitor visitor) throws Exception {
         return visitor.visit(this);
+    }
+    @Override
+    public void accept(CodeGenerator generator) {
+        generator.generateCode(this);
     }
 }

@@ -62,7 +62,7 @@ public class Compiler {
         boolean showLexer = false;
         boolean showParser = false;
         boolean showSemantic = false;
-        boolean noLibs = true;
+        boolean noLibs = false;
         System.out.println("inputPath: " + inputPath); //LOCAL: String inputPath = "src/main/java/compiler/test.txt";
         Lexer lex = lexerGetter(inputPath, showLexer, noLibs);
         Parser parser = parserGetter(lex, showParser);

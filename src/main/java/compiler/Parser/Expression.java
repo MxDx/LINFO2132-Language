@@ -146,8 +146,8 @@ public class Expression extends Node {
         return corps.accept(visitor);
     }
     @Override
-    public void accept(CodeGenerator generator, String identifier) {
-        generator.generateCode(this, identifier);
+    public void accept(CodeGenerator generator) {
+        generator.generateCode(this);
     }
 
     public static class Bang extends Expression {
@@ -206,12 +206,13 @@ public class Expression extends Node {
 
         @Override
         public IdentifierType accept(TypeVisitor visitor) {
+            this.setType(value.getType());
             Type type = visitor.getTable().getType(value.getType());
             return new IdentifierType(type);
         }
         @Override
-        public void accept(CodeGenerator generator, String identifier) {
-            generator.generateCode(this, identifier);
+        public void accept(CodeGenerator generator) {
+            generator.generateCode(this);
         }
     }
 

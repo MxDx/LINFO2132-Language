@@ -21,6 +21,11 @@ public class Assignment extends Node {
         parser.match(Parser.EQUALS);
     }
 
+    public Assignment(Node node, Node expression) {
+        super(node);
+        this.expression = expression;
+    }
+
     public Assignment parse() throws Exception {
         expression = new Expression(parser).setEOF(EOF).parse();
         return this;

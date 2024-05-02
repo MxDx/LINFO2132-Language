@@ -15,6 +15,12 @@ public abstract class Node {
         this.tokenNumber = parser.currentToken.getTokenNumber();
     }
 
+    public Node(Node node) {
+        this.line = node.getLine();
+        this.tokenNumber = node.getTokenNumber();
+        this.type = node.getNodeType();
+    }
+
     public int getLine() {
         return line;
     }
