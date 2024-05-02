@@ -140,6 +140,13 @@ public class CodeGenerator {
         }
     }
 
+    public void generateCode(IdentifierAccess.FunctionCall functionCall) {
+        for (Node argument : functionCall.getArguments()) {
+            argument.accept(this);
+        }
+        mw.visitMethodInsn(Opcodes.INVOKESTATIC, "Main", functionCall.getIdentifier(), "()V", false);
+    }
+
     public void println(String str) {
         mw.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
         mw.visitLdcInsn(str);

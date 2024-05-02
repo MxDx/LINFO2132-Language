@@ -1,5 +1,6 @@
 package compiler.Parser;
 
+import compiler.CodeGenerator.CodeGenerator;
 import compiler.Lexer.Special;
 import compiler.Lexer.Symbol;
 import compiler.SemanticAnalysis.Type.IdentifierType;
@@ -215,6 +216,10 @@ public class IdentifierAccess extends Node {
         @Override
         public IdentifierType accept(TypeVisitor visitor, IdentifierType type) throws Exception {
             return visitor.visit(this, type);
+        }
+        @Override
+        public void accept(CodeGenerator generator, String identifier) {
+            generator.generateCode(this);
         }
     }
 }
