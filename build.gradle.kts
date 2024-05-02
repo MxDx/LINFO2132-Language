@@ -25,6 +25,9 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     implementation("junit:junit:4.13.2")
 
+    // ASM library for bytecode manipulation.
+    implementation("org.ow2.asm:asm-all:5.2")
+
     // This dependency is used by the application.
     implementation("com.google.guava:guava:31.1-jre")
 
