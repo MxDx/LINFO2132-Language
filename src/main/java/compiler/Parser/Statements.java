@@ -1,5 +1,6 @@
 package compiler.Parser;
 
+import compiler.CodeGenerator.CodeGenerator;
 import compiler.Lexer.Symbol;
 import compiler.SemanticAnalysis.Type.IdentifierType;
 import compiler.SemanticAnalysis.TypeVisitor;
@@ -48,6 +49,9 @@ public class Statements extends Starting {
         str.append(statements.get(statements.size()-1).toString());
         str.append("\n]\n}");
         return str.toString();
+    }
+    public void accept(CodeGenerator generator) {
+        generator.generateCode(this);
     }
 
     public static class Statement extends Node {
@@ -110,5 +114,9 @@ public class Statements extends Starting {
         public IdentifierType accept(TypeVisitor visitor) throws Exception {
             return visitor.visit(this);
         }
+        public void accept(CodeGenerator generator) {
+            generator.generateCode(this);
+        }
+
     }
 }

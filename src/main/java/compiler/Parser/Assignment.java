@@ -1,7 +1,9 @@
 package compiler.Parser;
 
+import compiler.CodeGenerator.CodeGenerator;
 import compiler.Lexer.Special;
 import compiler.Lexer.Symbol;
+import compiler.SemanticAnalysis.IdentifierTable;
 import compiler.SemanticAnalysis.Type.IdentifierType;
 import compiler.SemanticAnalysis.TypeVisitor;
 
@@ -42,6 +44,12 @@ public class Assignment extends Node {
 
     @Override
     public IdentifierType accept(TypeVisitor visitor) throws Exception {
-        return expression.accept(visitor);
+        IdentifierType ret = expression.accept(visitor);
+        this.setType(ret.getType().getType().getType());
+        return ret;
     }
+    public void accept(CodeGenerator generator, String identifier) {
+        generator.generateCode(this, identifier);
+    }
+
 }

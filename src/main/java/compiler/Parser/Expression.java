@@ -1,5 +1,6 @@
 package compiler.Parser;
 
+import compiler.CodeGenerator.CodeGenerator;
 import compiler.Lexer.MyInteger;
 import compiler.Lexer.Special;
 import compiler.Lexer.Symbol;
@@ -144,6 +145,10 @@ public class Expression extends Node {
     public IdentifierType accept(TypeVisitor visitor) throws Exception {
         return corps.accept(visitor);
     }
+    @Override
+    public void accept(CodeGenerator generator, String identifier) {
+        generator.generateCode(this, identifier);
+    }
 
     public static class Bang extends Expression {
         public Node expression;
@@ -186,6 +191,9 @@ public class Expression extends Node {
             super(parser);
             this.value = value;
         }
+        public Symbol getValue(){
+            return value;
+        }
 
         public Expression parse() throws Exception {
             return this;
@@ -200,6 +208,10 @@ public class Expression extends Node {
         public IdentifierType accept(TypeVisitor visitor) {
             Type type = visitor.getTable().getType(value.getType());
             return new IdentifierType(type);
+        }
+        @Override
+        public void accept(CodeGenerator generator, String identifier) {
+            generator.generateCode(this, identifier);
         }
     }
 

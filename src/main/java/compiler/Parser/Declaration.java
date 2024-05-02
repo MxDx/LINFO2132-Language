@@ -1,5 +1,6 @@
 package compiler.Parser;
 
+import compiler.CodeGenerator.CodeGenerator;
 import compiler.Lexer.Keyword;
 import compiler.Lexer.Symbol;
 import compiler.Lexer.VarType;
@@ -72,4 +73,12 @@ public class Declaration extends Node {
     public IdentifierType accept(TypeVisitor visitor) throws Exception {
         return visitor.visit(this);
     }
+    @Override
+    public void accept(CodeGenerator generator, String identifier) {
+        generator.generateCode(this, identifier);
+    }
+    public void accept(CodeGenerator generator) {
+        generator.generateCode(this);
+    }
+
 }

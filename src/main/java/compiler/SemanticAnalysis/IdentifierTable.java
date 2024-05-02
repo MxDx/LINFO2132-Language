@@ -14,6 +14,7 @@ public class IdentifierTable {
     private final HashMap<String, IdentifierType> tableIdentifier;
     private final HashMap<String, Type> tableType;
 
+
     public IdentifierTable() {
         parent = null;
         tableIdentifier = new HashMap<>();
