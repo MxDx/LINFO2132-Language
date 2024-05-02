@@ -40,30 +40,32 @@ public class Compiler {
 
     public static void main(String[] args) {
 
-        /*if (args.length < 1) {
+        if (args.length < 1) {
             System.out.println("No input file");
-            return;
+            return ;
         }
 
         boolean showLexer = args[0].equals("-lexer");
         boolean showParser = args[0].equals("-parser");
         boolean showSemantic = args[0].equals("-semantic");
-        System.out.println("showLexer: " + showLexer);
-        System.out.println("showParser: " + showParser);
+        //System.out.println("showLexer: " + showLexer);
+        //System.out.println("showParser: " + showParser);
         if ((showLexer ||showParser) && args.length < 2) {
             System.out.println("No input file");
-            return;
-        }*/
+            return ;
+        }
 
-        //String inputPath = args[(showLexer||showParser ? 1 : 0)];
+        String inputPath = args[(showLexer||showParser ? 1 : 0)];
+        /*
         String inputPath = "src/main/java/compiler/test.txt";
         boolean showLexer = false;
         boolean showParser = true;
-        boolean showSemantic = true;
-        System.out.println("inputPath: " + inputPath); //LOCAL: String inputPath = "src/main/java/compiler/test.txt";
+        boolean showSemantic = true;*/
+        //System.out.println("inputPath: " + inputPath); //LOCAL: String inputPath = "src/main/java/compiler/test.txt";
         Lexer lex = lexerGetter(inputPath, showLexer);
         Parser parser = parserGetter(lex, showParser);
         semanticAnalysisGetter(parser, showSemantic);
+        return;
     }
 
     public static Lexer lexerGetter(String inputPath,boolean showLexer) {

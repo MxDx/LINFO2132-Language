@@ -297,14 +297,17 @@ public class TypeVisitor {
         if (Objects.equals(left.getType(), table.getType("int")) && Objects.equals(right.getType(), table.getType("int"))) {
             return new IdentifierType(table.getType("int"));
         }
-        if (Objects.equals(left.getType(), table.getType("float")) && Objects.equals(right.getType(), table.getType("float"))) {
+        if (!Objects.equals(arithmeticOperation.operation, "%") && Objects.equals(left.getType(), table.getType("float")) && Objects.equals(right.getType(), table.getType("float"))) {
             return new IdentifierType(table.getType("float"));
         }
-        if (Objects.equals(left.getType(), table.getType("int")) && Objects.equals(right.getType(), table.getType("float"))) {
+        if (!Objects.equals(arithmeticOperation.operation, "%") && Objects.equals(left.getType(), table.getType("int")) && Objects.equals(right.getType(), table.getType("float"))) {
             return new IdentifierType(table.getType("float"));
         }
-        if (Objects.equals(left.getType(), table.getType("float")) && Objects.equals(right.getType(), table.getType("int"))) {
+        if (!Objects.equals(arithmeticOperation.operation, "%") && Objects.equals(left.getType(), table.getType("float")) && Objects.equals(right.getType(), table.getType("int"))) {
             return new IdentifierType(table.getType("float"));
+        }
+        if (Objects.equals(arithmeticOperation.operation, "+") && Objects.equals(left.getType(), table.getType("string")) && Objects.equals(right.getType(),table.getType("string"))){
+            return new IdentifierType(table.getType("string"));
         }
         String str = "Arithmetic operation [ ";
         str += arithmeticOperation.getOperator();
