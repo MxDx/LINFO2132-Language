@@ -1,3 +1,10 @@
+def int square(int v) {
+    return v*v;
+}
+
+int g = square(5);
+writeInt(g);
+
 int a = 5;
 writeInt(a);
 
@@ -30,8 +37,10 @@ if (1.5 == 1.5) {
 
 while (a > 0) {
     writeInt(a);
-    a = a - 1;
     int c = 45;
+    writeInt(c);
+    a = a - 1;
 }
 
+writeInt(c);
 writeInt(a);

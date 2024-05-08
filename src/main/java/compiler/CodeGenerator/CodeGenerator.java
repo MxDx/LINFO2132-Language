@@ -124,6 +124,10 @@ public class CodeGenerator {
         descriptor.append(getJavaType(method.getReturnType().getValue()));
         MethodVisitor new_mw = cw.visitMethod(Opcodes.ACC_PUBLIC, method.getName().getValue(), descriptor.toString(), null, null);
         CodeGenerator codeGenerator = new CodeGenerator(this, new_mw);
+        for (Parameter parameter : method.getParameters()) {
+            stackTable.addVariableType(parameter.getIdentifier(), parameter.getType().getValue());
+            stackTable.addVariable(parameter.getIdentifier());
+        }
         if (method.getBlock() != null) {
             method.getBlock().accept(codeGenerator);
         }
@@ -364,15 +368,17 @@ public class CodeGenerator {
     }
 
     public void generateCode(While whileStatement) {
+        StackTable oldStackTable = stackTable;
+        stackTable = new StackTable(oldStackTable);
         Label start = new Label();
         Label end = new Label();
         mw.visitLabel(start);
         int OpCode = generateCode((Expression.ComparisonOperation) whileStatement.getExpression());
         mw.visitJumpInsn(OpCode, end);
         whileStatement.getBlock().accept(this);
-        //loadOnStack((Expression.Operation) whileStatement.getExpression());
         mw.visitJumpInsn(Opcodes.GOTO, start);
         mw.visitLabel(end);
+        stackTable = oldStackTable;
     }
 
     public void generateCode(If ifStatement) {

@@ -9,6 +9,7 @@ public class StackTable {
     Integer stackPointer = 0;
     public StackTable(StackTable parent) {
         this.parent = parent;
+        this.stackPointer = parent.stackPointer;
     }
     public StackTable() {
         this.parent = null;
