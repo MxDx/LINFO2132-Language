@@ -1,6 +1,7 @@
 package compiler.CodeGenerator;
 import compiler.Parser.Starting;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import java.io.FileOutputStream;
@@ -58,6 +59,11 @@ public class CodeGenerator {
     public void generateCode(Statements.Statement statement) {
         statement.content.accept(this);
     }
+
+    public void generateCode(Block block) {
+        block.getStatements().accept(this);
+    }
+
     public void generateCode(Node node){
         throw new RuntimeException("Node Not implemented");
     }
@@ -71,7 +77,6 @@ public class CodeGenerator {
 
     public void generateCode(Assignment assignment, String identifier) {
         Expression expression = (Expression) assignment.getExpression();
-        stackTable.addVariable(identifier);
         expression.accept(this);
         switch (assignment.getNodeType()) {
             case "int":
@@ -83,6 +88,8 @@ public class CodeGenerator {
             case "string":
                 mw.visitVarInsn(Opcodes.ASTORE, stackTable.getVariable(identifier));
                 break;
+            default:
+                throw new RuntimeException("Invalid type of assignment");
         }
     }
     public void generateCode(Expression.Value value) {
@@ -101,8 +108,10 @@ public class CodeGenerator {
     public void generateCode(Declaration declaration) {
         Expression assignment = (Expression) declaration.getAssignment();
         stackTable.addVariableType(declaration.getIdentifier(), declaration.getType().getValue());
+        stackTable.addVariable(declaration.getIdentifier());
         if (assignment != null) {
             Assignment assignmentNode = new Assignment(assignment, assignment);
+            assignmentNode.setType(declaration.getNodeType());
             assignmentNode.accept(this, declaration.getIdentifier());
         }
     }
@@ -123,7 +132,6 @@ public class CodeGenerator {
         new_mw.visitMaxs(-1, -1);
             
     }
-
     public void generateCode(Return returnStatement) {
         Expression expression = (Expression) returnStatement.getExpression();
         if (expression == null) {
@@ -145,25 +153,21 @@ public class CodeGenerator {
     }
     public void generateCode(IdentifierAccess.FunctionCall functionCall) {
         switch (functionCall.getIdentifier()) {
-            case "printlnString":
+            case "writeString", "write", "writeln":
                 mw.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
                 functionCall.getArguments().get(0).accept(this);
                 mw.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
                 break;
-            case "printlnInt":
+            case "writeInt":
                 mw.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
                 functionCall.getArguments().get(0).accept(this);
                 mw.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V", false);
                 break;
-            case "printlnFloat":
+            case "writeFloat":
                 mw.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
                 functionCall.getArguments().get(0).accept(this);
                 mw.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "(F)V", false);
                 break;
-            case "printlnBool":
-                mw.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
-                functionCall.getArguments().get(0).accept(this);
-                mw.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Z)V", false);
             default:
                 for (Node argument : functionCall.getArguments()) {
                     argument.accept(this);
@@ -173,10 +177,11 @@ public class CodeGenerator {
         }
     }
     public void generateCode(IdentifierAccess identifierAccess) {
-        if(identifierAccess.getNext() != null) {
+        if (identifierAccess.getNext() != null) {
             identifierAccess.getNext().accept(this);
-        }
-        else {
+        } else if (identifierAccess.getAssignment() != null) {
+            identifierAccess.getAssignment().accept(this, identifierAccess.getIdentifier());
+        } else {
             int slot = stackTable.getVariable(identifierAccess.getIdentifier());
             switch (stackTable.getType(identifierAccess.getIdentifier())) {
                 case "int":
@@ -192,6 +197,201 @@ public class CodeGenerator {
         }
     }
 
+    public void loadOnStack(Expression.Operation operation) {
+        String leftType = operation.getTypeLeft();
+        String rightType = operation.getTypeRight();
+        if (leftType != rightType) {
+            if (leftType.equals("int") && rightType.equals("float")) {
+                operation.getLeft().accept(this);
+                mw.visitInsn(Opcodes.I2F);
+                operation.getRight().accept(this);
+            } else if (leftType.equals("float") && rightType.equals("int")) {
+                operation.getRight().accept(this);
+                mw.visitInsn(Opcodes.I2F);
+                operation.getLeft().accept(this);
+            } else {
+                throw new RuntimeException("Invalid casting");
+            }
+        } else {
+            operation.getLeft().accept(this);
+            operation.getRight().accept(this);
+        }
+    }
+
+    public void generateCode(Expression.Operation operation) {
+        // Check for casting
+        String finalType = operation.getNodeType();
+        loadOnStack(operation);
+
+        switch (operation.getOperator()) {
+            case "+":
+                switch (finalType) {
+                    case "int":
+                        mw.visitInsn(Opcodes.IADD);
+                        break;
+                    case "float":
+                        mw.visitInsn(Opcodes.FADD);
+                        break;
+                    default:
+                        throw new RuntimeException("String addition not yet implemented");
+                }
+                break;
+            case "-":
+                switch (finalType) {
+                    case "int":
+                        mw.visitInsn(Opcodes.ISUB);
+                        break;
+                    case "float":
+                        mw.visitInsn(Opcodes.FSUB);
+                        break;
+                }
+                break;
+            case "*":
+                switch (finalType) {
+                    case "int":
+                        mw.visitInsn(Opcodes.IMUL);
+                        break;
+                    case "float":
+                        mw.visitInsn(Opcodes.FMUL);
+                        break;
+                }
+                break;
+            case "/":
+                switch (finalType) {
+                    case "int":
+                        mw.visitInsn(Opcodes.IDIV);
+                        break;
+                    case "float":
+                        mw.visitInsn(Opcodes.FDIV);
+                        break;
+                }
+                break;
+            case "%":
+                switch (finalType) {
+                    case "int":
+                        mw.visitInsn(Opcodes.IREM);
+                        break;
+                    case "float":
+                        throw new RuntimeException("Modulo operation not supported for float");
+                }
+                break;
+        }
+    }
+
+    public int generateCode(Expression.ComparisonOperation comparisonOperation) {
+        // Check for casting
+        String finalType = comparisonOperation.getNodeType();
+        loadOnStack(comparisonOperation);
+
+        switch (comparisonOperation.getOperator()) {
+            case "==":
+                switch (finalType) {
+                    case "int":
+                        return Opcodes.IF_ICMPNE;
+                    case "float":
+                        // If left - right = 0, then they are equal
+                        mw.visitInsn(Opcodes.FSUB);
+                        mw.visitInsn(Opcodes.F2I);
+                        return Opcodes.IFNE;
+                    case "string":
+                        return Opcodes.IF_ACMPNE;
+                    case "bool":
+                        return Opcodes.IF_ICMPNE;
+                }
+                break;
+            case "!=":
+                switch (finalType) {
+                    case "int":
+                        return Opcodes.IF_ICMPEQ;
+                    case "float":
+                        return Opcodes.IF_ACMPEQ;
+                    case "string":
+                        return Opcodes.IF_ACMPEQ;
+                    case "bool":
+                        return Opcodes.IF_ICMPEQ;
+                }
+                break;
+            case "<":
+                switch (finalType) {
+                    case "int":
+                        return Opcodes.IF_ICMPGE;
+                    case "float":
+                        throw new RuntimeException("Float comparison not supported");
+                }
+                break;
+            case ">":
+                switch (finalType) {
+                    case "int":
+                        return Opcodes.IF_ICMPLE;
+                    case "float":
+                        throw new RuntimeException("Float comparison not supported");
+                }
+                break;
+            case "<=":
+                switch (finalType) {
+                    case "int":
+                        return Opcodes.IF_ICMPGT;
+                    case "float":
+                        throw new RuntimeException("Float comparison not supported");
+                }
+                break;
+            case ">=":
+                switch (finalType) {
+                    case "int":
+                        return Opcodes.IF_ICMPLT;
+                    case "float":
+                        throw new RuntimeException("Float comparison not supported");
+                }
+                break;
+            default:
+                throw new RuntimeException("Invalid comparison operator");
+        }
+        throw new RuntimeException("Invalid comparison operator");
+    }
+
+    public int generateCode(Expression.LogicalOperation logicalOperation) {
+        logicalOperation.getLeft().accept(this);
+        logicalOperation.getRight().accept(this);
+        switch (logicalOperation.getOperator()) {
+            case "&&":
+                mw.visitInsn(Opcodes.IAND);
+                break;
+            case "||":
+                mw.visitInsn(Opcodes.IOR);
+                break;
+        }
+        return Opcodes.IFEQ;
+    }
+
+    public void generateCode(While whileStatement) {
+        Label start = new Label();
+        Label end = new Label();
+        mw.visitLabel(start);
+        int OpCode = generateCode((Expression.ComparisonOperation) whileStatement.getExpression());
+        mw.visitJumpInsn(OpCode, end);
+        whileStatement.getBlock().accept(this);
+        //loadOnStack((Expression.Operation) whileStatement.getExpression());
+        mw.visitJumpInsn(Opcodes.GOTO, start);
+        mw.visitLabel(end);
+    }
+
+    public void generateCode(If ifStatement) {
+        Label end = new Label();
+        Label elseLabel = new Label();
+        int OpCode = generateCode((Expression.ComparisonOperation) ifStatement.getExpression());
+        if (ifStatement.getElseStatement() != null) {
+            mw.visitJumpInsn(OpCode, elseLabel);
+            ifStatement.getBlock().accept(this);
+            mw.visitJumpInsn(Opcodes.GOTO, end);
+            mw.visitLabel(elseLabel);
+            ifStatement.getElseStatement().accept(this);
+            mw.visitLabel(end);
+        } else {
+            mw.visitJumpInsn(OpCode, end);
+            ifStatement.getBlock().accept(this);
+            mw.visitLabel(end);
+        }
+    }
 
 
     public String getJavaType(String type) {

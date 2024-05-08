@@ -220,6 +220,8 @@ public class Expression extends Node {
         public String operation;
         public Node left;
         public Node right;
+        private String typeLeft;
+        private String typeRight;
 
         public Operation(Parser parser, Node before) {
             super(parser);
@@ -245,6 +247,19 @@ public class Expression extends Node {
             return operation;
         }
 
+        public String getTypeLeft() {
+            return typeLeft;
+        }
+        public String getTypeRight() {
+            return typeRight;
+        }
+        public void setTypeLeft(String type) {
+            typeLeft = type;
+        }
+        public void setTypeRight(String type) {
+            typeRight = type;
+        }
+
         public Node parse() throws Exception {
             return this;
         }
@@ -255,6 +270,11 @@ public class Expression extends Node {
             str += "\"operation\": " + "\"" + operation + "\"" + ",\n";
             str += "\"right\": {\n" + right.toString() + "\n}\n";
             return str;
+        }
+
+        @Override
+        public void accept(CodeGenerator generator) {
+            generator.generateCode(this);
         }
     }
 

@@ -1,5 +1,37 @@
 int a = 5;
-printlnInt(a);
+writeInt(a);
 
 string b = "Hello";
-printlnString(b);
+writeString(b);
+
+int c = 10 * 2;
+writeInt(c);
+
+int d = c + 2;
+writeInt(d);
+
+float e = (d / (c * 1.0)) + 0.5;
+writeFloat(e);
+
+if (c > 10 * 4) {
+    writeString("c is greater than 40");
+} else {
+    writeString("c is less than or equal to 40");
+}
+
+float f = 1.5 - 1.5;
+writeFloat(f);
+
+if (1.5 == 1.5) {
+    writeString("1.5 is equal to 1.5");
+} else {
+    writeString("1.5 is not equal to 1.5");
+}
+
+while (a > 0) {
+    writeInt(a);
+    a = a - 1;
+    int c = 45;
+}
+
+writeInt(a);

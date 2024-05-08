@@ -68,6 +68,7 @@ public class TypeVisitor {
             str +=  "< " + declaration.getType().getValue() + " >";
             SemanticAnalysis.SemanticException("ScopeError",str, declaration);
         }
+        declaration.setType(type.getType().getValue());
         IdentifierType identifierType = new IdentifierType(type, declaration.getType());
         if (declaration.getAssignment() != null) {
             IdentifierType assignment = declaration.getAssignment().accept(this);
@@ -274,10 +275,14 @@ public class TypeVisitor {
     public IdentifierType visit(Expression.ComparisonOperation comparisonOperation) throws Exception {
         IdentifierType left = comparisonOperation.getLeft().accept(this);
         IdentifierType right = comparisonOperation.getRight().accept(this);
+        comparisonOperation.setTypeLeft(left.getType().getType().getValue());
+        comparisonOperation.setTypeRight(right.getType().getType().getValue());
         if (Objects.equals(left.getType(), table.getType("int")) && Objects.equals(right.getType(), table.getType("float"))) {
+            comparisonOperation.setType("float");
             return new IdentifierType(table.getType("bool"));
         }
         if (Objects.equals(left.getType(), table.getType("float")) && Objects.equals(right.getType(), table.getType("int"))) {
+            comparisonOperation.setType("float");
             return new IdentifierType(table.getType("bool"));
         }
         if (!Objects.equals(left.getType(), right.getType())) {
@@ -288,25 +293,33 @@ public class TypeVisitor {
             str += right;
             SemanticAnalysis.SemanticException("OperatorError",str, comparisonOperation);
         }
+        comparisonOperation.setType(comparisonOperation.getTypeLeft());
         return new IdentifierType(table.getType("bool"));
     }
 
     public IdentifierType visit(Expression.ArithmeticOperation arithmeticOperation) throws Exception {
         IdentifierType left = arithmeticOperation.getLeft().accept(this);
         IdentifierType right = arithmeticOperation.getRight().accept(this);
+        arithmeticOperation.setTypeLeft(left.getType().getType().getValue());
+        arithmeticOperation.setTypeRight(right.getType().getType().getValue());
         if (Objects.equals(left.getType(), table.getType("int")) && Objects.equals(right.getType(), table.getType("int"))) {
+            arithmeticOperation.setType("int");
             return new IdentifierType(table.getType("int"));
         }
         if (!Objects.equals(arithmeticOperation.operation, "%") && Objects.equals(left.getType(), table.getType("float")) && Objects.equals(right.getType(), table.getType("float"))) {
+            arithmeticOperation.setType("float");
             return new IdentifierType(table.getType("float"));
         }
         if (!Objects.equals(arithmeticOperation.operation, "%") && Objects.equals(left.getType(), table.getType("int")) && Objects.equals(right.getType(), table.getType("float"))) {
+            arithmeticOperation.setType("float");
             return new IdentifierType(table.getType("float"));
         }
         if (!Objects.equals(arithmeticOperation.operation, "%") && Objects.equals(left.getType(), table.getType("float")) && Objects.equals(right.getType(), table.getType("int"))) {
+            arithmeticOperation.setType("float");
             return new IdentifierType(table.getType("float"));
         }
         if (Objects.equals(arithmeticOperation.operation, "+") && Objects.equals(left.getType(), table.getType("string")) && Objects.equals(right.getType(),table.getType("string"))){
+            arithmeticOperation.setType("string");
             return new IdentifierType(table.getType("string"));
         }
         String str = "Arithmetic operation [ ";
@@ -339,6 +352,9 @@ public class TypeVisitor {
             String str = "Identifier not declared: ";
             str += "< " + identifier + " >";
             SemanticAnalysis.SemanticException("ScopeError", str, identifierAccess);
+        }
+        if (type.getType() != null) {
+            identifierAccess.setType(type.getType().getType().getValue());
         }
         if (identifierAccess.getNext() != null) {
             type =  identifierAccess.getNext().accept(this, type);

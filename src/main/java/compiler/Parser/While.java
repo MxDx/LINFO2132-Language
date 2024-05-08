@@ -3,7 +3,7 @@ package compiler.Parser;
 import compiler.Lexer.Symbol;
 import compiler.SemanticAnalysis.Type.IdentifierType;
 import compiler.SemanticAnalysis.TypeVisitor;
-
+import compiler.CodeGenerator.CodeGenerator;
 import java.util.ArrayList;
 
 public class While extends Node{
@@ -42,5 +42,10 @@ public class While extends Node{
     @Override
     public IdentifierType accept(TypeVisitor visitor) throws Exception {
         return visitor.visit(this);
+    }
+
+    @Override
+    public void accept(CodeGenerator generator) {
+        generator.generateCode(this);
     }
 }

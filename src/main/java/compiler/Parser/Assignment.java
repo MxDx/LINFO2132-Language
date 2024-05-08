@@ -50,7 +50,7 @@ public class Assignment extends Node {
     @Override
     public IdentifierType accept(TypeVisitor visitor) throws Exception {
         IdentifierType ret = expression.accept(visitor);
-        this.setType(ret.getType().getType().getType());
+        this.setType(ret.getType().getType().getValue());
         return ret;
     }
     public void accept(CodeGenerator generator, String identifier) {

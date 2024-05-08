@@ -1,5 +1,6 @@
 package compiler.Parser;
 
+import compiler.CodeGenerator.CodeGenerator;
 import compiler.Lexer.Keyword;
 import compiler.Lexer.Symbol;
 import compiler.SemanticAnalysis.Type.IdentifierType;
@@ -52,6 +53,11 @@ public class If extends Node{
         return visitor.visit(this);
     }
 
+    @Override
+    public void accept(CodeGenerator generator) {
+        generator.generateCode(this);
+    }
+
     public Node getBlock() {
         return block;
     }
@@ -85,6 +91,11 @@ public class If extends Node{
         @Override
         public IdentifierType accept(TypeVisitor visitor) throws Exception {
             return block.accept(visitor);
+        }
+
+        @Override
+        public void accept(CodeGenerator generator) {
+            generator.generateCode(this.block);
         }
     }
 }

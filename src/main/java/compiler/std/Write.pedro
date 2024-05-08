@@ -1,15 +1,10 @@
 def void writeInt(int i) {
-    return;
 }
 def void writeFloat(float f) {
-    return;
 }
 def void writeString(string s) {
-    return;
 }
-def void writeln() {
-    return;
+def void writeln(string s) {
 }
 def void write(string s) {
-    return;
 }
