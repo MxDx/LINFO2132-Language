@@ -100,6 +100,7 @@ public class CodeGenerator {
     }
     public void generateCode(Declaration declaration) {
         Expression assignment = (Expression) declaration.getAssignment();
+        stackTable.addVariableType(declaration.getIdentifier(), declaration.getType().getValue());
         if (assignment != null) {
             Assignment assignmentNode = new Assignment(assignment, assignment);
             assignmentNode.accept(this, declaration.getIdentifier());
@@ -114,7 +115,10 @@ public class CodeGenerator {
         descriptor.append(getJavaType(method.getReturnType().getValue()));
         MethodVisitor new_mw = cw.visitMethod(Opcodes.ACC_PUBLIC, method.getName().getValue(), descriptor.toString(), null, null);
         CodeGenerator codeGenerator = new CodeGenerator(this, new_mw);
-        method.getBlock().accept(codeGenerator);
+        if (method.getBlock() != null) {
+            method.getBlock().accept(codeGenerator);
+        }
+        new_mw.visitInsn(Opcodes.RETURN);
         new_mw.visitEnd();
         new_mw.visitMaxs(-1, -1);
             
@@ -139,19 +143,56 @@ public class CodeGenerator {
                 break;
         }
     }
-
     public void generateCode(IdentifierAccess.FunctionCall functionCall) {
-        for (Node argument : functionCall.getArguments()) {
-            argument.accept(this);
+        switch (functionCall.getIdentifier()) {
+            case "printlnString":
+                mw.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+                functionCall.getArguments().get(0).accept(this);
+                mw.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+                break;
+            case "printlnInt":
+                mw.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+                functionCall.getArguments().get(0).accept(this);
+                mw.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V", false);
+                break;
+            case "printlnFloat":
+                mw.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+                functionCall.getArguments().get(0).accept(this);
+                mw.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "(F)V", false);
+                break;
+            case "printlnBool":
+                mw.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+                functionCall.getArguments().get(0).accept(this);
+                mw.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Z)V", false);
+            default:
+                for (Node argument : functionCall.getArguments()) {
+                    argument.accept(this);
+                }
+                mw.visitMethodInsn(Opcodes.INVOKESTATIC, "Main", functionCall.getIdentifier(), "()V", false);
+
         }
-        mw.visitMethodInsn(Opcodes.INVOKESTATIC, "Main", functionCall.getIdentifier(), "()V", false);
+    }
+    public void generateCode(IdentifierAccess identifierAccess) {
+        if(identifierAccess.getNext() != null) {
+            identifierAccess.getNext().accept(this);
+        }
+        else {
+            int slot = stackTable.getVariable(identifierAccess.getIdentifier());
+            switch (stackTable.getType(identifierAccess.getIdentifier())) {
+                case "int":
+                    mw.visitVarInsn(Opcodes.ILOAD, slot);
+                    break;
+                case "float":
+                    mw.visitVarInsn(Opcodes.FLOAD, slot);
+                    break;
+                case "string":
+                    mw.visitVarInsn(Opcodes.ALOAD, slot);
+                    break;
+            }
+        }
     }
 
-    public void println(String str) {
-        mw.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
-        mw.visitLdcInsn(str);
-        mw.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
-    }
+
 
     public String getJavaType(String type) {
         switch (type) {

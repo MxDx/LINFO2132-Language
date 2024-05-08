@@ -147,7 +147,7 @@ public class Expression extends Node {
     }
     @Override
     public void accept(CodeGenerator generator) {
-        generator.generateCode(this);
+        corps.accept(generator);
     }
 
     public static class Bang extends Expression {

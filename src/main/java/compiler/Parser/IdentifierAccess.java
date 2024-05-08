@@ -76,6 +76,10 @@ public class IdentifierAccess extends Node {
     public IdentifierType accept(TypeVisitor visitor, IdentifierType type) throws Exception {
         return null;
     }
+    @Override
+    public void accept(CodeGenerator generator) {
+        generator.generateCode(this);
+    }
 
     public static class ArrayAccess extends IdentifierAccess {
         public Node index;
@@ -218,7 +222,7 @@ public class IdentifierAccess extends Node {
             return visitor.visit(this, type);
         }
         @Override
-        public void accept(CodeGenerator generator, String identifier) {
+        public void accept(CodeGenerator generator) {
             generator.generateCode(this);
         }
     }

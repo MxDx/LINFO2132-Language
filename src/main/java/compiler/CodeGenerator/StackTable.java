@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 public class StackTable {
     HashMap<String, Integer> variableMap = new HashMap<>();
+    HashMap<String, String> typeMap = new HashMap<>();
     StackTable parent;
     Integer stackPointer = 0;
     public StackTable(StackTable parent) {
@@ -21,6 +22,15 @@ public class StackTable {
         }
         return -1;
     }
+    public String getType(String identifier) {
+        if (typeMap.containsKey(identifier)) {
+            return typeMap.get(identifier);
+        }
+        if (parent != null) {
+            return parent.getType(identifier);
+        }
+        return null;
+    }
     public boolean addVariable(String identifier, int value) {
         if (variableMap.containsKey(identifier)) {
             return false;
@@ -33,6 +43,13 @@ public class StackTable {
             return false;
         }
         variableMap.put(identifier, stackPointer++);
+        return true;
+    }
+    public boolean addVariableType(String identifier, String type) {
+        if (typeMap.containsKey(identifier)) {
+            return false;
+        }
+        typeMap.put(identifier, type);
         return true;
     }
 }
