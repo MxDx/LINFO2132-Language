@@ -40,8 +40,7 @@ public class Compiler {
     };
 
     public static void main(String[] args) {
-        /*
-        if (args.length < 1) {
+        /*if (args.length < 1) {
             System.out.println("No input file");
             return ;
         }
@@ -49,25 +48,36 @@ public class Compiler {
         boolean showLexer = args[0].equals("-lexer");
         boolean showParser = args[0].equals("-parser");
         boolean showSemantic = args[0].equals("-semantic");
-        //System.out.println("showLexer: " + showLexer);
-        //System.out.println("showParser: " + showParser);
+
         if ((showLexer ||showParser) && args.length < 2) {
             System.out.println("No input file");
             return ;
-        }*/
+        }
+        String inputPath = args[(showLexer||showParser ? 1 : 0)];
 
-        //String inputPath = args[(showLexer||showParser ? 1 : 0)];
-
+        boolean outputFile = (args[1].equals("-o") && !(showLexer||showParser)) || (args[2].equals("-o") && (showLexer||showParser));
+        String outputFileName;
+        if (outputFile) {
+            outputFileName = args[2];
+        }
+        else {
+            outputFileName = "default.class";
+        }
+        System.out.println(outputFileName);
+        */
+        String outputFileName = "default.class";
         String inputPath = "src/main/java/compiler/testGen.txt";
         boolean showLexer = false;
         boolean showParser = false;
         boolean showSemantic = false;
+
         boolean noLibs = false;
+
         System.out.println("inputPath: " + inputPath); //LOCAL: String inputPath = "src/main/java/compiler/test.txt";
         Lexer lex = lexerGetter(inputPath, showLexer, noLibs);
         Parser parser = parserGetter(lex, showParser);
         semanticAnalysisGetter(parser, showSemantic);
-        codeGeneratorGetter(parser);
+        codeGeneratorGetter(parser,outputFileName);
         return;
     }
 
@@ -128,9 +138,9 @@ public class Compiler {
             throw new RuntimeException(e);
         }
     }
-    public static void codeGeneratorGetter(Parser parser) {
+    public static void codeGeneratorGetter(Parser parser, String fileName) {
         try {
-            CodeGenerator codeGenerator = new CodeGenerator();
+            CodeGenerator codeGenerator = new CodeGenerator(fileName);
             codeGenerator.generateCode(parser.getAST());
         } catch (Exception e) {
             throw new RuntimeException(e);

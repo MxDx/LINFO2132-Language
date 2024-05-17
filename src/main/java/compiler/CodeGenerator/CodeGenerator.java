@@ -16,10 +16,20 @@ public class CodeGenerator {
     StackTable stackTable;
     ClassWriter cw;
     MethodVisitor mw;
+    String className;
+    String fileName;
     public CodeGenerator() {
         cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC, "Main", null, "java/lang/Object", null);
         mw = cw.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, "main", "([Ljava/lang/String;)V", null, null);
+        mw.visitCode();
+        stackTable = new StackTable();
+    }
+    public CodeGenerator(String fileName){
+
+        cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC, this.className, null, "java/lang/Object", null);
+        mw = cw.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, this.className, "([Ljava/lang/String;)V", null, null);
         mw.visitCode();
         stackTable = new StackTable();
     }
@@ -45,7 +55,7 @@ public class CodeGenerator {
         mw.visitMaxs(-1, -1);
         cw.visitEnd();
         byte[] bytes = cw.toByteArray();
-        try (FileOutputStream outFile = new FileOutputStream("Main.class")) {
+        try (FileOutputStream outFile = new FileOutputStream("className")) {
             outFile.write(bytes);
         } catch (IOException e) {
             e.printStackTrace();
@@ -320,6 +330,7 @@ public class CodeGenerator {
                     case "int":
                         return Opcodes.IF_ICMPGE;
                     case "float":
+                        //Opcodes.FCMPG; devrait fonctionner mais pas parreil que IF_ICMPGE à tester
                         throw new RuntimeException("Float comparison not supported");
                 }
                 break;
