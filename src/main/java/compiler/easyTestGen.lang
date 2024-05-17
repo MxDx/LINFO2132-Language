@@ -1,0 +1,11 @@
+int a = 5;
+writeInt(a);
+
+string b = "Hello";
+writeString(b);
+
+int c = 10 * 2;
+writeInt(c);
+
+int d = c + 2;
+writeInt(d);
