@@ -54,8 +54,8 @@ public class If extends Node{
     }
 
     @Override
-    public void accept(CodeGenerator generator) {
-        generator.generateCode(this);
+    public int accept(CodeGenerator generator) {
+        return generator.generateCode(this);
     }
 
     public Node getBlock() {
@@ -94,8 +94,8 @@ public class If extends Node{
         }
 
         @Override
-        public void accept(CodeGenerator generator) {
-            generator.generateCode(this.block);
+        public int accept(CodeGenerator generator) {
+            return generator.generateCode(this.block);
         }
     }
 }

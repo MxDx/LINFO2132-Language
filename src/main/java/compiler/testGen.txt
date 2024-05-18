@@ -1,3 +1,8 @@
+
+if (3.0 <= 3.0 || 3.0 != 3.0) {
+    writeString("Hello");
+}
+
 int a = 5 * 2;
 
 def int square(int v) {

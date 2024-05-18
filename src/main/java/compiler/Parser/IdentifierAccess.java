@@ -77,8 +77,8 @@ public class IdentifierAccess extends Node {
         return null;
     }
     @Override
-    public void accept(CodeGenerator generator) {
-        generator.generateCode(this);
+    public int accept(CodeGenerator generator) {
+        return generator.generateCode(this);
     }
 
     public static class ArrayAccess extends IdentifierAccess {
@@ -222,8 +222,8 @@ public class IdentifierAccess extends Node {
             return visitor.visit(this, type);
         }
         @Override
-        public void accept(CodeGenerator generator) {
-            generator.generateCode(this);
+        public int accept(CodeGenerator generator) {
+            return generator.generateCode(this);
         }
     }
 }

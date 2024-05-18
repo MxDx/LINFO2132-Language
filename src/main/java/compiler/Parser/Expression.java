@@ -146,8 +146,9 @@ public class Expression extends Node {
         return corps.accept(visitor);
     }
     @Override
-    public void accept(CodeGenerator generator) {
+    public int accept(CodeGenerator generator) {
         corps.accept(generator);
+        return 0;
     }
 
     public static class Bang extends Expression {
@@ -174,6 +175,10 @@ public class Expression extends Node {
         @Override
         public IdentifierType accept(TypeVisitor visitor) throws Exception {
             return expression.accept(visitor);
+        }
+        @Override
+        public int accept(CodeGenerator generator) {
+            return generator.generateCode(this);
         }
     }
 
@@ -211,8 +216,9 @@ public class Expression extends Node {
             return new IdentifierType(type);
         }
         @Override
-        public void accept(CodeGenerator generator) {
+        public int accept(CodeGenerator generator) {
             generator.generateCode(this);
+            return 0;
         }
     }
 
@@ -271,10 +277,8 @@ public class Expression extends Node {
             str += "\"right\": {\n" + right.toString() + "\n}\n";
             return str;
         }
-
-        @Override
-        public void accept(CodeGenerator generator) {
-            generator.generateCode(this);
+        public int accept(CodeGenerator generator) {
+            return generator.generateCode(this);
         }
     }
 
@@ -372,6 +376,10 @@ public class Expression extends Node {
         public IdentifierType accept(TypeVisitor visitor) throws Exception {
             return visitor.visit(this);
         }
+        @Override
+        public int accept(CodeGenerator generator) {
+            return generator.generateCode(this);
+        }
     }
 
     public static class ComparisonOperation extends Operation {
@@ -412,6 +420,10 @@ public class Expression extends Node {
         public IdentifierType accept(TypeVisitor visitor) throws Exception {
             return visitor.visit(this);
         }
+        @Override
+        public int accept(CodeGenerator generator) {
+            return generator.generateCode(this);
+        }
     }
     public static class LogicalOperation extends Operation {
         public LogicalOperation(Parser parser, Node before) throws Exception {
@@ -433,6 +445,10 @@ public class Expression extends Node {
         @Override
         public IdentifierType accept(TypeVisitor visitor) throws Exception {
             return visitor.visit(this);
+        }
+        @Override
+        public int accept(CodeGenerator generator) {
+            return generator.generateCode(this);
         }
     }
 }

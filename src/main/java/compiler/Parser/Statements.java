@@ -50,8 +50,8 @@ public class Statements extends Starting {
         str.append("\n]\n}");
         return str.toString();
     }
-    public void accept(CodeGenerator generator) {
-        generator.generateCode(this);
+    public int accept(CodeGenerator generator) {
+        return generator.generateCode(this);
     }
 
     public static class Statement extends Node {
@@ -114,8 +114,8 @@ public class Statements extends Starting {
         public IdentifierType accept(TypeVisitor visitor) throws Exception {
             return visitor.visit(this);
         }
-        public void accept(CodeGenerator generator) {
-            generator.generateCode(this);
+        public int accept(CodeGenerator generator) {
+            return generator.generateCode(this);
         }
 
     }

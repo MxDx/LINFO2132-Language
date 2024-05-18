@@ -45,7 +45,7 @@ public class While extends Node{
     }
 
     @Override
-    public void accept(CodeGenerator generator) {
-        generator.generateCode(this);
+    public int accept(CodeGenerator generator) {
+        return generator.generateCode(this);
     }
 }

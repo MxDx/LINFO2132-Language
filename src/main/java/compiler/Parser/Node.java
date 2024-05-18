@@ -43,8 +43,8 @@ public abstract class Node {
     public IdentifierType accept(TypeVisitor visitor) throws Exception {
         return visitor.visit();
     }
-    public void accept(CodeGenerator generator) {
-        generator.generateCode(this);
+    public int accept(CodeGenerator generator) {
+        return generator.generateCode(this);
     }
 
     public void accept(CodeGenerator codeGenerator, String identifier) {

@@ -30,7 +30,7 @@ public class Block extends Node{
         return visitor.visit(this);
     }
     @Override
-    public void accept(CodeGenerator generator) {
-        generator.generateCode(this.statements);
+    public int accept(CodeGenerator generator) {
+        return generator.generateCode(this.statements);
     }
 }
