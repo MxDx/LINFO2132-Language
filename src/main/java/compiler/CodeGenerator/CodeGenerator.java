@@ -27,8 +27,8 @@ public class CodeGenerator {
     }
     public CodeGenerator(String fileName){
         this.fileName = fileName;
-        this.className = fileName.substring(0, fileName.length() - 6);
-        //this.className = this.className.substring(0, 1).toUpperCase() + this.className.substring(1);
+        fileName = fileName.substring(fileName.lastIndexOf('/') + 1);
+        this.className = fileName.substring(0, fileName.lastIndexOf('.'));
         cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC, this.className, null, "java/lang/Object", null);
         mw = cw.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, "main", "([Ljava/lang/String;)V", null, null);

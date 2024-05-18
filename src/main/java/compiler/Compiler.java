@@ -59,6 +59,7 @@ public class Compiler {
         String outputFileName;
         if (outputFile) {
             outputFileName = args[2];
+
         }
         else {
             outputFileName = "default.class";
