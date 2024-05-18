@@ -134,14 +134,31 @@ public class CodeGenerator {
         }
         descriptor.append(")");
         descriptor.append(getJavaType(method.getReturnType().getValue()));
-        MethodVisitor new_mw = cw.visitMethod(Opcodes.ACC_PUBLIC, method.getName().getValue(), descriptor.toString(), null, null);
-        CodeGenerator codeGenerator = new CodeGenerator(this, new_mw);
+        MethodVisitor new_mw = cw.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, method.getName().getValue(), descriptor.toString(), null, null);
+        CodeGenerator newCodeGenerator = new CodeGenerator(this, new_mw);
+        int indexParameter = 0;
         for (Parameter parameter : method.getParameters()) {
-            stackTable.addVariableType(parameter.getIdentifier(), parameter.getType().getValue());
-            stackTable.addVariable(parameter.getIdentifier());
+            newCodeGenerator.stackTable.addVariableType(parameter.getIdentifier(), parameter.getType().getValue());
+            newCodeGenerator.stackTable.addVariable(parameter.getIdentifier());
+            int slot = newCodeGenerator.stackTable.getVariable(parameter.getIdentifier());
+            switch (parameter.getType().getValue()) {
+                case "int":
+                    new_mw.visitVarInsn(Opcodes.ILOAD, indexParameter);
+                    new_mw.visitVarInsn(Opcodes.ISTORE, slot);
+                    break;
+                case "float":
+                    new_mw.visitVarInsn(Opcodes.FLOAD, indexParameter);
+                    new_mw.visitVarInsn(Opcodes.FSTORE, slot);
+                    break;
+                case "string":
+                    new_mw.visitVarInsn(Opcodes.ALOAD, indexParameter);
+                    new_mw.visitVarInsn(Opcodes.ASTORE, slot);
+                    break;
+            }
+            indexParameter++;
         }
         if (method.getBlock() != null) {
-            method.getBlock().accept(codeGenerator);
+            method.getBlock().accept(newCodeGenerator);
         }
         new_mw.visitInsn(Opcodes.RETURN);
         new_mw.visitEnd();
@@ -188,7 +205,7 @@ public class CodeGenerator {
                 for (Node argument : functionCall.getArguments()) {
                     argument.accept(this);
                 }
-                mw.visitMethodInsn(Opcodes.INVOKESTATIC, "Main", functionCall.getIdentifier(), "()V", false);
+                mw.visitMethodInsn(Opcodes.INVOKESTATIC, this.className, functionCall.getIdentifier(), "(I)I", false);
 
         }
     }

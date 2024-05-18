@@ -40,6 +40,7 @@ public class Compiler {
     };
 
     public static void main(String[] args) {
+        /*
         if (args.length < 1) {
             System.out.println("No input file");
             return ;
@@ -65,13 +66,14 @@ public class Compiler {
             outputFileName = "default.class";
         }
         System.out.println(outputFileName);
+        //*/
 
-        /*String outputFileName = "default.class";
-        String inputPath = "src/main/java/compiler/easyTestGen.lang";
+        String outputFileName = "default.class";
+        String inputPath = "src/main/java/compiler/testGen.txt";
         boolean showLexer = false;
         boolean showParser = false;
         boolean showSemantic = false;
-        */
+
 
         boolean noLibs = false;
 
