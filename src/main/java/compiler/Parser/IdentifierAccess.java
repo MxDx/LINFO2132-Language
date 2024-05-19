@@ -202,8 +202,13 @@ public class IdentifierAccess extends Node {
         public IdentifierAccess parse() throws Exception {
 
             while (!parser.currentToken.getValue().equals(")")) {
+                Symbol oldSymbol = parser.currentToken;
                 arguments.add(new Expression(parser).setEOF(EOF).parse());
                 if (parser.currentToken.getValue().equals(",")) {
+                    parser.getNext();
+                }
+                if (oldSymbol.equals(parser.currentToken)) {
+                    parser.getNext();
                     parser.getNext();
                 }
             }

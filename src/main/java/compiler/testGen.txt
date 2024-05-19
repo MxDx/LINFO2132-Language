@@ -3,15 +3,30 @@ struct Point {
     int y;
 }
 
+struct Person {
+    string name;
+    Point location;
+    int[] history;
+}
+
 Point location = Point(192, 276);
+
+int[] carray = int[5];
+
+Person d = Person("me", Point(42, 69), int[2]);
+
 writeInt(location.x);
 writeInt(location.y);
+
+writeString(d.name);
+
+Point p = d.location;
+writeInt(p.x);
+writeInt(p.y);
 
 string car = chr(65);
 
 writeString(car);
-
-int[] carray = int[5];
 
 carray[0] = 1;
 

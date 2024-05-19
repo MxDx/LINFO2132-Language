@@ -1,11 +1,16 @@
-int a = 5;
-writeInt(a);
+struct Point {
+    int x;
+    int y;
+}
 
-string b = "Hello";
-writeString(b);
+struct Person {
+    string name;
+    Point location;
+    int[] history;
+}
 
-int c = 10 * 2;
-writeInt(c);
+Point location = Point(192, 276);
 
-int d = c + 2;
-writeInt(d);
+int[] carray = int[5];
+
+Person d = Person("me", location, carray);

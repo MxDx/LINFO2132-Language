@@ -18,7 +18,7 @@ import compiler.Parser.*;
 public class CodeGenerator {
     StackTable stackTable;
     HashMap<String, String> functionTable;
-    HashMap<String, Integer> structTable;
+    HashMap<String, HashMap<String, String>> structTable;
     ClassWriter cw;
     MethodVisitor mw;
     String className;
@@ -233,8 +233,6 @@ public class CodeGenerator {
                     break;
                 default:
                     if (structTable.containsKey(nodeType)) {
-                        mw.visitTypeInsn(Opcodes.NEW, nodeType);
-                        mw.visitInsn(Opcodes.DUP);
                         assignment.accept(this);
                         mw.visitVarInsn(Opcodes.ASTORE, stackTable.getVariable(identifier));
                     }
@@ -246,15 +244,17 @@ public class CodeGenerator {
     public int generateCode(Struct struct) {
         ClassWriter newClass = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         newClass.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC, struct.getIdentifier(), null, "java/lang/Object", null);
-        structTable.put(struct.getIdentifier(), 0);
-
+        HashMap<String, String> fields = new HashMap<>();
         // Setup init method with the argument of the struct
         StringBuilder descriptor = new StringBuilder("(");
         for (Declaration declaration : struct.getDeclarations()) {
-            descriptor.append(getJavaType(declaration.getNodeType()));
+            String minDesc = getJavaType(declaration.getNodeType());
+            descriptor.append(minDesc);
+            fields.put(declaration.getIdentifier(), minDesc);
             newClass.visitField(Opcodes.ACC_PUBLIC, declaration.getIdentifier(), getJavaType(declaration.getNodeType()), null, null);
         }
         descriptor.append(")V");
+        structTable.put(struct.getIdentifier(), fields);
         MethodVisitor new_mw = newClass.visitMethod(Opcodes.ACC_PUBLIC, "<init>", descriptor.toString(), null, null);
         functionTable.put(struct.getIdentifier(), descriptor.toString());
 
@@ -281,12 +281,10 @@ public class CodeGenerator {
                     new_mw.visitVarInsn(Opcodes.ILOAD, indexParameter);
                     new_mw.visitFieldInsn(Opcodes.PUTFIELD, struct.getIdentifier(), declaration.getIdentifier(), "Z");
                     break;
-                case "int[]", "bool[]", "string[]", "float[]":
+                default:
                     new_mw.visitVarInsn(Opcodes.ALOAD, indexParameter);
                     new_mw.visitFieldInsn(Opcodes.PUTFIELD, struct.getIdentifier(), declaration.getIdentifier(), getJavaType(declaration.getNodeType()));
                     break;
-                default:
-                    throw new RuntimeException("Invalid type for struct");
             }
             indexParameter++;
         }
@@ -389,7 +387,10 @@ public class CodeGenerator {
     public int generateCode(IdentifierAccess.StructAccess structAccess) {
         // Load the struct on the stack
         mw.visitVarInsn(Opcodes.ALOAD, stackTable.getVariable(structAccess.getIdentifier()));
-        mw.visitFieldInsn(Opcodes.GETFIELD, structAccess.getNodeType(), structAccess.getField(), "I");
+        String field = structAccess.getField();
+        String struct = structAccess.getNodeType();
+        String desc = structTable.get(struct).get(field);
+        mw.visitFieldInsn(Opcodes.GETFIELD, struct, field, desc);
         return Opcodes.NOP;
     }
     public int generateCode(IdentifierAccess.FunctionCall functionCall) {
@@ -431,6 +432,10 @@ public class CodeGenerator {
                 break;
 
             default:
+                if (structTable.containsKey(functionCall.getIdentifier())) {
+                    mw.visitTypeInsn(Opcodes.NEW, functionCall.getIdentifier());
+                    mw.visitInsn(Opcodes.DUP);
+                }
                 for (Node arg : functionCall.getArguments()) {
                     arg.accept(this);
                 }
@@ -456,23 +461,8 @@ public class CodeGenerator {
                 case "float":
                     mw.visitVarInsn(Opcodes.FLOAD, slot);
                     break;
-                case "string":
-                    mw.visitVarInsn(Opcodes.ALOAD, slot);
-                    break;
-                case "int[]":
-                    mw.visitVarInsn(Opcodes.ALOAD, slot);
-                    break;
-                case "float[]":
-                    mw.visitVarInsn(Opcodes.ALOAD, slot);
-                    break;
-                case "string[]":
-                    mw.visitVarInsn(Opcodes.ALOAD, slot);
-                    break;
-                case "bool[]":
-                    mw.visitVarInsn(Opcodes.ALOAD, slot);
-                    break;
                 default:
-                    throw new RuntimeException("Unknown type of identifier");
+                    mw.visitVarInsn(Opcodes.ALOAD, slot);
             }
         }
         return Opcodes.NOP;
@@ -845,7 +835,7 @@ public class CodeGenerator {
             case "Object":
                 return "Ljava/lang/Object;";
             default:
-                throw new RuntimeException("Invalid Type");
+                return "L" + type + ";";
         }
     }
 }
