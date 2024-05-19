@@ -416,6 +416,7 @@ public class TypeVisitor {
         if (type == null) {
             SemanticAnalysis.SemanticException("ScopeError","Field not declared", structAccess);
         }
+        structAccess.setType(structType.getType().getValue());
         if (structAccess.getNext() != null) {
             return structAccess.getNext().accept(this, type);
         }

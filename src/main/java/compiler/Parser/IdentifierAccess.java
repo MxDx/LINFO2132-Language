@@ -176,6 +176,9 @@ public class IdentifierAccess extends Node {
         public int accept(CodeGenerator generator, Label start, Label end) {
             return generator.generateCode(this, start, end);
         }
+        public int accept(CodeGenerator generator) {
+            return generator.generateCode(this);
+        }
     }
 
     public static class FunctionCall extends IdentifierAccess {

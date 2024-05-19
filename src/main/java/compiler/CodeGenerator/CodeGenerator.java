@@ -17,7 +17,8 @@ import compiler.Parser.*;
 
 public class CodeGenerator {
     StackTable stackTable;
-    HashMap<String,String> functionTable;
+    HashMap<String, String> functionTable;
+    HashMap<String, Integer> structTable;
     ClassWriter cw;
     MethodVisitor mw;
     String className;
@@ -30,6 +31,7 @@ public class CodeGenerator {
         mw.visitCode();
         stackTable = new StackTable();
         functionTable = new HashMap<>();
+        structTable = new HashMap<>();
     }
     public CodeGenerator(String fileName){
         this.fileName = fileName;
@@ -41,17 +43,20 @@ public class CodeGenerator {
         mw.visitCode();
         stackTable = new StackTable();
         functionTable = new HashMap<>();
+        structTable = new HashMap<>();
     }
 
     public CodeGenerator(CodeGenerator parent) {
         this.stackTable = new StackTable(parent.stackTable);
         functionTable = new HashMap<>(parent.functionTable);
+        stackTable = new StackTable(parent.stackTable);
         this.cw = parent.cw;
         this.mw = parent.mw;
     }
     public CodeGenerator(CodeGenerator parent,MethodVisitor mw) {
         this.stackTable = new StackTable(parent.stackTable);
         functionTable = new HashMap<>(parent.functionTable);
+        stackTable = new StackTable(parent.stackTable);
         this.cw = parent.cw;
         this.mw = mw;
     }
@@ -194,15 +199,6 @@ public class CodeGenerator {
         stackTable.addVariableType(declaration.getIdentifier(), nodeType);
         stackTable.addVariable(declaration.getIdentifier());
         if (assignment != null) {
-            /*
-            //Assignment assignmentNode = new Assignment(assignment, assignment);
-            //nodeType = declaration.getNodeType();
-            if (declaration.getType().isVector()) {
-                nodeType += "[]";
-            }
-            //assignmentNode.setType(nodeType);
-            //assignmentNode.accept(this, declaration.getIdentifier());
-             */
             String identifier = declaration.getIdentifier();
             switch (declaration.getNodeType()) {
                 case "int":
@@ -236,13 +232,75 @@ public class CodeGenerator {
                     mw.visitVarInsn(Opcodes.ASTORE, stackTable.getVariable(identifier));
                     break;
                 default:
-                    throw new RuntimeException("Type of assignment not supported");
+                    if (structTable.containsKey(nodeType)) {
+                        mw.visitTypeInsn(Opcodes.NEW, nodeType);
+                        mw.visitInsn(Opcodes.DUP);
+                        assignment.accept(this);
+                        mw.visitVarInsn(Opcodes.ASTORE, stackTable.getVariable(identifier));
+                    }
             }
         }
         return Opcodes.NOP;
     }
 
     public int generateCode(Struct struct) {
+        ClassWriter newClass = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        newClass.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC, struct.getIdentifier(), null, "java/lang/Object", null);
+        structTable.put(struct.getIdentifier(), 0);
+
+        // Setup init method with the argument of the struct
+        StringBuilder descriptor = new StringBuilder("(");
+        for (Declaration declaration : struct.getDeclarations()) {
+            descriptor.append(getJavaType(declaration.getNodeType()));
+            newClass.visitField(Opcodes.ACC_PUBLIC, declaration.getIdentifier(), getJavaType(declaration.getNodeType()), null, null);
+        }
+        descriptor.append(")V");
+        MethodVisitor new_mw = newClass.visitMethod(Opcodes.ACC_PUBLIC, "<init>", descriptor.toString(), null, null);
+        functionTable.put(struct.getIdentifier(), descriptor.toString());
+
+        new_mw.visitCode();
+        new_mw.visitVarInsn(Opcodes.ALOAD, 0);
+        new_mw.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
+        int indexParameter = 1;
+        for (Declaration declaration : struct.getDeclarations()) {
+            new_mw.visitVarInsn(Opcodes.ALOAD, 0);
+            switch (declaration.getNodeType()) {
+                case "int":
+                    new_mw.visitVarInsn(Opcodes.ILOAD, indexParameter);
+                    new_mw.visitFieldInsn(Opcodes.PUTFIELD, struct.getIdentifier(), declaration.getIdentifier(), "I");
+                    break;
+                case "float":
+                    new_mw.visitVarInsn(Opcodes.FLOAD, indexParameter);
+                    new_mw.visitFieldInsn(Opcodes.PUTFIELD, struct.getIdentifier(), declaration.getIdentifier(), "F");
+                    break;
+                case "string":
+                    new_mw.visitVarInsn(Opcodes.ALOAD, indexParameter);
+                    new_mw.visitFieldInsn(Opcodes.PUTFIELD, struct.getIdentifier(), declaration.getIdentifier(), "Ljava/lang/String;");
+                    break;
+                case "bool":
+                    new_mw.visitVarInsn(Opcodes.ILOAD, indexParameter);
+                    new_mw.visitFieldInsn(Opcodes.PUTFIELD, struct.getIdentifier(), declaration.getIdentifier(), "Z");
+                    break;
+                case "int[]", "bool[]", "string[]", "float[]":
+                    new_mw.visitVarInsn(Opcodes.ALOAD, indexParameter);
+                    new_mw.visitFieldInsn(Opcodes.PUTFIELD, struct.getIdentifier(), declaration.getIdentifier(), getJavaType(declaration.getNodeType()));
+                    break;
+                default:
+                    throw new RuntimeException("Invalid type for struct");
+            }
+            indexParameter++;
+        }
+        new_mw.visitInsn(Opcodes.RETURN);
+        new_mw.visitMaxs(-1, -1);
+        new_mw.visitEnd();
+        newClass.visitEnd();
+
+        byte[] bytes = newClass.toByteArray();
+        try (FileOutputStream outFile = new FileOutputStream(struct.getIdentifier() + ".class")) {
+            outFile.write(bytes);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return Opcodes.NOP;
     }
 
@@ -328,6 +386,12 @@ public class CodeGenerator {
         return Opcodes.NOP;
     }
 
+    public int generateCode(IdentifierAccess.StructAccess structAccess) {
+        // Load the struct on the stack
+        mw.visitVarInsn(Opcodes.ALOAD, stackTable.getVariable(structAccess.getIdentifier()));
+        mw.visitFieldInsn(Opcodes.GETFIELD, structAccess.getNodeType(), structAccess.getField(), "I");
+        return Opcodes.NOP;
+    }
     public int generateCode(IdentifierAccess.FunctionCall functionCall) {
         switch (functionCall.getIdentifier()) {
             case "writeString", "write", "writeln":
@@ -370,8 +434,11 @@ public class CodeGenerator {
                 for (Node arg : functionCall.getArguments()) {
                     arg.accept(this);
                 }
-                mw.visitMethodInsn(Opcodes.INVOKESTATIC, this.className, functionCall.getIdentifier(), functionTable.get(functionCall.getIdentifier()), false);
-
+                if (structTable.containsKey(functionCall.getIdentifier())) {
+                    mw.visitMethodInsn(Opcodes.INVOKESPECIAL, functionCall.getIdentifier(), "<init>", functionTable.get(functionCall.getIdentifier()), false);
+                } else {
+                    mw.visitMethodInsn(Opcodes.INVOKESTATIC, this.className, functionCall.getIdentifier(), functionTable.get(functionCall.getIdentifier()), false);
+                }
         }
         return Opcodes.NOP;
     }

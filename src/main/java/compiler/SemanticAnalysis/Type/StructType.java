@@ -26,6 +26,10 @@ public class StructType extends Type {
                 SemanticAnalysis.SemanticException("TypeError", "Field already declared", declaration);
             }
             IdentifierType identifierType = new IdentifierType(type, varType);
+            declaration.setType(identifierType.getType().getType().getValue());
+            if (identifierType.isVector()) {
+                declaration.setType(identifierType.getType().getType().getValue() + "[]".repeat(identifierType.getVectorDepth()));
+            }
             fields.put(identifier, identifierType);
         }
     }
