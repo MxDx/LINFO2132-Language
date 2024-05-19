@@ -1,10 +1,15 @@
 def void writeInt(int i) {
+    // Print the integer to the console
 }
 def void writeFloat(float f) {
+    // Print the float to the console
 }
 def void writeString(string s) {
+    // Print the string to the console
 }
 def void writeln(string s) {
+    // Print the string to the console
 }
-def void write(string s) {
+def void write(Object o) {
+    // Print the object to the console
 }
