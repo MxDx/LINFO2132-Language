@@ -1,5 +1,6 @@
 package compiler.Parser;
 
+import compiler.CodeGenerator.CodeGenerator;
 import compiler.Lexer.Symbol;
 import compiler.Lexer.VarType;
 import compiler.SemanticAnalysis.Type.IdentifierType;
@@ -45,5 +46,8 @@ public class ArrayInitialization extends Node{
     @Override
     public IdentifierType accept(TypeVisitor visitor) throws Exception {
         return visitor.visit(this);
+    }
+    public int accept(CodeGenerator generator) {
+        return generator.generateCode(this);
     }
 }

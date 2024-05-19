@@ -65,6 +65,10 @@ public class If extends Node{
         return elseStatement;
     }
 
+    public void setExpression(Expression expression) {
+        this.expression = expression;
+    }
+
     private static class Else extends Node {
         Block block;
 

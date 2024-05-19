@@ -1,0 +1,19 @@
+struct Object {
+   // Generic object
+}
+
+
+def string chr(int i) {
+    // Turn an integer into a character
+    return "a";
+}
+
+def int len(Object a) {
+   // Get the length of an object
+    return 1;
+}
+
+def int floor(float f) {
+   // Round down a float
+   return 1;
+}

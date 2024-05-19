@@ -1,5 +1,7 @@
 package compiler.CodeGenerator;
 import compiler.Parser.Starting;
+import compiler.SemanticAnalysis.Type.IdentifierType;
+import compiler.SemanticAnalysis.TypeVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
@@ -7,6 +9,7 @@ import org.objectweb.asm.Opcodes;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Objects;
 
 import compiler.Parser.*;
 
@@ -94,22 +97,52 @@ public class CodeGenerator {
     public int generateCode(Node node, String identifier) {
         throw new RuntimeException("Node Not implemented");
     }
+    public int generateCode(Node node, Label start, Label end) {
+        throw new RuntimeException("Node not supported with start and end labels");
+    }
+
+    public int generateCode(IdentifierAccess identifierAccess, Label start, Label end) {
+        identifierAccess.accept(this);
+        mw.visitJumpInsn(Opcodes.IFEQ, end);
+        return Opcodes.NOP;
+    }
 
     public int generateCode(Assignment assignment, String identifier) {
         Expression expression = (Expression) assignment.getExpression();
-        expression.accept(this);
         switch (assignment.getNodeType()) {
             case "int":
+                expression.accept(this);
                 mw.visitVarInsn(Opcodes.ISTORE, stackTable.getVariable(identifier));
                 break;
             case "float":
+                expression.accept(this);
                 mw.visitVarInsn(Opcodes.FSTORE, stackTable.getVariable(identifier));
                 break;
             case "string":
+                expression.accept(this);
                 mw.visitVarInsn(Opcodes.ASTORE, stackTable.getVariable(identifier));
                 break;
+            case "bool":
+                // Sucre syntaxique
+                Label start = new Label();
+                Label elseLabel = new Label();
+                Label end = new Label();
+                expression.accept(this, start, elseLabel);
+                mw.visitLabel(start);
+                mw.visitInsn(Opcodes.ICONST_1);
+                mw.visitJumpInsn(Opcodes.GOTO, end);
+                mw.visitLabel(elseLabel);
+                mw.visitInsn(Opcodes.ICONST_0);
+                mw.visitLabel(end);
+                mw.visitVarInsn(Opcodes.ISTORE, stackTable.getVariable(identifier));
+                break;
+            case "int[]", "float[]", "string[]", "bool[]":
+                expression.accept(this);
+                mw.visitInsn(Opcodes.IASTORE);
+                //mw.visitVarInsn(Opcodes.AASTORE, stackTable.getVariable(identifier));
+                break;
             default:
-                throw new RuntimeException("Invalid type of assignment");
+                throw new RuntimeException("Type of assignment not supported");
         }
         return Opcodes.NOP;
     }
@@ -124,20 +157,95 @@ public class CodeGenerator {
             case "string":
                 mw.visitLdcInsn(value.getValue().getValue());
                 break;
+            case "bool":
+                mw.visitLdcInsn(Boolean.parseBoolean(value.getValue().getValue()));
+                break;
+        }
+        return Opcodes.NOP;
+    }
+    public int generateCode(Expression.Value value, Label start, Label end) {
+        switch (value.getValue().getType()) {
+            case "int":
+                mw.visitLdcInsn(Integer.parseInt(value.getValue().getValue()));
+                mw.visitJumpInsn(Opcodes.IFNE, start);
+                mw.visitJumpInsn(Opcodes.GOTO, end);
+                break;
+            case "float":
+                mw.visitLdcInsn(Float.parseFloat(value.getValue().getValue()));
+                mw.visitJumpInsn(Opcodes.IFNE, start);
+                mw.visitJumpInsn(Opcodes.GOTO, end);
+                break;
+            case "string":
+                mw.visitLdcInsn(value.getValue().getValue());
+                mw.visitJumpInsn(Opcodes.IFNONNULL, start);
+                mw.visitJumpInsn(Opcodes.GOTO, end);
+                break;
+            case "bool":
+                mw.visitLdcInsn(Boolean.parseBoolean(value.getValue().getValue()));
+                mw.visitJumpInsn(Opcodes.IFNE, start);
+                mw.visitJumpInsn(Opcodes.GOTO, end);
+                break;
         }
         return Opcodes.NOP;
     }
     public int generateCode(Declaration declaration) {
         Expression assignment = (Expression) declaration.getAssignment();
-        stackTable.addVariableType(declaration.getIdentifier(), declaration.getType().getValue());
+        String nodeType = declaration.getNodeType();
+        stackTable.addVariableType(declaration.getIdentifier(), nodeType);
         stackTable.addVariable(declaration.getIdentifier());
         if (assignment != null) {
-            Assignment assignmentNode = new Assignment(assignment, assignment);
-            assignmentNode.setType(declaration.getNodeType());
-            assignmentNode.accept(this, declaration.getIdentifier());
+            /*
+            //Assignment assignmentNode = new Assignment(assignment, assignment);
+            //nodeType = declaration.getNodeType();
+            if (declaration.getType().isVector()) {
+                nodeType += "[]";
+            }
+            //assignmentNode.setType(nodeType);
+            //assignmentNode.accept(this, declaration.getIdentifier());
+             */
+            String identifier = declaration.getIdentifier();
+            switch (declaration.getNodeType()) {
+                case "int":
+                    assignment.accept(this);
+                    mw.visitVarInsn(Opcodes.ISTORE, stackTable.getVariable(identifier));
+                    break;
+                case "float":
+                    assignment.accept(this);
+                    mw.visitVarInsn(Opcodes.FSTORE, stackTable.getVariable(identifier));
+                    break;
+                case "string":
+                    assignment.accept(this);
+                    mw.visitVarInsn(Opcodes.ASTORE, stackTable.getVariable(identifier));
+                    break;
+                case "bool":
+                    // Sucre syntaxique
+                    Label start = new Label();
+                    Label elseLabel = new Label();
+                    Label end = new Label();
+                    assignment.accept(this, start, elseLabel);
+                    mw.visitLabel(start);
+                    mw.visitInsn(Opcodes.ICONST_1);
+                    mw.visitJumpInsn(Opcodes.GOTO, end);
+                    mw.visitLabel(elseLabel);
+                    mw.visitInsn(Opcodes.ICONST_0);
+                    mw.visitLabel(end);
+                    mw.visitVarInsn(Opcodes.ISTORE, stackTable.getVariable(identifier));
+                    break;
+                case "int[]", "float[]", "string[]", "bool[]":
+                    assignment.accept(this);
+                    mw.visitVarInsn(Opcodes.ASTORE, stackTable.getVariable(identifier));
+                    break;
+                default:
+                    throw new RuntimeException("Type of assignment not supported");
+            }
         }
         return Opcodes.NOP;
     }
+
+    public int generateCode(Struct struct) {
+        return Opcodes.NOP;
+    }
+
     public int generateCode(Method method) {
         StringBuilder descriptor = new StringBuilder("(");
         for (Parameter parameter : method.getParameters()) {
@@ -198,6 +306,28 @@ public class CodeGenerator {
         return Opcodes.NOP;
     }
 
+    public int generateCode(ArrayInitialization arrayInitialization) {
+        String type = arrayInitialization.getType().getValue();
+        arrayInitialization.getIndex().accept(this);
+        switch (type) {
+            case "int":
+                mw.visitIntInsn(Opcodes.NEWARRAY, Opcodes.T_INT);
+                break;
+            case "float":
+                mw.visitIntInsn(Opcodes.NEWARRAY, Opcodes.T_FLOAT);
+                break;
+            case "string":
+                mw.visitTypeInsn(Opcodes.ANEWARRAY, "java/lang/String");
+                break;
+            case "bool":
+                mw.visitIntInsn(Opcodes.NEWARRAY, Opcodes.T_BOOLEAN);
+                break;
+            default:
+                throw new RuntimeException("Invalid type for array");
+        }
+        return Opcodes.NOP;
+    }
+
     public int generateCode(IdentifierAccess.FunctionCall functionCall) {
         switch (functionCall.getIdentifier()) {
             case "writeString", "write", "writeln":
@@ -215,9 +345,30 @@ public class CodeGenerator {
                 functionCall.getArguments().get(0).accept(this);
                 mw.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "(F)V", false);
                 break;
-            default:
-                for (Node argument : functionCall.getArguments()) {
+            case "chr":
+                functionCall.getArguments().get(0).accept(this);
+                mw.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Character", "toString", "(C)Ljava/lang/String;", false);
+                break;
+            case "len":
+                // check if the argument is an array or a string
+                Expression argument = (Expression) functionCall.getArguments().get(0);
+
+                if (argument.getNodeType().endsWith("[]")) {
                     argument.accept(this);
+                    mw.visitInsn(Opcodes.ARRAYLENGTH);
+                } else {
+                    argument.accept(this);
+                    mw.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/String", "length", "()I", false);
+                }
+                break;
+            case "floor":
+                functionCall.getArguments().get(0).accept(this);
+                mw.visitInsn(Opcodes.F2I);
+                break;
+
+            default:
+                for (Node arg : functionCall.getArguments()) {
+                    arg.accept(this);
                 }
                 mw.visitMethodInsn(Opcodes.INVOKESTATIC, this.className, functionCall.getIdentifier(), functionTable.get(functionCall.getIdentifier()), false);
 
@@ -232,7 +383,7 @@ public class CodeGenerator {
         } else {
             int slot = stackTable.getVariable(identifierAccess.getIdentifier());
             switch (stackTable.getType(identifierAccess.getIdentifier())) {
-                case "int":
+                case "int", "bool":
                     mw.visitVarInsn(Opcodes.ILOAD, slot);
                     break;
                 case "float":
@@ -241,7 +392,34 @@ public class CodeGenerator {
                 case "string":
                     mw.visitVarInsn(Opcodes.ALOAD, slot);
                     break;
+                case "int[]":
+                    mw.visitVarInsn(Opcodes.ALOAD, slot);
+                    break;
+                case "float[]":
+                    mw.visitVarInsn(Opcodes.ALOAD, slot);
+                    break;
+                case "string[]":
+                    mw.visitVarInsn(Opcodes.ALOAD, slot);
+                    break;
+                case "bool[]":
+                    mw.visitVarInsn(Opcodes.ALOAD, slot);
+                    break;
+                default:
+                    throw new RuntimeException("Unknown type of identifier");
             }
+        }
+        return Opcodes.NOP;
+    }
+    public int generateCode(IdentifierAccess.ArrayAccess arrayAccess) {
+        mw.visitVarInsn(Opcodes.ALOAD, stackTable.getVariable(arrayAccess.getIdentifier()));
+        arrayAccess.getIndex().accept(this);
+        if (arrayAccess.getNext() != null) {
+            arrayAccess.getNext().accept(this);
+        } else if (arrayAccess.getAssignment() != null) {
+            arrayAccess.getAssignment().getExpression().accept(this);
+            mw.visitInsn(Opcodes.IASTORE);
+        } else {
+            mw.visitInsn(Opcodes.IALOAD);
         }
         return Opcodes.NOP;
     }
@@ -271,7 +449,7 @@ public class CodeGenerator {
         return Opcodes.NOP;
     }
 
-    public int generateCode(Expression.ArithmeticOperation operation, Label start , Label end) {
+    public int generateCode(Expression.ArithmeticOperation operation) {
         // Check for casting
         String finalType = operation.getNodeType();
         loadOnStack(operation);
@@ -286,7 +464,8 @@ public class CodeGenerator {
                         mw.visitInsn(Opcodes.FADD);
                         break;
                     default:
-                        throw new RuntimeException("String addition not yet implemented");
+                        // It is a string
+                        mw.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/String", "concat", "(Ljava/lang/String;)Ljava/lang/String;", false);
                 }
                 break;
             case "-":
@@ -514,26 +693,30 @@ public class CodeGenerator {
     public int generateCode(While whileStatement) {
         StackTable oldStackTable = stackTable;
         stackTable = new StackTable(oldStackTable);
+        Label eval = new Label();
         Label start = new Label();
         Label end = new Label();
+        mw.visitLabel(eval);
+        Node node = whileStatement.getExpression();
+        node.accept(this, start, end);
         mw.visitLabel(start);
-        int OpCode = generateCode((Expression.ComparisonOperation) whileStatement.getExpression());
-        mw.visitJumpInsn(OpCode, end);
         whileStatement.getBlock().accept(this);
-        mw.visitJumpInsn(Opcodes.GOTO, start);
+        mw.visitJumpInsn(Opcodes.GOTO, eval);
         mw.visitLabel(end);
         stackTable = oldStackTable;
         return Opcodes.NOP;
     }
     public int generateCode(If ifStatement) {
+        StackTable oldStackTable = stackTable;
+        stackTable = new StackTable(oldStackTable);
         Label start = new Label();
         Label end = new Label();
         Label elseLabel = new Label();
         //int OpCode = ifStatement.getExpression().accept(this);
         if (ifStatement.getElseStatement() != null) {
             //mw.visitJumpInsn(OpCode, elseLabel);
-            Expression expression = (Expression) ifStatement.getExpression();
-            expression.accept(this, start, elseLabel);
+            Node node = ifStatement.getExpression();
+            node.accept(this, start, elseLabel);
             mw.visitLabel(start);
             ifStatement.getBlock().accept(this);
             mw.visitJumpInsn(Opcodes.GOTO, end);
@@ -542,12 +725,32 @@ public class CodeGenerator {
             mw.visitLabel(end);
         } else {
             //mw.visitJumpInsn(OpCode, end);
-            Expression expression = (Expression) ifStatement.getExpression();
-            expression.accept(this, start, end);
+            Node node = ifStatement.getExpression();
+            node.accept(this, start, end);
             mw.visitLabel(start);
             ifStatement.getBlock().accept(this);
             mw.visitLabel(end);
         }
+        stackTable = oldStackTable;
+        return Opcodes.NOP;
+    }
+
+    public int generateCode(For forStatement) {
+        StackTable oldStackTable = stackTable;
+        stackTable = new StackTable(oldStackTable);
+        Label eval = new Label();
+        Label start = new Label();
+        Label end = new Label();
+        forStatement.getFirstAssignment().accept(this);
+        mw.visitLabel(eval);
+        Expression expression = (Expression) forStatement.getExpression();
+        expression.accept(this, start, end);
+        mw.visitLabel(start);
+        forStatement.getBlock().accept(this);
+        forStatement.getSecondAssignment().accept(this);
+        mw.visitJumpInsn(Opcodes.GOTO, eval);
+        mw.visitLabel(end);
+        stackTable = oldStackTable;
         return Opcodes.NOP;
     }
 
@@ -564,6 +767,16 @@ public class CodeGenerator {
                 return "V";
             case "bool":
                 return "Z";
+            case "int[]":
+                return "[I";
+            case "float[]":
+                return "[F";
+            case "string[]":
+                return "[Ljava/lang/String;";
+            case "bool[]":
+                return "[Z";
+            case "Object":
+                return "Ljava/lang/Object;";
             default:
                 throw new RuntimeException("Invalid Type");
         }

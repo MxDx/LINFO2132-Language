@@ -3,6 +3,7 @@ package compiler.Parser;
 import compiler.CodeGenerator.CodeGenerator;
 import compiler.SemanticAnalysis.Type.IdentifierType;
 import compiler.SemanticAnalysis.TypeVisitor;
+import org.objectweb.asm.Label;
 
 public abstract class Node {
     public Parser parser;
@@ -49,5 +50,8 @@ public abstract class Node {
 
     public void accept(CodeGenerator codeGenerator, String identifier) {
         codeGenerator.generateCode(this, identifier);
+    }
+    public int accept(CodeGenerator codeGenerator, Label start, Label end) {
+        return codeGenerator.generateCode(this, start, end);
     }
 }

@@ -7,6 +7,8 @@ import compiler.SemanticAnalysis.Type.IdentifierType;
 import compiler.SemanticAnalysis.TypeVisitor;
 
 import java.util.ArrayList;
+import org.objectweb.asm.Label;
+
 
 public class IdentifierAccess extends Node {
     public String identifier;
@@ -80,6 +82,9 @@ public class IdentifierAccess extends Node {
     public int accept(CodeGenerator generator) {
         return generator.generateCode(this);
     }
+    public int accept(CodeGenerator generator, Label start, Label end) {
+        return generator.generateCode(this, start, end);
+    }
 
     public static class ArrayAccess extends IdentifierAccess {
         public Node index;
@@ -121,6 +126,12 @@ public class IdentifierAccess extends Node {
         public IdentifierType accept(TypeVisitor visitor, IdentifierType type) throws Exception {
             return visitor.visit(this, type);
         }
+        public int accept(CodeGenerator generator) {
+            return generator.generateCode(this);
+        }
+        public int accept(CodeGenerator generator, Label start, Label end) {
+            return generator.generateCode(this, start, end);
+        }
     }
 
     public static class StructAccess extends IdentifierAccess {
@@ -161,6 +172,9 @@ public class IdentifierAccess extends Node {
         @Override
         public IdentifierType accept(TypeVisitor visitor, IdentifierType type) throws Exception {
             return visitor.visit(this, type);
+        }
+        public int accept(CodeGenerator generator, Label start, Label end) {
+            return generator.generateCode(this, start, end);
         }
     }
 
@@ -224,6 +238,9 @@ public class IdentifierAccess extends Node {
         @Override
         public int accept(CodeGenerator generator) {
             return generator.generateCode(this);
+        }
+        public int accept(CodeGenerator generator, Label start, Label end) {
+            return generator.generateCode(this, start, end);
         }
     }
 }

@@ -1,4 +1,57 @@
+int[] carray = int[5];
 
-if (2.0 <= 3.0 && 3.0 != 3.0) {
+carray[0] = 1;
+
+writeInt(carray[0]);
+
+int lengthArray = len(carray);
+
+writeInt(lengthArray);
+
+int length = len("hello");
+
+writeInt(length);
+
+bool c = 1 > 10;
+
+if (c) {
+    writeString("True because c is true");
+} else {
+    writeString("False");
+}
+
+string s = "Hello ";
+string s2 = "World";
+writeString(s + s2);
+
+if (s == "Hello") {
+    writeString("Equal");
+} else {
+    writeString("Not Equal");
+}
+
+
+if (2.0 <= 3.0 && 3.0 != 3.0 || 4.0 >= 5.0 && 6.0 == 6.0) {
     writeString("Hello");
+}
+
+def int square(int v) {
+    return v*v;
+}
+
+int g = 2;
+
+int a = 1;
+while (a <= 10  && a < square(2)) {
+    writeInt(a);
+    int g = 35;
+    a = a + 1;
+}
+
+writeInt(g);
+
+writeString("Printing numbers from 1 to 10");
+int b = 1;
+for (b = 1, b <= 10, b = b + 1) {
+    writeInt(b);
 }

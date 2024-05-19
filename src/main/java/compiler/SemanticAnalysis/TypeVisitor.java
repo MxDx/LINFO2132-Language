@@ -75,6 +75,9 @@ public class TypeVisitor {
             if (type == null) {
                 SemanticAnalysis.SemanticException("TypeError","Assignment type is null", declaration);
             }
+            if (assignment.isVector()) {
+                declaration.setType(declaration.getType().getValue() + "[]".repeat(assignment.getVectorDepth()));
+            }
             if (!Objects.equals(identifierType, assignment)) {
                 String str = "Assignment type does not match declaration type: ";
                 str += identifierType + " != ";
@@ -447,6 +450,13 @@ public class TypeVisitor {
         for (int i = 0; i < parameters.size(); i++) {
             IdentifierType parameter = parameters.get(i);
             IdentifierType argument = arguments.get(i).accept(this);
+            arguments.get(i).setType(argument.getType().getType().getValue());
+            if (argument.isVector()) {
+                arguments.get(i).setType(arguments.get(i).getNodeType() + "[]".repeat(argument.getVectorDepth()));
+            }
+            if (parameter.getType().getType().getValue().equals("Object")) {
+                continue;
+            }
             if (!Objects.equals(parameter, argument)) {
                 String str = "Function call parameters do not match function declaration: ";
                 str += parameter + " != ";

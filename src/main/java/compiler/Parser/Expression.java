@@ -152,7 +152,7 @@ public class Expression extends Node {
         return 0;
     }
     public int accept(CodeGenerator generator, Label start, Label end) {
-        throw new UnsupportedOperationException();
+        return corps.accept(generator, start, end);
     }
 
     public static class Bang extends Expression {
@@ -223,6 +223,9 @@ public class Expression extends Node {
         public int accept(CodeGenerator generator) {
             generator.generateCode(this);
             return 0;
+        }
+        public int accept(CodeGenerator generator, Label start, Label end) {
+            return generator.generateCode(this, start, end);
         }
     }
 
@@ -387,9 +390,6 @@ public class Expression extends Node {
         public int accept(CodeGenerator generator) {
             return generator.generateCode(this);
         }
-        public int accept(CodeGenerator generator, Label start, Label end) {
-            return generator.generateCode(this, start, end);
-        }
     }
 
     public static class ComparisonOperation extends Operation {
@@ -433,6 +433,9 @@ public class Expression extends Node {
         @Override
         public int accept(CodeGenerator generator) {
             return generator.generateCode(this);
+        }
+        public int accept(CodeGenerator generator, Label start, Label end) {
+            return generator.generateCode(this, start, end);
         }
     }
     public static class LogicalOperation extends Operation {
