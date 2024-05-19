@@ -8,6 +8,7 @@ import compiler.SemanticAnalysis.Type.IdentifierType;
 import compiler.SemanticAnalysis.Type.Type;
 import compiler.SemanticAnalysis.TypeVisitor;
 
+import org.objectweb.asm.Label;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Objects;
@@ -150,6 +151,9 @@ public class Expression extends Node {
         corps.accept(generator);
         return 0;
     }
+    public int accept(CodeGenerator generator, Label start, Label end) {
+        throw new UnsupportedOperationException();
+    }
 
     public static class Bang extends Expression {
         public Node expression;
@@ -280,6 +284,9 @@ public class Expression extends Node {
         public int accept(CodeGenerator generator) {
             return generator.generateCode(this);
         }
+        public int accept(CodeGenerator generator, Label start, Label end) {
+            return generator.generateCode(this, start, end);
+        }
     }
 
     public static class ArithmeticOperation extends Operation {
@@ -380,6 +387,9 @@ public class Expression extends Node {
         public int accept(CodeGenerator generator) {
             return generator.generateCode(this);
         }
+        public int accept(CodeGenerator generator, Label start, Label end) {
+            return generator.generateCode(this, start, end);
+        }
     }
 
     public static class ComparisonOperation extends Operation {
@@ -449,6 +459,9 @@ public class Expression extends Node {
         @Override
         public int accept(CodeGenerator generator) {
             return generator.generateCode(this);
+        }
+        public int accept(CodeGenerator generator, Label start, Label end) {
+            return generator.generateCode(this, start, end);
         }
     }
 }

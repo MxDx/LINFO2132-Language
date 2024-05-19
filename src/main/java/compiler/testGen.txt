@@ -1,14 +1,4 @@
 
-if (3.0 <= 3.0 || 3.0 != 3.0) {
+if (2.0 <= 3.0 && 3.0 != 3.0) {
     writeString("Hello");
 }
-
-int a = 5 * 2;
-
-def int square(int v) {
-    return v*v;
-}
-
-int g = square(a);
-
-writeInt(g);

@@ -19,6 +19,7 @@ public class CodeGenerator {
     MethodVisitor mw;
     String className;
     String fileName;
+    boolean firstOr = false;
     public CodeGenerator() {
         cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC, "Main", null, "java/lang/Object", null);
@@ -196,6 +197,7 @@ public class CodeGenerator {
         }
         return Opcodes.NOP;
     }
+
     public int generateCode(IdentifierAccess.FunctionCall functionCall) {
         switch (functionCall.getIdentifier()) {
             case "writeString", "write", "writeln":
@@ -264,12 +266,12 @@ public class CodeGenerator {
             operation.getRight().accept(this);
         }
     }
-    
-    public int generateCode(Expression.Operation operation) {
+
+    public int generateCode(Expression.Operation operation, Label start, Label end) {
         return Opcodes.NOP;
     }
 
-    public int generateCode(Expression.ArithmeticOperation operation) {
+    public int generateCode(Expression.ArithmeticOperation operation, Label start , Label end) {
         // Check for casting
         String finalType = operation.getNodeType();
         loadOnStack(operation);
@@ -330,7 +332,7 @@ public class CodeGenerator {
         return Opcodes.NOP;
     }
 
-    public int generateCode(Expression.ComparisonOperation comparisonOperation) {
+    public int generateCode(Expression.ComparisonOperation comparisonOperation, Label start , Label end) {
         // Check for casting
         String finalType = comparisonOperation.getNodeType();
         loadOnStack(comparisonOperation);
@@ -339,48 +341,100 @@ public class CodeGenerator {
             case "==":
                 switch (finalType) {
                     case "int":
-                        return Opcodes.IF_ICMPNE;
+                        if (firstOr) {
+                            mw.visitJumpInsn(Opcodes.IF_ICMPEQ, start);
+                        } else {
+                            mw.visitJumpInsn(Opcodes.IF_ICMPNE, end);
+                        }
+                        return Opcodes.NOP;
                     case "float":
                         // If left - right = 0, then they are equal
                         mw.visitInsn(Opcodes.FSUB);
                         mw.visitInsn(Opcodes.F2I);
+                        if (firstOr) {
+                            mw.visitJumpInsn(Opcodes.IFEQ, start);
+                        } else {
+                            mw.visitJumpInsn(Opcodes.IFNE, end);
+                        }
                         return Opcodes.IFNE;
                     case "string":
+                        if (firstOr) {
+                            mw.visitJumpInsn(Opcodes.IF_ACMPEQ, start);
+                        } else {
+                            mw.visitJumpInsn(Opcodes.IF_ACMPNE, end);
+                        }
                         return Opcodes.IF_ACMPNE;
                     case "bool":
+                        if (firstOr) {
+                            mw.visitJumpInsn(Opcodes.IF_ICMPEQ, start);
+                        } else {
+                            mw.visitJumpInsn(Opcodes.IF_ICMPNE, end);
+                        }
                         return Opcodes.IF_ICMPNE;
                 }
                 break;
             case "!=":
                 switch (finalType) {
-                    case "int":
+                    case "int", "bool":
+                        if (firstOr) {
+                            mw.visitJumpInsn(Opcodes.IF_ICMPNE, start);
+                        } else {
+                            mw.visitJumpInsn(Opcodes.IF_ICMPEQ, end);
+                        }
                         return Opcodes.IF_ICMPEQ;
                     case "float":
                         mw.visitInsn(Opcodes.FSUB);
                         mw.visitInsn(Opcodes.F2I);
+                        if (firstOr) {
+                            mw.visitJumpInsn(Opcodes.IFNE, start);
+                        } else {
+                            mw.visitJumpInsn(Opcodes.IFEQ, end);
+                        }
                         return Opcodes.IFEQ;
                     case "string":
+                        if (firstOr) {
+                            mw.visitJumpInsn(Opcodes.IF_ACMPNE, start);
+                        } else {
+                            mw.visitJumpInsn(Opcodes.IF_ACMPEQ, end);
+                        }
                         return Opcodes.IF_ACMPEQ;
-                    case "bool":
-                        return Opcodes.IF_ICMPEQ;
                 }
                 break;
             case "<":
                 switch (finalType) {
                     case "int":
+                        if (firstOr) {
+                            mw.visitJumpInsn(Opcodes.IF_ICMPLT, start);
+                        } else {
+                            mw.visitJumpInsn(Opcodes.IF_ICMPGE, end);
+                        }
                         return Opcodes.IF_ICMPGE;
                     case "float":
                         mw.visitInsn(Opcodes.FCMPG);
+                        if (firstOr) {
+                            mw.visitJumpInsn(Opcodes.IFLT, start);
+                        } else {
+                            mw.visitJumpInsn(Opcodes.IFGE, end);
+                        }
                         return Opcodes.IFGE;
-                        //throw new RuntimeException("Float comparison not supported");
                 }
                 break;
             case ">":
                 switch (finalType) {
                     case "int":
+                        if (firstOr) {
+                            mw.visitJumpInsn(Opcodes.IF_ICMPGT, start);
+                        } else {
+                            mw.visitJumpInsn(Opcodes.IF_ICMPLE, end);
+                        }
                         return Opcodes.IF_ICMPLE;
                     case "float":
                         mw.visitInsn(Opcodes.FCMPL);
+                        if (firstOr) {
+                            mw.visitJumpInsn(Opcodes.IFGT, start);
+                        } else {
+                            mw.visitJumpInsn(Opcodes.IFLE, end);
+                        }
                         return Opcodes.IFLE;
                         //throw new RuntimeException("Float comparison not supported");
                 }
@@ -388,18 +442,38 @@ public class CodeGenerator {
             case "<=":
                 switch (finalType) {
                     case "int":
+                        if (firstOr) {
+                            mw.visitJumpInsn(Opcodes.IF_ICMPLE, start);
+                        } else {
+                            mw.visitJumpInsn(Opcodes.IF_ICMPGT, end);
+                        }
                         return Opcodes.IF_ICMPGT;
                     case "float":
                         mw.visitInsn(Opcodes.FCMPG);
+                        if (firstOr) {
+                            mw.visitJumpInsn(Opcodes.IFLE, start);
+                        } else {
+                            mw.visitJumpInsn(Opcodes.IFGT, end);
+                        }
                         return Opcodes.IFGT;
                 }
                 break;
             case ">=":
                 switch (finalType) {
                     case "int":
+                        if (firstOr) {
+                            mw.visitJumpInsn(Opcodes.IF_ICMPGE, start);
+                        } else {
+                            mw.visitJumpInsn(Opcodes.IF_ICMPLT, end);
+                        }
                         return Opcodes.IF_ICMPLT;
                     case "float":
                         mw.visitInsn(Opcodes.FCMPL);
+                        if (firstOr) {
+                            mw.visitJumpInsn(Opcodes.IFGE, start);
+                        } else {
+                            mw.visitJumpInsn(Opcodes.IFLT, end);
+                        }
                         return Opcodes.IFLT;
                 }
                 break;
@@ -409,20 +483,32 @@ public class CodeGenerator {
         throw new RuntimeException("Invalid comparison operator");
     }
 
-    public int generateCode(Expression.LogicalOperation logicalOperation) {
-        int opcode1 = logicalOperation.getLeft().accept(this);
-        mw.visitInsn(opcode1);
-        int opcode2 = logicalOperation.getRight().accept(this);
-        mw.visitInsn(opcode2);
+    public int generateCode(Expression.LogicalOperation logicalOperation, Label start , Label end) {
+        Expression.Operation left;
+        Expression.Operation right;
         switch (logicalOperation.getOperator()) {
             case "&&":
-                mw.visitInsn(Opcodes.IAND);
+                Label new_start = new Label();
+                left = (Expression.Operation) logicalOperation.getLeft();
+                firstOr = false;
+                left.accept(this, new_start, end);
+                mw.visitLabel(new_start);
+                right = (Expression.Operation) logicalOperation.getRight();
+                firstOr = false;
+                right.accept(this, start, end);
                 break;
             case "||":
-                mw.visitInsn(Opcodes.IOR);
+                Label new_end = new Label();
+                left = (Expression.Operation) logicalOperation.getLeft();
+                firstOr = true;
+                left.accept(this, start, new_end);
+                mw.visitLabel(new_end);
+                right = (Expression.Operation) logicalOperation.getRight();
+                firstOr = false;
+                right.accept(this, start, end);
                 break;
         }
-        return Opcodes.IFEQ;
+        return Opcodes.NOP;
     }
 
     public int generateCode(While whileStatement) {
@@ -439,20 +525,26 @@ public class CodeGenerator {
         stackTable = oldStackTable;
         return Opcodes.NOP;
     }
-
     public int generateCode(If ifStatement) {
+        Label start = new Label();
         Label end = new Label();
         Label elseLabel = new Label();
-        int OpCode = ifStatement.getExpression().accept(this);
+        //int OpCode = ifStatement.getExpression().accept(this);
         if (ifStatement.getElseStatement() != null) {
-            mw.visitJumpInsn(OpCode, elseLabel);
+            //mw.visitJumpInsn(OpCode, elseLabel);
+            Expression expression = (Expression) ifStatement.getExpression();
+            expression.accept(this, start, elseLabel);
+            mw.visitLabel(start);
             ifStatement.getBlock().accept(this);
             mw.visitJumpInsn(Opcodes.GOTO, end);
             mw.visitLabel(elseLabel);
             ifStatement.getElseStatement().accept(this);
             mw.visitLabel(end);
         } else {
-            mw.visitJumpInsn(OpCode, end);
+            //mw.visitJumpInsn(OpCode, end);
+            Expression expression = (Expression) ifStatement.getExpression();
+            expression.accept(this, start, end);
+            mw.visitLabel(start);
             ifStatement.getBlock().accept(this);
             mw.visitLabel(end);
         }
