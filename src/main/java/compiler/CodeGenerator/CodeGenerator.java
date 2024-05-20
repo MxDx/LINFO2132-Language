@@ -141,13 +141,28 @@ public class CodeGenerator {
                 mw.visitLabel(end);
                 mw.visitVarInsn(Opcodes.ISTORE, stackTable.getVariable(identifier));
                 break;
-            case "int[]", "float[]", "string[]", "bool[]":
-                expression.accept(this);
-                mw.visitInsn(Opcodes.IASTORE);
-                //mw.visitVarInsn(Opcodes.AASTORE, stackTable.getVariable(identifier));
-                break;
             default:
-                throw new RuntimeException("Type of assignment not supported");
+                switch (assignment.getNodeType()) {
+                    case "int[]":
+                        expression.accept(this);
+                        mw.visitVarInsn(Opcodes.IASTORE, stackTable.getVariable(identifier));
+                        break;
+                    case "float[]":
+                        expression.accept(this);
+                        mw.visitVarInsn(Opcodes.FASTORE, stackTable.getVariable(identifier));
+                        break;
+                    case "string[]":
+                        expression.accept(this);
+                        mw.visitVarInsn(Opcodes.AASTORE, stackTable.getVariable(identifier));
+                        break;
+                    case "bool[]":
+                        expression.accept(this);
+                        mw.visitVarInsn(Opcodes.BASTORE, stackTable.getVariable(identifier));
+                        break;
+                    default:
+                        expression.accept(this);
+                        mw.visitVarInsn(Opcodes.AASTORE, stackTable.getVariable(identifier));
+                }
         }
         return Opcodes.NOP;
     }
@@ -200,7 +215,7 @@ public class CodeGenerator {
         stackTable.addVariable(declaration.getIdentifier());
         if (assignment != null) {
             String identifier = declaration.getIdentifier();
-            switch (declaration.getNodeType()) {
+            switch (nodeType) {
                 case "int":
                     assignment.accept(this);
                     mw.visitVarInsn(Opcodes.ISTORE, stackTable.getVariable(identifier));
@@ -232,6 +247,14 @@ public class CodeGenerator {
                     mw.visitVarInsn(Opcodes.ASTORE, stackTable.getVariable(identifier));
                     break;
                 default:
+                    // Remove all the [] from the type
+                    if (structTable.containsKey(nodeType)) {
+                        assignment.accept(this);
+                        mw.visitVarInsn(Opcodes.ASTORE, stackTable.getVariable(identifier));
+                    }
+                    while (nodeType.endsWith("[]")) {
+                        nodeType = nodeType.substring(0, nodeType.length() - 2);
+                    }
                     if (structTable.containsKey(nodeType)) {
                         assignment.accept(this);
                         mw.visitVarInsn(Opcodes.ASTORE, stackTable.getVariable(identifier));
@@ -384,7 +407,30 @@ public class CodeGenerator {
                 mw.visitIntInsn(Opcodes.NEWARRAY, Opcodes.T_BOOLEAN);
                 break;
             default:
-                throw new RuntimeException("Invalid type for array");
+                mw.visitTypeInsn(Opcodes.ANEWARRAY, type);
+        }
+        return Opcodes.NOP;
+    }
+    public int generateCode(IdentifierAccess identifierAccess) {
+        if (identifierAccess.getNext() != null) {
+            if (!(identifierAccess.getNext() instanceof IdentifierAccess.FunctionCall)) {
+                mw.visitVarInsn(Opcodes.ALOAD, stackTable.getVariable(identifierAccess.getIdentifier()));
+            }
+            identifierAccess.getNext().accept(this);
+        } else if (identifierAccess.getAssignment() != null) {
+            identifierAccess.getAssignment().accept(this, identifierAccess.getIdentifier());
+        } else {
+            int slot = stackTable.getVariable(identifierAccess.getIdentifier());
+            switch (stackTable.getType(identifierAccess.getIdentifier())) {
+                case "int", "bool":
+                    mw.visitVarInsn(Opcodes.ILOAD, slot);
+                    break;
+                case "float":
+                    mw.visitVarInsn(Opcodes.FLOAD, slot);
+                    break;
+                default:
+                    mw.visitVarInsn(Opcodes.ALOAD, slot);
+            }
         }
         return Opcodes.NOP;
     }
@@ -393,7 +439,12 @@ public class CodeGenerator {
         // Load the struct on the stack
         //mw.visitVarInsn(Opcodes.ALOAD, stackTable.getVariable(structAccess.getIdentifier()));
         String field = structAccess.getField();
-        String struct = structAccess.getNodeType();
+        String struct;
+        if (structTable.containsKey(structAccess.getIdentifier())) {
+            struct = stackTable.getType(structAccess.getIdentifier());
+        } else {
+            struct = structAccess.getParentType();
+        }
         String desc = structTable.get(struct).get(field);
         if (structAccess.getNext() != null) {
             mw.visitFieldInsn(Opcodes.GETFIELD, struct, field, desc);
@@ -465,39 +516,49 @@ public class CodeGenerator {
         }
         return Opcodes.NOP;
     }
-    public int generateCode(IdentifierAccess identifierAccess) {
-        if (identifierAccess.getNext() != null) {
-            if (!(identifierAccess.getNext() instanceof IdentifierAccess.FunctionCall)) {
-                mw.visitVarInsn(Opcodes.ALOAD, stackTable.getVariable(identifierAccess.getIdentifier()));
-            }
-            identifierAccess.getNext().accept(this);
-        } else if (identifierAccess.getAssignment() != null) {
-            identifierAccess.getAssignment().accept(this, identifierAccess.getIdentifier());
-        } else {
-            int slot = stackTable.getVariable(identifierAccess.getIdentifier());
-            switch (stackTable.getType(identifierAccess.getIdentifier())) {
-                case "int", "bool":
-                    mw.visitVarInsn(Opcodes.ILOAD, slot);
-                    break;
-                case "float":
-                    mw.visitVarInsn(Opcodes.FLOAD, slot);
-                    break;
-                default:
-                    mw.visitVarInsn(Opcodes.ALOAD, slot);
-            }
-        }
-        return Opcodes.NOP;
-    }
     public int generateCode(IdentifierAccess.ArrayAccess arrayAccess) {
         //mw.visitVarInsn(Opcodes.ALOAD, stackTable.getVariable(arrayAccess.getIdentifier()));
         arrayAccess.getIndex().accept(this);
         if (arrayAccess.getNext() != null) {
+            mw.visitInsn(Opcodes.AALOAD);
             arrayAccess.getNext().accept(this);
         } else if (arrayAccess.getAssignment() != null) {
             arrayAccess.getAssignment().getExpression().accept(this);
-            mw.visitInsn(Opcodes.IASTORE);
+            String nodeType = arrayAccess.getNodeType();
+            switch (nodeType) {
+                case "int":
+                    mw.visitInsn(Opcodes.IASTORE);
+                    break;
+                case "float":
+                    mw.visitInsn(Opcodes.FASTORE);
+                    break;
+                case "string":
+                    mw.visitInsn(Opcodes.AASTORE);
+                    break;
+                case "bool":
+                    mw.visitInsn(Opcodes.BASTORE);
+                    break;
+               default:
+                   mw.visitInsn(Opcodes.AASTORE);
+                   break;
+            }
         } else {
-            mw.visitInsn(Opcodes.IALOAD);
+           switch (arrayAccess.getNodeType()) {
+               case "int":
+                   mw.visitInsn(Opcodes.IALOAD);
+                   break;
+               case "float":
+                   mw.visitInsn(Opcodes.FALOAD);
+                   break;
+               case "string":
+                   mw.visitInsn(Opcodes.AALOAD);
+                   break;
+               case "bool":
+                   mw.visitInsn(Opcodes.BALOAD);
+                   break;
+               default:
+                   mw.visitInsn(Opcodes.AALOAD);
+           }
         }
         return Opcodes.NOP;
     }
@@ -856,7 +917,10 @@ public class CodeGenerator {
             case "Object":
                 return "Ljava/lang/Object;";
             default:
-                return "L" + type + ";";
+                if (type.endsWith("[]"))
+                    return "[L" + type.substring(0, type.length() - 2) + ";";
+                else
+                    return "L" + type + ";";
         }
     }
 }

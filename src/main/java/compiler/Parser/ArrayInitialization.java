@@ -17,6 +17,9 @@ public class ArrayInitialization extends Node{
 
     public ArrayInitialization(Parser parser) throws Exception {
         super(parser);
+        if (parser.isStruct(parser.currentToken.getValue())) {
+            parser.currentToken = new VarType(parser.currentToken.getValue(), parser.currentToken.getLine(), parser.currentToken.getTokenNumber());
+        }
         this.type = (VarType) parser.currentToken;
         parser.getNext();
     }

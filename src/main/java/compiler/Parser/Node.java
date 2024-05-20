@@ -10,6 +10,8 @@ public abstract class Node {
     private final int line;
     private final int tokenNumber;
     private String type = null;
+    private String parentType = null;
+
     public Node(Parser parser) {
         this.parser = parser;
         this.line = parser.currentToken.getLine();
@@ -34,6 +36,13 @@ public abstract class Node {
     }
     public void setType(String type) {
         this.type = type;
+    }
+    public String getParentType() {
+        return parentType;
+    }
+
+    public void setParentType(String parentType) {
+        this.parentType = parentType;
     }
 
     @Override

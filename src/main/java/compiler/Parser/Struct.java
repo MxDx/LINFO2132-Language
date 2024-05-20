@@ -25,6 +25,7 @@ public class Struct extends  Node {
             parser.match(Parser.SEMICOLON);
         }
         parser.match(Parser.CLOSE_BRACES);
+        parser.addStruct(identifier);
         return this;
     }
 

@@ -3,6 +3,16 @@ struct Point {
     int y;
 }
 
+// List of point
+Point[] points = Point[5];
+
+points[0] = Point(1, 2);
+points[1] = Point(3, 4);
+points[2] = Point(5, 6);
+points[3] = Point(7, 8);
+points[4] = Point(9, 10);
+
+
 struct Person {
     string name;
     Point location;
@@ -16,10 +26,19 @@ int[] carray = int[5];
 Person d = Person("me", Point(42, 69), int[2]);
 
 def void main() {
-    writeString("Hello World");
+    writeString("Je suis main hehe");
 }
 
 writeString(d.name);
+d.history[0] = 1;
+d.history[1] = 2;
+
+write(d.history[0]);
+write(d.history[1]);
+
+d.location.x = 111;
+write(d.location.x);
+write(d.location.y);
 
 write(100000);
 

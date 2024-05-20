@@ -49,9 +49,10 @@ public class Expression extends Node {
         if (parser.currentToken.isValue()) {
             return new Value(parser).parse();
         } else {
-            if (Objects.equals(parser.currentToken.getType(), "Identifier")) {
-                return new IdentifierAccess(parser).setEOF(EOF).parse();
-            } else if (parser.currentToken.equals(Parser.OPEN_PARENTHESES)) {
+            if (Objects.equals(parser.currentToken.getType(), "VarType") || (parser.isStruct(parser.currentToken.getValue()) && parser.lookahead.equals(Parser.OPEN_BRACKETS))) {
+                 return new ArrayInitialization(parser).parse();
+            }
+            else if (parser.currentToken.equals(Parser.OPEN_PARENTHESES)) {
                 parser.match(Parser.OPEN_PARENTHESES);
 
                 if (EOF.contains(Parser.CLOSE_PARENTHESES)) {
@@ -66,9 +67,9 @@ public class Expression extends Node {
                     parser.ParserException("Invalid expression");
                 }
                 return result;
-            } else if (Objects.equals(parser.currentToken.getType(), "VarType")) {
-                return new ArrayInitialization(parser).parse();
-            } else if (Objects.equals(parser.currentToken, new Special("-"))) {
+            } else if (Objects.equals(parser.currentToken.getType(), "Identifier")) {
+                return new IdentifierAccess(parser).setEOF(EOF).parse();
+            }  else if (Objects.equals(parser.currentToken, new Special("-"))) {
                 Value sucre = new Value(parser, new MyInteger("0", parser.currentToken.getLine(), parser.currentToken.getTokenNumber()));
                 return new ArithmeticOperation(parser, sucre).setEOF(EOF).parse();
             } else if (Objects.equals(parser.currentToken, new Special("!"))) {

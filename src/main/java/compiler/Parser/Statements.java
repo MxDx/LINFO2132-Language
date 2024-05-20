@@ -81,6 +81,11 @@ public class Statements extends Starting {
                     return this;
 
                 case "Identifier":
+                    if (parser.isStruct(parser.currentToken.getValue()) && parser.lookahead.getValue().equals("[")) {
+                        content = new Declaration(this.parser).parse();
+                        parser.match(Parser.SEMICOLON);
+                        return this;
+                    }
                     switch (parser.lookahead.getType()) {
                         case "Identifier" -> content = new Declaration(this.parser).parse();
                         case "Special" -> {

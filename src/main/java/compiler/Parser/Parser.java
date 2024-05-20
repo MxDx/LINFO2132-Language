@@ -3,6 +3,8 @@ package compiler.Parser;
 import compiler.Lexer.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+
 import org.json.JSONObject;
 
 public class Parser {
@@ -29,12 +31,16 @@ public class Parser {
     Starting root;
     Lexer lexer;
     Symbol lookahead;
+    HashSet<String> Structs;
+
+
 
     public Parser(Lexer lexer) throws Exception {
         this.lexer = lexer;
         currentToken = lexer.getNextSymbol();
         lookahead = lexer.getNextSymbol();
         root = new Starting(this);
+        Structs = new HashSet<>();
         root.parse();
     }
     public Starting getAST() {
@@ -56,6 +62,14 @@ public class Parser {
 
     public Starting getRoot() {
         return root;
+    }
+
+    public void addStruct(String struct) {
+        Structs.add(struct);
+    }
+
+    public boolean isStruct(String struct) {
+        return Structs.contains(struct);
     }
 
     @Override

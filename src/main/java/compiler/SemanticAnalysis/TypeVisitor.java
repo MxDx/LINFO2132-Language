@@ -360,6 +360,9 @@ public class TypeVisitor {
             identifierAccess.setType(type.getType().getType().getValue());
         }
         if (identifierAccess.getNext() != null) {
+            if (!(identifierAccess.getNext() instanceof IdentifierAccess.FunctionCall)) {
+                identifierAccess.getNext().setParentType(type.getType().getType().getValue());
+            }
             type =  identifierAccess.getNext().accept(this, type);
         }
         if (identifierAccess.getAssignment() != null) {
@@ -390,8 +393,10 @@ public class TypeVisitor {
         }
         type = type.vectorPass();
         if (arrayAccess.getNext() != null) {
+            arrayAccess.getNext().setParentType(type.getType().getType().getValue());
             return arrayAccess.getNext().accept(this, type);
         }
+        arrayAccess.setType(type.getType().getType().getValue());
         if (arrayAccess.getAssignment() != null) {
             IdentifierType assignmentType = arrayAccess.getAssignment().accept(this);
             if (assignmentType == null) {
@@ -418,8 +423,11 @@ public class TypeVisitor {
         }
         structAccess.setType(structType.getType().getValue());
         if (structAccess.getNext() != null) {
+            String parentType =((StructType) getTable().getType(structType.getType().getValue())).getField(structAccess.getField()).getType().getType().getValue();
+            structAccess.getNext().setParentType(parentType);
             return structAccess.getNext().accept(this, type);
         }
+        structAccess.setType(type.getType().getType().getValue());
         if (structAccess.getAssignment() != null) {
             IdentifierType assignmentType = structAccess.getAssignment().accept(this);
             if (assignmentType == null) {
