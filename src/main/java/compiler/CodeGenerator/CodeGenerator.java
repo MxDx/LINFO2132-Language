@@ -2,10 +2,8 @@ package compiler.CodeGenerator;
 import compiler.Parser.Starting;
 import compiler.SemanticAnalysis.Type.IdentifierType;
 import compiler.SemanticAnalysis.TypeVisitor;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.*;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -279,6 +277,9 @@ public class CodeGenerator {
                     if (structTable.containsKey(nodeType)) {
                         assignment.accept(this);
                         mw.visitVarInsn(Opcodes.ASTORE, stackTable.getVariable(identifier));
+                    } else {
+                        assignment.accept(this);
+                        mw.visitVarInsn(Opcodes.ASTORE, stackTable.getVariable(identifier));
                     }
             }
         }
@@ -423,6 +424,17 @@ public class CodeGenerator {
     public int generateCode(ArrayInitialization arrayInitialization) {
         String type = arrayInitialization.getType().getValue();
         arrayInitialization.getIndex().accept(this);
+        boolean multiArray = false;
+        int vectorDepth = 1;
+        while (arrayInitialization.getNext() != null) {
+            arrayInitialization = arrayInitialization.getNext();
+            vectorDepth++;
+            arrayInitialization.getIndex().accept(this);
+            multiArray = true;
+        }
+        if (multiArray) {
+            mw.visitMultiANewArrayInsn(getJavaType(type), vectorDepth);
+        }
         switch (type) {
             case "int":
                 mw.visitIntInsn(Opcodes.NEWARRAY, Opcodes.T_INT);

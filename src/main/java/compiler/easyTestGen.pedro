@@ -3,6 +3,8 @@ import mini;
 import libs.array;
 import libs.math;
 
+//int[][] matrix = int[2][2];
+
 int[] arr = initArray(5, 5);
 printArray(arr);
 
