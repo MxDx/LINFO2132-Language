@@ -15,10 +15,18 @@ int[] carray = int[5];
 
 Person d = Person("me", Point(42, 69), int[2]);
 
-writeInt(location.x);
-writeInt(location.y);
+def void main() {
+    writeString("Hello World");
+}
 
 writeString(d.name);
+
+write(100000);
+
+location.x = 100;
+
+writeInt(location.x);
+writeInt(location.y);
 
 Point p = d.location;
 writeInt(p.x);
@@ -89,3 +97,11 @@ int b = 1;
 for (b = 1, b <= 10, b = b + 1) {
     writeInt(b);
 }
+
+
+int[] b2 = int[5];
+b2[0] = 1;
+
+//write(b2[0]);
+
+

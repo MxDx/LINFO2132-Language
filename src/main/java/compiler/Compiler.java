@@ -66,14 +66,14 @@ public class Compiler {
             outputFileName = "default.class";
         }
         System.out.println(outputFileName);
-        //*/
+        /*/
 
         String outputFileName = "default.class";
         String inputPath = "src/main/java/compiler/testGen.txt";
         boolean showLexer = false;
         boolean showParser = false;
         boolean showSemantic = false;
-
+        //*/
 
         boolean noLibs = false;
 
@@ -165,6 +165,9 @@ public class Compiler {
         File[] listOfFiles = folder.listFiles();
         Stack<Reader> stdLibs = new Stack<>();
         for (File file : listOfFiles) {
+            if (file.getName().equals("Utils.pedro")) {
+                continue;
+            }
             if (file.isFile() && file.getName().endsWith(".pedro")) {
                 try {
                     stdLibs.push(new FileReader(file));
@@ -172,6 +175,11 @@ public class Compiler {
                     e.printStackTrace();
                 }
             }
+        }
+        try {
+            stdLibs.push(new FileReader(new File("src/main/java/compiler/std/Utils.pedro")));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
         return stdLibs;
     }

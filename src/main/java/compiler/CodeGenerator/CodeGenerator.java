@@ -390,11 +390,23 @@ public class CodeGenerator {
         String field = structAccess.getField();
         String struct = structAccess.getNodeType();
         String desc = structTable.get(struct).get(field);
-        mw.visitFieldInsn(Opcodes.GETFIELD, struct, field, desc);
+        if (structAccess.getNext() != null) {
+            structAccess.getNext().accept(this);
+        } else if (structAccess.getAssignment() != null) {
+            structAccess.getAssignment().getExpression().accept(this);
+            mw.visitFieldInsn(Opcodes.PUTFIELD, struct, field, desc);
+        } else {
+            mw.visitFieldInsn(Opcodes.GETFIELD, struct, field, desc);
+        }
         return Opcodes.NOP;
     }
     public int generateCode(IdentifierAccess.FunctionCall functionCall) {
-        switch (functionCall.getIdentifier()) {
+        String identifier = functionCall.getIdentifier();
+        if (identifier.equals("write")) {
+            String nodeType = functionCall.getArguments().get(0).getNodeType();
+            identifier += nodeType.substring(0, 1).toUpperCase() + nodeType.substring(1);
+        }
+        switch (identifier) {
             case "writeString", "write", "writeln":
                 mw.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
                 functionCall.getArguments().get(0).accept(this);
