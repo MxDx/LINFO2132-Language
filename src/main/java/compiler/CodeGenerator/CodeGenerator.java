@@ -8,6 +8,7 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -18,6 +19,7 @@ import compiler.Parser.*;
 public class CodeGenerator {
     StackTable stackTable;
     HashMap<String, String> functionTable;
+    HashMap<String, ArrayList<String>> functionParameters;
     HashMap<String, HashMap<String, String>> structTable;
     ClassWriter cw;
     MethodVisitor mw;
@@ -43,12 +45,14 @@ public class CodeGenerator {
         mw.visitCode();
         stackTable = new StackTable();
         functionTable = new HashMap<>();
+        functionParameters = new HashMap<>();
         structTable = new HashMap<>();
     }
 
     public CodeGenerator(CodeGenerator parent) {
         this.stackTable = new StackTable(parent.stackTable);
         functionTable = new HashMap<>(parent.functionTable);
+        functionParameters = new HashMap<>(parent.functionParameters);
         stackTable = new StackTable(parent.stackTable);
         structTable = new HashMap<>(parent.structTable);
         this.cw = parent.cw;
@@ -57,6 +61,7 @@ public class CodeGenerator {
     public CodeGenerator(CodeGenerator parent,MethodVisitor mw) {
         this.stackTable = new StackTable(parent.stackTable);
         functionTable = new HashMap<>(parent.functionTable);
+        functionParameters = new HashMap<>(parent.functionParameters);
         stackTable = new StackTable(parent.stackTable);
         structTable = new HashMap<>(parent.structTable);
         this.cw = parent.cw;
@@ -343,6 +348,15 @@ public class CodeGenerator {
             parameter.getType().setValue(nodeType);
             descriptor.append(getJavaType(nodeType));
         }
+        // Loading the constant as param of the function
+        ArrayList<String> parameters = new ArrayList<>();
+        for (String key : stackTable.getVariableMap().keySet()) {
+            parameters.add(key);
+            String nodeType = stackTable.getType(key);
+            descriptor.append(getJavaType(nodeType));
+        }
+        functionParameters.put(method.getName().getValue(), parameters);
+
         descriptor.append(")");
         descriptor.append(getJavaType(method.getReturnType().getValue()));
         MethodVisitor new_mw = cw.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, method.getName().getValue(), descriptor.toString(), null, null);
@@ -353,6 +367,7 @@ public class CodeGenerator {
             newCodeGenerator.stackTable.addVariableType(parameter.getIdentifier(), parameter.getType().getValue());
             newCodeGenerator.stackTable.addVariable(parameter.getIdentifier());
             int slot = newCodeGenerator.stackTable.getVariable(parameter.getIdentifier());
+            /*
             switch (parameter.getType().getValue()) {
                 case "int":
                     new_mw.visitVarInsn(Opcodes.ILOAD, indexParameter);
@@ -371,7 +386,12 @@ public class CodeGenerator {
                     new_mw.visitVarInsn(Opcodes.ASTORE, slot);
                     break;
             }
+             */
             indexParameter++;
+        }
+        for (String key : stackTable.getVariableMap().keySet()) {
+            newCodeGenerator.stackTable.addVariable(key);
+            newCodeGenerator.stackTable.addVariableType(key, stackTable.getType(key));
         }
         if (method.getBlock() != null) {
             method.getBlock().accept(newCodeGenerator);
@@ -472,8 +492,10 @@ public class CodeGenerator {
         return Opcodes.NOP;
     }
     public int generateCode(IdentifierAccess.FunctionCall functionCall) {
+        boolean newLine = true;
         String identifier = functionCall.getIdentifier();
         if (identifier.equals("write")) {
+            newLine = false;
             String nodeType = functionCall.getArguments().get(0).getNodeType();
             identifier += nodeType.substring(0, 1).toUpperCase() + nodeType.substring(1);
         }
@@ -482,20 +504,32 @@ public class CodeGenerator {
             identifier = "write" + nodeType.substring(0, 1).toUpperCase() + nodeType.substring(1);
         }
         switch (identifier) {
-            case "writeString", "write":
+            case "writeString":
                 mw.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
                 functionCall.getArguments().get(0).accept(this);
-                mw.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+                if (newLine) {
+                    mw.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+                } else {
+                    mw.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "print", "(Ljava/lang/String;)V", false);
+                }
                 break;
             case "writeInt":
                 mw.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
                 functionCall.getArguments().get(0).accept(this);
-                mw.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V", false);
+                if (newLine) {
+                    mw.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "(I)V", false);
+                } else {
+                    mw.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "print", "(I)V", false);
+                }
                 break;
             case "writeFloat":
                 mw.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
                 functionCall.getArguments().get(0).accept(this);
-                mw.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "(F)V", false);
+                if (newLine) {
+                    mw.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "(F)V", false);
+                } else {
+                    mw.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "print", "(F)V", false);
+                }
                 break;
             case "chr":
                 functionCall.getArguments().get(0).accept(this);
@@ -525,6 +559,29 @@ public class CodeGenerator {
                 }
                 for (Node arg : functionCall.getArguments()) {
                     arg.accept(this);
+                }
+                if (!structTable.containsKey(functionCall.getIdentifier())) {
+                    // Loading the constant as param of the function
+                    ArrayList<String> parameters = functionParameters.get(functionCall.getIdentifier());
+                    for (String key : parameters) {
+                        String nodeType = stackTable.getType(key);
+                        switch (nodeType) {
+                            case "int":
+                                mw.visitVarInsn(Opcodes.ILOAD, stackTable.getVariable(key));
+                                break;
+                            case "float":
+                                mw.visitVarInsn(Opcodes.FLOAD, stackTable.getVariable(key));
+                                break;
+                            case "string":
+                                mw.visitVarInsn(Opcodes.ALOAD, stackTable.getVariable(key));
+                                break;
+                            case "bool":
+                                mw.visitVarInsn(Opcodes.ILOAD, stackTable.getVariable(key));
+                                break;
+                            default:
+                                mw.visitVarInsn(Opcodes.ALOAD, stackTable.getVariable(key));
+                        }
+                    }
                 }
                 if (structTable.containsKey(functionCall.getIdentifier())) {
                     mw.visitMethodInsn(Opcodes.INVOKESPECIAL, functionCall.getIdentifier(), "<init>", functionTable.get(functionCall.getIdentifier()), false);

@@ -9,7 +9,8 @@ public class StackTable {
     Integer stackPointer = 0;
     public StackTable(StackTable parent) {
         this.parent = parent;
-        this.stackPointer = parent.stackPointer;
+        //this.stackPointer = parent.stackPointer;
+        stackPointer = 0;
     }
     public StackTable() {
         this.parent = null;
@@ -23,6 +24,16 @@ public class StackTable {
         }
         return -1;
     }
+
+    public HashMap<String, Integer> getVariableMap() {
+        HashMap<String, Integer> map = new HashMap<>();
+        map.putAll(variableMap);
+        if (parent != null) {
+            map.putAll(parent.getVariableMap());
+        }
+        return map;
+    }
+
     public String getType(String identifier) {
         if (typeMap.containsKey(identifier)) {
             return typeMap.get(identifier);
