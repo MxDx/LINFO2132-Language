@@ -3,6 +3,20 @@ import mini;
 import libs.array;
 import libs.math;
 
+if (!(false)) {
+    writeln("shabang yes");
+}
+
+if (!(true)) {
+    writeln("not shabang no");
+}
+
+bool shabang = !(1 == 1 || 2 == 2 && 3 == 3);
+
+if (!(shabang)) {
+    writeln("sha sha bang");
+}
+
 //int[][] matrix = int[2][2];
 
 int[] arr = initArray(5, 5);
