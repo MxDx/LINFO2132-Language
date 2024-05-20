@@ -1,4 +1,28 @@
 import mini;
+//import read_test;
+import libs.array;
+import libs.math;
+
+int[] arr = initArray(5, 5);
+printArray(arr);
+
+float expd = exp(1.0);
+write("expd: ");
+writeln(expd);
+
+float sinus = sin(3.14);
+write("sinus: ");
+writeln(sinus);
+
+int a_0 = 1;
+
+if (true) {
+    int a_0 = 2;
+    write("a_0 in if: ");
+    writeln(a_0);
+}
+write("a_0: ");
+writeln(a_0);
 
 def void twoArgs(int a, int b) {
     writeln(a);
@@ -116,11 +140,12 @@ Point p1 = Point(1, 2);
 printPoint(p1);
 
 def void main() {
+    write("Write a number: ");
     int value = readInt();
     writeln(square(value));
     int i;
     for (i=1, i<100, i = i+1) {
-        while (value!=3) {
+        while (value!=3 && value < 100) {
             if (i > 10){
                 // ....
             } else {

@@ -258,8 +258,14 @@ public class TypeVisitor {
             SemanticAnalysis.SemanticException("ReturnError", str, returnStatement);
         } else {
             expression.setType(returnType.getType().getType().getValue());
+            if (type.isVector()) {
+                expression.setType(type.getType().getType().getValue() + "[]".repeat(type.getVectorDepth()));
+            }
         }
-
+        returnStatement.setType(returnType.getType().getType().getValue());
+        if (returnType.isVector()) {
+            returnStatement.setType(returnType.getType().getType().getValue() + "[]".repeat(type.getVectorDepth()));
+        }
         if (Objects.equals(returnType.getType(), table.getType("float")) && Objects.equals(type.getType(), table.getType("int"))) {
             return null;
         }

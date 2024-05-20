@@ -371,7 +371,11 @@ public class CodeGenerator {
         functionParameters.put(method.getName().getValue(), parameters);
 
         descriptor.append(")");
-        descriptor.append(getJavaType(method.getReturnType().getValue()));
+        String returnType = method.getReturnType().getValue();
+        for (int i = 0; i < method.getReturnType().getVectorDepth(); i++) {
+            returnType += "[]";
+        }
+        descriptor.append(getJavaType(returnType));
         MethodVisitor new_mw = cw.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, method.getName().getValue(), descriptor.toString(), null, null);
         functionTable.put(method.getName().getValue(),descriptor.toString());
         CodeGenerator newCodeGenerator = new CodeGenerator(this, new_mw);
@@ -542,7 +546,36 @@ public class CodeGenerator {
                 functionCall.getArguments().get(0).accept(this);
                 mw.visitInsn(Opcodes.F2I);
                 break;
-
+            case "readInt":
+                // Read from the standard input with a scanner
+                mw.visitTypeInsn(Opcodes.NEW, "java/util/Scanner");
+                mw.visitInsn(Opcodes.DUP);
+                mw.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "in", "Ljava/io/InputStream;");
+                mw.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/util/Scanner", "<init>", "(Ljava/io/InputStream;)V", false);
+                mw.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/Scanner", "nextInt", "()I", false);
+                break;
+            case "readFloat":
+                // Read from the standard input with a scanner
+                mw.visitTypeInsn(Opcodes.NEW, "java/util/Scanner");
+                mw.visitInsn(Opcodes.DUP);
+                mw.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "in", "Ljava/io/InputStream;");
+                mw.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/util/Scanner", "<init>", "(Ljava/io/InputStream;)V", false);
+                mw.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/Scanner", "nextFloat", "()F", false);
+                break;
+            case "readString":
+                // Read from the standard input with a scanner
+                mw.visitTypeInsn(Opcodes.NEW, "java/util/Scanner");
+                mw.visitInsn(Opcodes.DUP);
+                mw.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "in", "Ljava/io/InputStream;");
+                mw.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/util/Scanner", "<init>", "(Ljava/io/InputStream;)V", false);
+                mw.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/Scanner", "nextLine", "()Ljava/lang/String;", false);
+                break;
+            case "cos", "sin", "tan", "acos", "asin", "atan", "sqrt", "log", "exp", "log10", "cosh", "sinh", "tanh", "ceil", "abs":
+                functionCall.getArguments().get(0).accept(this);
+                mw.visitInsn(Opcodes.F2D);
+                mw.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Math", identifier, "(D)D", false);
+                mw.visitInsn(Opcodes.D2F);
+                break;
             default:
                 if (structTable.containsKey(functionCall.getIdentifier())) {
                     mw.visitTypeInsn(Opcodes.NEW, functionCall.getIdentifier());
@@ -942,7 +975,7 @@ public class CodeGenerator {
 
     public int generateCode(For forStatement) {
         StackTable oldStackTable = stackTable;
-        //stackTable = new StackTable(oldStackTable);
+        stackTable = new StackTable(oldStackTable);
         Label eval = new Label();
         Label start = new Label();
         Label end = new Label();

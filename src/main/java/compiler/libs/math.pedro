@@ -1,0 +1,75 @@
+
+def float cos(float x) {
+    // jvm lib
+    return 0.0;
+}
+
+def float sin(float x) {
+    // jvm lib
+    return 0.0;
+}
+
+def float tan(float x) {
+    // jvm lib
+    return 0.0;
+}
+
+def float acos(float x) {
+    // jvm lib
+    return 0.0;
+}
+
+def float asin(float x) {
+    // jvm lib
+    return 0.0;
+}
+
+def float atan(float x) {
+    // jvm lib
+    return 0.0;
+}
+
+def float sqrt(float x) {
+    // jvm lib
+    return 0.0;
+}
+
+def float log(float x) {
+    // jvm lib
+    return 0.0;
+}
+
+def float log10(float x) {
+    // jvm lib
+    return 0.0;
+}
+
+def float exp(float x) {
+    // jvm lib
+    return 0.0;
+}
+
+def float cosh(float x) {
+    // jvm lib
+    return 0.0;
+}
+
+def float sinh(float x) {
+    // jvm lib
+    return 0.0;
+}
+
+def float tanh(float x) {
+    // jvm lib
+    return 0.0;
+}
+
+def float ceil(float x) {
+    // jvm lib
+    return 0.0;
+}
+
+def float abs(float x) {
+    // jvm lib
+    return 0.0;
+}

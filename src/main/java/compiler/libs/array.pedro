@@ -1,0 +1,22 @@
+
+def int[] initArray(int size, int fil){
+    int[] arr = int[size];
+    int i;
+    for(i = 0, i < size, i = i + 1) {
+        arr[i] = fil;
+    }
+    return arr;
+}
+
+def int[] initNullArray(int size){
+    return initArray(size, 0);
+}
+
+def void printArray(int[] arr){
+    int i;
+    for(i = 0, i < len(arr), i = i + 1) {
+        write(arr[i]);
+        write(" ");
+    }
+    writeln("");
+}

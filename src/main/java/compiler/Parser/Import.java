@@ -2,6 +2,7 @@ package compiler.Parser;
 
 import compiler.Compiler;
 import compiler.Lexer.Lexer;
+import compiler.Lexer.Special;
 
 import java.util.Stack;
 
@@ -11,7 +12,13 @@ public class Import extends Node {
     }
     public Node parse() throws Exception {
         parser.getNext();
+        String importName = parser.currentToken.getValue();
         String path = parser.getImportPath();
+        if (importName.equals("libs")) {
+            parser.getNext();
+            parser.match(new Special("."));
+            path = "src/main/java/compiler/libs/";
+        }
         path += parser.currentToken.getValue();
         path += ".pedro";
         Lexer lexer = Compiler.lexerGetter(path, false, true);
