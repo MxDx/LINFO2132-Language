@@ -20,3 +20,46 @@ def void printArray(int[] arr){
     }
     writeln("");
 }
+
+def int sumArray(int[] arr){
+    int i;
+    int sum = 0;
+    for(i = 0, i < len(arr), i = i + 1) {
+        sum = sum + arr[i];
+    }
+    return sum;
+}
+
+def int productArray(int[] arr){
+    int i;
+    int prod = 1;
+    for(i = 0, i < len(arr), i = i + 1) {
+        prod = prod * arr[i];
+    }
+    return prod;
+}
+def int maxArray(int[] arr){
+    int i;
+    int max = arr[0];
+    for(i = 1, i < len(arr), i = i + 1) {
+        if(arr[i] > max){
+            max = arr[i];
+        }
+    }
+    return max;
+}
+def int minArray(int[] arr){
+    int i;
+    int min = arr[0];
+    for(i = 1, i < len(arr), i = i + 1) {
+        if(arr[i] < min){
+            min = arr[i];
+        }
+    }
+    return min;
+}
+
+def int averageArray(int[] arr){
+    return sumArray(arr) / len(arr);
+}
+

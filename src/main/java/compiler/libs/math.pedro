@@ -73,3 +73,18 @@ def float abs(float x) {
     // jvm lib
     return 0.0;
 }
+def int min(int x, int y) {
+    if (x < y) {
+        return x;
+    } else {
+        return y;
+    }
+}
+
+def int max(int x, int y) {
+    if (x > y) {
+        return x;
+    } else {
+        return y;
+    }
+}

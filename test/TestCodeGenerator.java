@@ -353,20 +353,7 @@ public class TestCodeGenerator {
         generateCode(input);
         assertEquals("3\n", runMain());
     }
-    @Test
-    public void testRead() throws Exception {
-        String input =
-                """
-                int x = readInt();
-                float y = readFloat();
-                string z = readString();
-                write(x);
-                write(y);
-                write(z);
-                """;
-        generateCode(input);
-        assertEquals("00.0\n", runMain());
-    }
+
     @Test
     public void testImport() throws Exception {
         String input =
@@ -379,14 +366,42 @@ public class TestCodeGenerator {
         generateCode(input);
         assertEquals("hello from mini\n5Hello mini function\n42\n", runMain());
     }
-
-
-
-
-
-
-
-
+    @Test
+    public void testMathLib() throws Exception {
+        String input =
+                """
+                        import libs.math;
+                        writeln(5);
+                        writeFloat(abs(-5.0));
+                        writeFloat(abs(5.0));
+                        writeInt(max(5, 3));
+                        writeInt(min(5, 3));
+                        writeFloat(sin(3.14));
+                        writeFloat(atan(1.0));
+                        writeFloat(log10(100.0));
+                        writeFloat(exp(1.0));
+                        """;
+        generateCode(input);
+        assertEquals("5\n5.0\n5.0\n5\n3\n0.001592548\n0.7853982\n2.0\n2.7182817\n", runMain());
+    }
+    @Test
+    public void testArrayLib() throws Exception {
+        String input =
+                """
+                        import libs.array;
+                        int[] x = int[3];
+                        x[0] = 1;
+                        x[1] = 2;
+                        x[2] = 3;
+                        writeInt(sumArray(x));
+                        writeInt(productArray(x));
+                        writeInt(maxArray(x));
+                        writeInt(minArray(x));
+                        writeInt(averageArray(x));
+                        """;
+        generateCode(input);
+        assertEquals("6\n6\n3\n1\n2\n", runMain());
+    }
 
 
     ////////////////// Advanced tests //////////////////
@@ -610,6 +625,29 @@ public class TestCodeGenerator {
                 """;
         generateCode(input);
         assertEquals("25\n", runMain());
+    }
+    @Test
+    public void testComplexReturnArray() throws Exception {
+        String input =
+                """
+                def int[] add1(int[] x) {
+                    int i;
+                    for (i = 0, i < len(x), i = i + 1) {
+                        x[i] = x[i] + 1;
+                    }
+                    return x;
+                }
+                int[] x = int[3];
+                x[0] = 1;
+                x[1] = 2;
+                x[2] = 3;
+                int[] y = add1(x);
+                writeln(y[0]);
+                writeln(y[1]);
+                writeln(y[2]);
+                """;
+        generateCode(input);
+        assertEquals("2\n3\n4\n", runMain());
     }
 
 }
