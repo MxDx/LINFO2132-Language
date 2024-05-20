@@ -1,12 +1,22 @@
+import mini;
+
 def void twoArgs(int a, int b) {
     writeln(a);
     writeln(b);
 }
 
+helloMini();
+
+write("mini const: ");
+writeln(miniConst);
+
+
 def void print5() {
     writeln(5);
 }
 print5();
+
+
 
 twoArgs(1, 2);
 
@@ -37,6 +47,13 @@ threeArgs(1, 2, 3);
 write("aaa: ");
 writeln(aaa);
 
+def void fourArgs(int a, int b, int c, int d) {
+    twoArgs(a, b);
+    twoArgs(c, d);
+}
+
+fourArgs(1, 2, 3, 4);
+
 def Point createPoint(int x, int y) {
     //Point p = Point(1, 2);
     Point p = Point(x, y);
@@ -57,18 +74,13 @@ def int square(int v) {
 def int gigaSquare(int[] v) {
     int i;
     int total = 0;
-    write("a length: ");
-    writeln(len(a));
-    write("aa: ");
-    writeln(aa);
-    write("aaa: ");
-    writeln(aaa);
     for (i=0, i<2, i = i+1) {
-        total = total;// + square(v[i]);
+        total = total + square(v[i]);
     }
     return total;
 }
 
+write("gigaSquare: ");
 writeln(gigaSquare(a));
 Point p12 = Point(42, 69);
 
@@ -120,3 +132,37 @@ def void main() {
 
     i = (i+2)*2;
 }
+
+struct Person {
+    string name;
+    Point location;
+    int[] history;
+}
+
+struct SuperPerson {
+    string name;
+    Point location;
+    int[] history;
+    Person[] friends;
+}
+
+SuperPerson superPerson = SuperPerson("me", Point(42, 69), int[2], Person[2]);
+superPerson.friends[0] = Person("John", Point(1, 2), int[2]);
+superPerson.friends[1] = Person("Doe", Point(3, 4), int[2]);
+
+write("SuperPerson: ");
+writeln(superPerson.name);
+write(superPerson.location.x);
+write(", ");
+writeln(superPerson.location.y);
+write("SuperPerson friends: ");
+writeln(superPerson.friends[0].name);
+write(superPerson.friends[0].location.x);
+write(", ");
+write(superPerson.friends[0].location.y);
+writeln("");
+write("SuperPerson friends: ");
+writeln(superPerson.friends[1].name);
+write(superPerson.friends[1].location.x);
+write(", ");
+write(superPerson.friends[1].location.y);

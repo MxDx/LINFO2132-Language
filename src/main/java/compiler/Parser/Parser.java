@@ -32,7 +32,7 @@ public class Parser {
     Lexer lexer;
     Symbol lookahead;
     HashSet<String> Structs;
-
+    boolean isImport = false;
 
 
     public Parser(Lexer lexer) throws Exception {

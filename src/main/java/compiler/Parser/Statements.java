@@ -19,8 +19,15 @@ public class Statements extends Starting {
         statements = new ArrayList<>();
         while (parser.currentToken != null) {
             if (parser.currentToken.equals(EOF)) break;
-            Statement statement = new Statement(parser);
-            statements.add(statement.parse());
+            Statement statement = new Statement(parser).parse();
+            if (parser.isImport) {
+                Statements importStatements = (Statements) statement.getContent();
+                statements.addAll(importStatements.statements);
+                parser.isImport = false;
+                continue;
+            } else {
+                statements.add(statement);
+            }
             while (Objects.equals(parser.currentToken, Parser.SEMICOLON)) {
                 parser.getNext();
             }
@@ -76,6 +83,7 @@ public class Statements extends Starting {
                         case "def" -> content = new Method(this.parser).parse();
                         case "struct" -> content = new Struct(this.parser).parse();
                         case "final" -> content = new Declaration(this.parser).parse();
+                        case "import" -> content = new Import(this.parser).parse();
                         default -> parser.ParserException("Invalid Statement Keyword");
                     }
                     return this;
