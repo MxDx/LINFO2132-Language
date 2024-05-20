@@ -2,10 +2,8 @@ package compiler.CodeGenerator;
 import compiler.Parser.Starting;
 import compiler.SemanticAnalysis.Type.IdentifierType;
 import compiler.SemanticAnalysis.TypeVisitor;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.*;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -128,7 +126,8 @@ public class CodeGenerator {
 
     public int generateCode(IdentifierAccess identifierAccess, Label start, Label end) {
         identifierAccess.accept(this);
-        mw.visitJumpInsn(Opcodes.IFEQ, end);
+        mw.visitJumpInsn(Opcodes.IFNE, start);
+        mw.visitJumpInsn(Opcodes.GOTO, end);
         return Opcodes.NOP;
     }
 
@@ -201,6 +200,11 @@ public class CodeGenerator {
                 mw.visitLdcInsn(Boolean.parseBoolean(value.getValue().getValue()));
                 break;
         }
+        return Opcodes.NOP;
+    }
+
+    public int generateCode(Expression.Bang bang, Label start, Label end) {
+        bang.getExpression().accept(this, end, start);
         return Opcodes.NOP;
     }
     public int generateCode(Expression.Value value, Label start, Label end) {
@@ -277,6 +281,9 @@ public class CodeGenerator {
                         nodeType = nodeType.substring(0, nodeType.length() - 2);
                     }
                     if (structTable.containsKey(nodeType)) {
+                        assignment.accept(this);
+                        mw.visitVarInsn(Opcodes.ASTORE, stackTable.getVariable(identifier));
+                    } else {
                         assignment.accept(this);
                         mw.visitVarInsn(Opcodes.ASTORE, stackTable.getVariable(identifier));
                     }
@@ -423,6 +430,17 @@ public class CodeGenerator {
     public int generateCode(ArrayInitialization arrayInitialization) {
         String type = arrayInitialization.getType().getValue();
         arrayInitialization.getIndex().accept(this);
+        boolean multiArray = false;
+        int vectorDepth = 1;
+        while (arrayInitialization.getNext() != null) {
+            arrayInitialization = arrayInitialization.getNext();
+            vectorDepth++;
+            arrayInitialization.getIndex().accept(this);
+            multiArray = true;
+        }
+        if (multiArray) {
+            mw.visitMultiANewArrayInsn(getJavaType(type), vectorDepth);
+        }
         switch (type) {
             case "int":
                 mw.visitIntInsn(Opcodes.NEWARRAY, Opcodes.T_INT);
@@ -901,26 +919,26 @@ public class CodeGenerator {
     }
 
     public int generateCode(Expression.LogicalOperation logicalOperation, Label start , Label end) {
-        Expression.Operation left;
-        Expression.Operation right;
+        Node left;
+        Node right;
         switch (logicalOperation.getOperator()) {
             case "&&":
                 Label new_start = new Label();
-                left = (Expression.Operation) logicalOperation.getLeft();
+                left = logicalOperation.getLeft();
                 firstOr = false;
                 left.accept(this, new_start, end);
                 mw.visitLabel(new_start);
-                right = (Expression.Operation) logicalOperation.getRight();
+                right =  logicalOperation.getRight();
                 firstOr = false;
                 right.accept(this, start, end);
                 break;
             case "||":
                 Label new_end = new Label();
-                left = (Expression.Operation) logicalOperation.getLeft();
+                left = logicalOperation.getLeft();
                 firstOr = true;
                 left.accept(this, start, new_end);
                 mw.visitLabel(new_end);
-                right = (Expression.Operation) logicalOperation.getRight();
+                right = logicalOperation.getRight();
                 firstOr = false;
                 right.accept(this, start, end);
                 break;

@@ -533,7 +533,9 @@ public class TestParser {
         Expression expression = (Expression) declaration.assignment;
         assertTrue("The expression is not an instance of ArrayInitialization", expression.corps instanceof ArrayInitialization);
         ArrayInitialization arrayInit = (ArrayInitialization) expression.corps;
-        assertEquals("The array has the wrong type", new VarType("int"), arrayInit.type);
+        VarType expectedType2 = new VarType("int");
+        expectedType2.setVector();
+        assertEquals("The array has the wrong type", expectedType2, arrayInit.type);
         assertEquals("The array has the wrong size", "5", ((Expression.Value) arrayInit.expression).value.getValue());
 
     }

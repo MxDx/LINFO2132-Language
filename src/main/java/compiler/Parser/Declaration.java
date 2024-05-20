@@ -25,11 +25,7 @@ public class Declaration extends Node {
         type = new VarType(parser.currentToken.getValue(), parser.currentToken.getLine(), parser.currentToken.getTokenNumber());
         type.setFinal(isFinal);
         parser.getNext();
-        if (Objects.equals(parser.currentToken.getValue(), "[")){
-            type.setVector();
-            parser.getNext();
-            parser.match(Parser.CLOSE_BRACKETS);
-        }
+        checkVector();
         if (!Objects.equals(parser.currentToken.getType(), "Identifier")){
             parser.ParserException("Invalid Identifier");
         }
@@ -43,6 +39,15 @@ public class Declaration extends Node {
         }
 
         return this;
+    }
+
+    private void checkVector() throws Exception {
+        if (Objects.equals(parser.currentToken.getValue(), "[")){
+            type.setVectorDepth(type.getVectorDepth() + 1);
+            parser.getNext();
+            parser.match(Parser.CLOSE_BRACKETS);
+            checkVector();
+        }
     }
 
     @Override

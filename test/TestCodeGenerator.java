@@ -685,4 +685,46 @@ public class TestCodeGenerator {
 
     }
 
+    @Test
+    public void testBangOperator() throws Exception {
+        String input =
+                """
+                bool x = true;
+                bool y = false;
+                if (!(x)) {
+                    writeln(1);
+                } else {
+                    writeln(0);
+                }
+                if (!(y)) {
+                    writeln(1);
+                } else {
+                    writeln(0);
+                }
+                """;
+        generateCode(input);
+        assertEquals("0\n1\n", runMain());
+    }
+
+    @Test
+    public void testComplexBangOperator() throws Exception {
+        String input =
+                """
+                bool x = true;
+                bool y = false;
+                if (!(x && y)) {
+                    writeln(1);
+                } else {
+                    writeln(0);
+                }
+                if (!(x || y)) {
+                    writeln(1);
+                } else {
+                    writeln(0);
+                }
+                """;
+        generateCode(input);
+        assertEquals("1\n0\n", runMain());
+    }
+
 }

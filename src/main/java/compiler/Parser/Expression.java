@@ -185,6 +185,13 @@ public class Expression extends Node {
         public int accept(CodeGenerator generator) {
             return generator.generateCode(this);
         }
+        public int accept(CodeGenerator generator, Label start, Label end) {
+            return generator.generateCode(this, start, end);
+        }
+
+        public Node getExpression() {
+            return expression;
+        }
     }
 
     public static class Value extends Expression {

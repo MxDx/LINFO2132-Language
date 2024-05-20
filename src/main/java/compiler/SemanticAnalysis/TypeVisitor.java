@@ -499,7 +499,6 @@ public class TypeVisitor {
         }
 
         IdentifierType identifierType = new IdentifierType(type, arrayInitialization.getType());
-        identifierType.setVectorDepth(1);
         return identifierType;
     }
 }

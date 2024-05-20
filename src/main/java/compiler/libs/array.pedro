@@ -21,6 +21,7 @@ def void printArray(int[] arr){
     writeln("");
 }
 
+
 def int sumArray(int[] arr){
     int i;
     int sum = 0;
