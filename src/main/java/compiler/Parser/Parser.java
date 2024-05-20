@@ -33,9 +33,19 @@ public class Parser {
     Symbol lookahead;
     HashSet<String> Structs;
     boolean isImport = false;
+    String importPath = "";
 
 
     public Parser(Lexer lexer) throws Exception {
+        this.lexer = lexer;
+        currentToken = lexer.getNextSymbol();
+        lookahead = lexer.getNextSymbol();
+        root = new Starting(this);
+        Structs = new HashSet<>();
+        root.parse();
+    }
+    public Parser(Lexer lexer,String importPath) throws Exception {
+        this.importPath = importPath;
         this.lexer = lexer;
         currentToken = lexer.getNextSymbol();
         lookahead = lexer.getNextSymbol();
@@ -90,6 +100,12 @@ public class Parser {
         error += "\tat line: " + currentToken.getLine() + "\n";
         error += "\tat token number: " + currentToken.getTokenNumber() + "\n";
         throw new ParserException(error);
+    }
+    public void setImportPath(String path) {
+        importPath = path;
+    }
+    public String getImportPath() {
+        return importPath;
     }
 
     public static ArrayList<Symbol> EOF_COMMA() {

@@ -11,10 +11,11 @@ public class Import extends Node {
     }
     public Node parse() throws Exception {
         parser.getNext();
-        String path = parser.currentToken.getValue();
+        String path = parser.getImportPath();
+        path += parser.currentToken.getValue();
         path += ".pedro";
         Lexer lexer = Compiler.lexerGetter(path, false, true);
-        Parser newParser = Compiler.parserGetter(lexer, false);
+        Parser newParser = Compiler.parserGetter(lexer, false, path.substring(0, path.lastIndexOf("/") + 1));
         parser.getNext();
         parser.match(Parser.SEMICOLON);
         parser.isImport = true;

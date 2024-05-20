@@ -51,7 +51,7 @@ public class Compiler {
 
         System.out.println("inputPath: " + inputPath); //LOCAL: String inputPath = "src/main/java/compiler/test.txt";
         Lexer lex = lexerGetter(inputPath, showLexer, noLibs);
-        Parser parser = parserGetter(lex, showParser);
+        Parser parser = parserGetter(lex, showParser,inputPath.substring(0, inputPath.lastIndexOf("/") + 1));
         semanticAnalysisGetter(parser, showSemantic);
         codeGeneratorGetter(parser,outputFileName);
         return;
@@ -99,7 +99,7 @@ public class Compiler {
 
         System.out.println("inputPath: " + inputPath); //LOCAL: String inputPath = "src/main/java/compiler/test.txt";
         Lexer lex = lexerGetter(inputPath, showLexer, noLibs);
-        Parser parser = parserGetter(lex, showParser);
+        Parser parser = parserGetter(lex, showParser,inputPath.substring(0, inputPath.lastIndexOf("/") + 1));
         semanticAnalysisGetter(parser, showSemantic);
         codeGeneratorGetter(parser,outputFileName);
         return;
@@ -138,9 +138,9 @@ public class Compiler {
             return null;
     }
 
-    public static Parser parserGetter(Lexer lex,boolean showParser) {
+    public static Parser parserGetter(Lexer lex,boolean showParser,String importPath) {
         try {
-            Parser parser = new Parser(lex);
+            Parser parser = new Parser(lex, importPath);
             if (showParser) {
                 System.out.println(parser);
 

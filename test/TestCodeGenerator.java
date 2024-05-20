@@ -54,9 +54,9 @@ public class TestCodeGenerator {
         Stack<Reader> std = getStdLib();
         StringReader reader = new StringReader(input);
         Lexer lexer = new Lexer(reader,std);
-        Parser parser = new Parser(lexer);
+        Parser parser = new Parser(lexer, "test/import/");
         SemanticAnalysis semanticAnalysis = new SemanticAnalysis(parser);
-        CodeGenerator codeGenerator = new CodeGenerator();
+        CodeGenerator codeGenerator = new CodeGenerator("test/build/Test.class");
         codeGenerator.generateCode(parser.getAST());
         return 0;
     }
@@ -367,6 +367,23 @@ public class TestCodeGenerator {
         generateCode(input);
         assertEquals("00.0\n", runMain());
     }
+    @Test
+    public void testImport() throws Exception {
+        String input =
+                """
+                import "mini";
+                write(5);
+                helloMini();
+                write(miniConst);
+                """;
+        generateCode(input);
+        assertEquals("hello from mini\n5Hello mini function\n42\n", runMain());
+    }
+
+
+
+
+
 
 
 
