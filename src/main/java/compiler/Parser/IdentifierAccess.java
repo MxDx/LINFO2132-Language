@@ -206,8 +206,7 @@ public class IdentifierAccess extends Node {
                 arguments.add(new Expression(parser).setEOF(EOF).parse());
                 if (parser.currentToken.getValue().equals(",")) {
                     parser.getNext();
-                }
-                if (oldSymbol.equals(parser.currentToken)) {
+                } else if (oldSymbol.equals(parser.currentToken)) {
                     parser.getNext();
                     parser.getNext();
                 }

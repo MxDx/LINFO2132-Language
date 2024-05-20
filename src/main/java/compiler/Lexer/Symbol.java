@@ -23,7 +23,9 @@ public abstract class Symbol {
     public String getValue() {
         return Value;
     }
-
+    public void setValue(String value) {
+        Value = value;
+    }
     public boolean isValue() {
         return isValue;
     }

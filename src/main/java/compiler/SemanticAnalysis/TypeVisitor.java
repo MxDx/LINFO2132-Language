@@ -256,6 +256,8 @@ public class TypeVisitor {
             str += type + " != ";
             str += "void";
             SemanticAnalysis.SemanticException("ReturnError", str, returnStatement);
+        } else {
+            expression.setType(returnType.getType().getType().getValue());
         }
 
         if (Objects.equals(returnType.getType(), table.getType("float")) && Objects.equals(type.getType(), table.getType("int"))) {

@@ -7,9 +7,9 @@ def void writeFloat(float f) {
 def void writeString(string s) {
     // Print the string to the console
 }
-def void writeln(string s) {
-    // Print the string to the console
-}
 def void write(Object o) {
     // Print the object to the console
+}
+def void writeln(Object o) {
+    // Print the string to the console
 }

@@ -32,4 +32,8 @@ public class Parameter extends Node {
                 + "\"identifier\": \""+ identifier + "\"\n"
                 + '}';
     }
+
+    public int getVectorDepth() {
+        return type.getVectorDepth();
+    }
 }
