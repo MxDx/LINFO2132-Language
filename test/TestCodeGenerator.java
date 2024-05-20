@@ -649,5 +649,40 @@ public class TestCodeGenerator {
         generateCode(input);
         assertEquals("2\n3\n4\n", runMain());
     }
+    @Test
+    public void testComplexNestedStruct(){
+        String input =
+                """
+                struct Point {
+                    int x;
+                    int y;
+                }
+                struct Location {
+                    Point p;
+                    int z;
+                }
+                struct Location2 {
+                    Location l;
+                    int w;
+                }
+                struct Location3 {
+                    Location2 l2;
+                    int v;
+                }
+                Location3 l3 = Location3(Location2(Location(Point(1,2), 3), 4), 5);
+                writeln(l3.l2.l.p.x);
+                writeln(l3.l2.l.p.y);
+                writeln(l3.l2.l.z);
+                writeln(l3.l2.w);
+                writeln(l3.v);
+                """;
+        try {
+            generateCode(input);
+            assertEquals("1\n2\n3\n4\n5\n", runMain());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
 
 }
