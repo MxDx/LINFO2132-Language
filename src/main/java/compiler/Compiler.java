@@ -88,7 +88,8 @@ public class Compiler {
         /*/
 
         String outputFileName = "default.class";
-        String inputPath = "src/main/java/compiler/testGen.txt";
+        //String inputPath = "src/main/java/compiler/testGen.txt";
+        String inputPath = "src/main/java/compiler/test_semantic.txt";
         boolean showLexer = false;
         boolean showParser = false;
         boolean showSemantic = false;
