@@ -166,3 +166,84 @@ writeln(superPerson.friends[1].name);
 write(superPerson.friends[1].location.x);
 write(", ");
 write(superPerson.friends[1].location.y);
+
+Person d = Person("me", Point(42, 69), int[2]);
+writeString(d.name);
+d.history[0] = 1;
+d.history[1] = 2;
+
+writeln("Person d location history: ");
+writeln(d.history[0]);
+writeln(d.history[1]);
+
+d.location.x = 111;
+write(d.location.x);
+write(", ");
+writeln(d.location.y);
+
+writeln(100000);
+
+string car = chr(65);
+
+writeString(car);
+
+int[] carray = int[5];
+carray[0] = 1;
+
+int i = 0;
+for (i = 0, i < len(carray), i = i + 1) {
+    carray[i] = i;
+}
+
+
+writeInt(carray[0]);
+
+int lengthArray = len(carray);
+
+write("Length of carray * 4 (20): ");
+writeInt(lengthArray * carray[4]);
+
+int length = len("hello");
+
+writeInt(length);
+
+bool c = 1 > 10;
+
+if (c) {
+    writeString("True because c is true");
+} else {
+    writeString("False");
+}
+
+string s = "Hello ";
+string s2 = "World";
+writeString(s + s2);
+
+if (s == "Hello") {
+    writeString("Equal");
+} else {
+    writeString("Not Equal");
+}
+
+
+if (2.0 <= 3.0 && 3.0 != 3.0 || 4.0 >= 5.0 && 6.0 == 6.0) {
+    writeString("Hello");
+}
+
+int g = 2;
+
+int x = 1;
+while (x <= 10  && x < square(2)) {
+    writeInt(x);
+    int g = 35;
+    x = x + 1;
+}
+
+writeInt(g);
+
+writeString("Printing numbers from 1 to 10");
+int b = 1;
+for (b = 1, b <= 10, b = b + 1) {
+    writeInt(b);
+}
+
