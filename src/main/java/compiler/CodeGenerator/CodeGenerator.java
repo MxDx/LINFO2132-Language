@@ -25,6 +25,7 @@ public class CodeGenerator {
     MethodVisitor mw;
     String className;
     String fileName;
+    String pathName;
     boolean firstOr = false;
     public CodeGenerator() {
         cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
@@ -35,9 +36,12 @@ public class CodeGenerator {
         functionTable = new HashMap<>();
         structTable = new HashMap<>();
         functionParameters = new HashMap<>();
+        fileName = "test/build/Test.class";
         className = "Test";
+        pathName = "test/build/";
     }
     public CodeGenerator(String fileName){
+        this.pathName = fileName.substring(0, fileName.lastIndexOf('/') + 1);
         this.fileName = fileName;
         fileName = fileName.substring(fileName.lastIndexOf('/') + 1);
         this.className = fileName.substring(0, fileName.lastIndexOf('.'));
@@ -60,6 +64,7 @@ public class CodeGenerator {
         this.cw = parent.cw;
         this.mw = parent.mw;
         this.className = parent.className;
+        this.pathName = parent.pathName;
     }
     public CodeGenerator(CodeGenerator parent,MethodVisitor mw) {
         this.stackTable = new StackTable(parent.stackTable);
@@ -70,6 +75,7 @@ public class CodeGenerator {
         this.cw = parent.cw;
         this.mw = mw;
         this.className = parent.className;
+        this.pathName = parent.pathName;
     }
 
 
@@ -332,7 +338,7 @@ public class CodeGenerator {
         newClass.visitEnd();
 
         byte[] bytes = newClass.toByteArray();
-        try (FileOutputStream outFile = new FileOutputStream(struct.getIdentifier() + ".class")) {
+        try (FileOutputStream outFile = new FileOutputStream(this.pathName + struct.getIdentifier() + ".class")) {
             outFile.write(bytes);
         } catch (IOException e) {
             e.printStackTrace();

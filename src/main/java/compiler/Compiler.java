@@ -40,7 +40,7 @@ public class Compiler {
     };
 
     public static void test() {
-        String outputFileName = "default.class";
+        String outputFileName = "output/default.class";
         String inputPath = "src/main/java/compiler/easyTestGen.pedro";
         boolean showLexer = false;
         boolean showParser = false;

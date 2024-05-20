@@ -63,7 +63,7 @@ public class TestCodeGenerator {
 
     private static String runMain() throws Exception {
         try {
-            Process process = Runtime.getRuntime().exec("java -cp . Test");
+            Process process = Runtime.getRuntime().exec("java -cp ./test/build/ Test");
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;
             StringBuilder output = new StringBuilder();
