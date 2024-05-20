@@ -1,0 +1,7 @@
+writeln("hello from mini");
+
+def void helloMini() {
+    writeln("Hello mini function");
+}
+
+int miniConst = 42;

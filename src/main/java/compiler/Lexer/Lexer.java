@@ -63,7 +63,7 @@ public class Lexer {
     public Lexer(Reader input) throws Exception {
         this(input, new Stack<>());
     }
-    
+
     public Symbol getNextSymbol() throws Exception {
         try {
             char tmp = nextUsefulChar(input);
@@ -96,6 +96,7 @@ public class Lexer {
                     case "return" -> new Keyword("return", line, tokenNumber++);
                     case "struct" -> new Keyword("struct", line, tokenNumber++);
                     case "def" -> new Keyword("def", line, tokenNumber++);
+                    case "import" -> new Keyword("import", line, tokenNumber++);
                     // Identifier
                     default -> new Identifier(s, line, tokenNumber++);
                 };

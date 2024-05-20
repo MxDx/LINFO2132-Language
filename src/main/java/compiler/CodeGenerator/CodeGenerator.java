@@ -59,6 +59,7 @@ public class CodeGenerator {
         structTable = new HashMap<>(parent.structTable);
         this.cw = parent.cw;
         this.mw = parent.mw;
+        this.className = parent.className;
     }
     public CodeGenerator(CodeGenerator parent,MethodVisitor mw) {
         this.stackTable = new StackTable(parent.stackTable);
@@ -68,6 +69,7 @@ public class CodeGenerator {
         structTable = new HashMap<>(parent.structTable);
         this.cw = parent.cw;
         this.mw = mw;
+        this.className = parent.className;
     }
 
 
@@ -367,37 +369,16 @@ public class CodeGenerator {
         MethodVisitor new_mw = cw.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, method.getName().getValue(), descriptor.toString(), null, null);
         functionTable.put(method.getName().getValue(),descriptor.toString());
         CodeGenerator newCodeGenerator = new CodeGenerator(this, new_mw);
-        int indexParameter = 0;
         for (Parameter parameter : method.getParameters()) {
             newCodeGenerator.stackTable.addVariableType(parameter.getIdentifier(), parameter.getType().getValue());
             newCodeGenerator.stackTable.addVariable(parameter.getIdentifier());
             int slot = newCodeGenerator.stackTable.getVariable(parameter.getIdentifier());
-            /*
-            switch (parameter.getType().getValue()) {
-                case "int":
-                    new_mw.visitVarInsn(Opcodes.ILOAD, indexParameter);
-                    new_mw.visitVarInsn(Opcodes.ISTORE, slot);
-                    break;
-                case "float":
-                    new_mw.visitVarInsn(Opcodes.FLOAD, indexParameter);
-                    new_mw.visitVarInsn(Opcodes.FSTORE, slot);
-                    break;
-                case "string":
-                    new_mw.visitVarInsn(Opcodes.ALOAD, indexParameter);
-                    new_mw.visitVarInsn(Opcodes.ASTORE, slot);
-                    break;
-                default:
-                    new_mw.visitVarInsn(Opcodes.ALOAD, indexParameter);
-                    new_mw.visitVarInsn(Opcodes.ASTORE, slot);
-                    break;
-            }
-             */
-            indexParameter++;
         }
         for (String key : stackTable.getVariableMap().keySet()) {
             newCodeGenerator.stackTable.addVariable(key);
             newCodeGenerator.stackTable.addVariableType(key, stackTable.getType(key));
         }
+        new_mw.visitCode();
         if (method.getBlock() != null) {
             method.getBlock().accept(newCodeGenerator);
         }
@@ -476,7 +457,6 @@ public class CodeGenerator {
 
     public int generateCode(IdentifierAccess.StructAccess structAccess) {
         // Load the struct on the stack
-        //mw.visitVarInsn(Opcodes.ALOAD, stackTable.getVariable(structAccess.getIdentifier()));
         String field = structAccess.getField();
         String struct;
         if (structTable.containsKey(structAccess.getIdentifier())) {
@@ -956,7 +936,7 @@ public class CodeGenerator {
 
     public int generateCode(For forStatement) {
         StackTable oldStackTable = stackTable;
-        stackTable = new StackTable(oldStackTable);
+        //stackTable = new StackTable(oldStackTable);
         Label eval = new Label();
         Label start = new Label();
         Label end = new Label();

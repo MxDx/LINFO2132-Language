@@ -1,4 +1,0 @@
-def int giveMeFive() {
-    return 5;
-}
-giveMeFive();
