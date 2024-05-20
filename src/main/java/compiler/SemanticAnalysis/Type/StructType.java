@@ -7,14 +7,17 @@ import compiler.SemanticAnalysis.IdentifierTable;
 import compiler.SemanticAnalysis.SemanticAnalysis;
 import compiler.SemanticAnalysis.TypeVisitor;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class StructType extends Type {
 
     private final HashMap<String, IdentifierType> fields;
+    private final ArrayList<IdentifierType> fieldsList;
     public StructType(Struct struct, TypeVisitor visitor) throws Exception {
         super(new VarType(struct.getIdentifier()));
         fields = new HashMap<>();
+        fieldsList = new ArrayList<>();
         for (Declaration declaration : struct.getDeclarations()) {
             String identifier = declaration.getIdentifier();
             VarType varType = declaration.getType();
@@ -31,6 +34,7 @@ public class StructType extends Type {
                 declaration.setType(identifierType.getType().getType().getValue() + "[]".repeat(identifierType.getVectorDepth()));
             }
             fields.put(identifier, identifierType);
+            fieldsList.add(identifierType);
         }
     }
 
@@ -40,6 +44,10 @@ public class StructType extends Type {
 
     public IdentifierType getField(String field) {
         return fields.get(field);
+    }
+
+    public ArrayList<IdentifierType> getFieldsList() {
+        return fieldsList;
     }
 
     @Override

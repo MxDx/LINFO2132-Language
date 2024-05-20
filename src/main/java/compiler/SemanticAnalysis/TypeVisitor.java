@@ -102,7 +102,7 @@ public class TypeVisitor {
             str += "< " + struct.getIdentifier() + " >";
             SemanticAnalysis.SemanticException("StructError", str, struct);
         }
-        List<IdentifierType> fields_List = structType.getFields().values().stream().toList();
+        List<IdentifierType> fields_List = structType.getFieldsList();
         ArrayList<IdentifierType> fields = new ArrayList<>(fields_List);
         FuncType constructor = new FuncType(new IdentifierType(structType), fields);
         if (!table.addConstructor(struct.getIdentifier(), constructor)) {
