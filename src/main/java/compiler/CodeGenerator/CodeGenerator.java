@@ -303,6 +303,11 @@ public class CodeGenerator {
     }
 
     public int generateCode(Method method) {
+        if (method.getName().getValue().equals("main")) {
+            method.getBlock().accept(this);
+            return Opcodes.NOP;
+        }
+
         StringBuilder descriptor = new StringBuilder("(");
         for (Parameter parameter : method.getParameters()) {
             descriptor.append(getJavaType(parameter.getType().getValue()));
@@ -386,11 +391,12 @@ public class CodeGenerator {
 
     public int generateCode(IdentifierAccess.StructAccess structAccess) {
         // Load the struct on the stack
-        mw.visitVarInsn(Opcodes.ALOAD, stackTable.getVariable(structAccess.getIdentifier()));
+        //mw.visitVarInsn(Opcodes.ALOAD, stackTable.getVariable(structAccess.getIdentifier()));
         String field = structAccess.getField();
         String struct = structAccess.getNodeType();
         String desc = structTable.get(struct).get(field);
         if (structAccess.getNext() != null) {
+            mw.visitFieldInsn(Opcodes.GETFIELD, struct, field, desc);
             structAccess.getNext().accept(this);
         } else if (structAccess.getAssignment() != null) {
             structAccess.getAssignment().getExpression().accept(this);
@@ -461,6 +467,9 @@ public class CodeGenerator {
     }
     public int generateCode(IdentifierAccess identifierAccess) {
         if (identifierAccess.getNext() != null) {
+            if (!(identifierAccess.getNext() instanceof IdentifierAccess.FunctionCall)) {
+                mw.visitVarInsn(Opcodes.ALOAD, stackTable.getVariable(identifierAccess.getIdentifier()));
+            }
             identifierAccess.getNext().accept(this);
         } else if (identifierAccess.getAssignment() != null) {
             identifierAccess.getAssignment().accept(this, identifierAccess.getIdentifier());
@@ -480,7 +489,7 @@ public class CodeGenerator {
         return Opcodes.NOP;
     }
     public int generateCode(IdentifierAccess.ArrayAccess arrayAccess) {
-        mw.visitVarInsn(Opcodes.ALOAD, stackTable.getVariable(arrayAccess.getIdentifier()));
+        //mw.visitVarInsn(Opcodes.ALOAD, stackTable.getVariable(arrayAccess.getIdentifier()));
         arrayAccess.getIndex().accept(this);
         if (arrayAccess.getNext() != null) {
             arrayAccess.getNext().accept(this);

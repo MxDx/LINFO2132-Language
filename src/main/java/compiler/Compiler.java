@@ -39,10 +39,29 @@ public class Compiler {
         }
     };
 
+    public static void test() {
+        String outputFileName = "default.class";
+        String inputPath = "src/main/java/compiler/testGen.txt";
+        boolean showLexer = false;
+        boolean showParser = false;
+        boolean showSemantic = false;
+        //*/
+
+        boolean noLibs = false;
+
+        System.out.println("inputPath: " + inputPath); //LOCAL: String inputPath = "src/main/java/compiler/test.txt";
+        Lexer lex = lexerGetter(inputPath, showLexer, noLibs);
+        Parser parser = parserGetter(lex, showParser);
+        semanticAnalysisGetter(parser, showSemantic);
+        codeGeneratorGetter(parser,outputFileName);
+        return;
+    }
+
     public static void main(String[] args) {
-        /*
+        //*
         if (args.length < 1) {
             System.out.println("No input file");
+            test();
             return ;
         }
 
