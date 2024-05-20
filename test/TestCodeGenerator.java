@@ -262,6 +262,41 @@ public class TestCodeGenerator {
         assertEquals("6\n", runMain());
     }
     @Test
+    public void testComparaison() throws Exception {
+        String input =
+                """
+                int x = 5;
+                float y = 3.0;
+                string z = "Hello";
+                if (x > 5 && z == "Hello") {
+                    writeln(1);
+                } else {
+                    writeln(0);
+                }
+                if (x >= 5 && z != "Hello") {
+                    writeln(1);
+                } else {
+                    writeln(0);
+                }
+                if (x >= 5 && x > y) {
+                    writeln(1);
+                } else {
+                    writeln(0);
+                }
+                if (x > 5 || x > y || y < 10 && y <= 4.0) {
+                    writeln(1);
+                } else {
+                    writeln(0);
+                }
+                
+                """;
+        generateCode(input);
+        assertEquals("0\n0\n1\n1\n", runMain());
+    }
+
+
+    ////////////////// Build In function tests //////////////////
+    @Test
     public void testDiffWriteAndWriteln() throws Exception {
         String input =
                 """
@@ -288,6 +323,49 @@ public class TestCodeGenerator {
                 """;
         generateCode(input);
         assertEquals("5\n3.0\nHello\n53.0Hello\n", runMain());
+    }
+    @Test
+    public void testLength() throws Exception {
+        String input =
+                """
+                string x = "Hello";
+                write(len(x));
+                """;
+        generateCode(input);
+        assertEquals("5\n", runMain());
+    }
+    @Test
+    public void testChr() throws Exception {
+        String input =
+                """
+                write(chr(97));
+                """;
+        generateCode(input);
+        assertEquals("a\n", runMain());
+    }
+    @Test
+    public void testFloor() throws Exception {
+        String input =
+                """
+                float x = 3.5;
+                write(floor(x));
+                """;
+        generateCode(input);
+        assertEquals("3\n", runMain());
+    }
+    @Test
+    public void testRead() throws Exception {
+        String input =
+                """
+                int x = readInt();
+                float y = readFloat();
+                string z = readString();
+                write(x);
+                write(y);
+                write(z);
+                """;
+        generateCode(input);
+        assertEquals("00.0\n", runMain());
     }
 
 
